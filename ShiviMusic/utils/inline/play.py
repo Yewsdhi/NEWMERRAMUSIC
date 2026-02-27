@@ -1,6 +1,6 @@
 # -----------------------------------------------
 # 🔸 ShiviMusic Project
-# 🔹 Developed & Maintained by: kirti Bots (https://github.com/TEAM-VAMPIRE-OP)
+# 🔹 Developed & Maintained by: kirti Bots (https://github.com/TEAM-BADNAM-OP)
 # 📅 Copyright © 2025 – All Rights Reserved
 #
 # 📖 License:
