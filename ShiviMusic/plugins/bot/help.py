@@ -71,6 +71,7 @@ async def helper_private(
         keyboard = help_pannel(_)
         await update.reply_photo(
             photo=START_IMG_URL,
+            has_spoiler=True,
             caption=_["help_1"].format(SUPPORT_CHAT),
             reply_markup=keyboard,
         )
