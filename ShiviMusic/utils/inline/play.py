@@ -1,15 +1,6 @@
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
-# 
-# This source code is under MIT License 📜
-# ❌ Unauthorized forking, importing, or using this code
-#    without giving proper credit will result in legal action ⚠️
-# 
-# 📩 DM for permission : @TheSigmaCoder
-# ===========================================================
-
 import math
-from pyrogram.types import InlineKeyboardButton
+from config import SUPPORT_CHAT, OWNER_USERNAME
+from pyrogram.types import InlineKeyboardButton, WebAppInfo
 from ShiviMusic import app
 import config
 from ShiviMusic.utils.formatters import time_to_seconds
@@ -62,7 +53,6 @@ def stream_markup_timer(_, chat_id, played, dur):
         bar = "————————◉—"
     else:
         bar = "—————————◉"
-        
     buttons = [
         [
             InlineKeyboardButton(
@@ -78,13 +68,13 @@ def stream_markup_timer(_, chat_id, played, dur):
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
          [
-             InlineKeyboardButton(text="< - 𝟤𝟢ˢ", callback_data="seek_backward_20"),
-             InlineKeyboardButton(text="• ᴘʀᴏᴍᴏ •", url=f"https://t.me/m/JqzgmqVmODM1"),
-             InlineKeyboardButton(text="𝟤𝟢ˢ + >", callback_data="seek_forward_20")
+             InlineKeyboardButton(text="< - 𝟤𝟢 s", callback_data="seek_backward_20"),
+             InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", url=f"https://t.me/lll_BADNAM_BABY_llll?text=𝖧ᴇʏ%20ʙᴀʙʏ%20%20😄%20ɪ%20ᴡᴀɴᴛ%20ᴘᴀɪᴅ%20ᴘʀᴏᴍᴏᴛɪᴏɴ,%20ɢɪᴠᴇ%20ᴍᴇ%20ᴘʀɪᴄᴇ%20ʟɪsᴛ%20😙"),
+             InlineKeyboardButton(text="𝟤𝟢 s + >", callback_data="seek_forward_20")
          ],
-        [
-            InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true"),
-        ]
+         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
+    ]
+        
     ]
     return buttons
 
@@ -99,12 +89,12 @@ def stream_markup(_, chat_id):
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
          ],
         [
-             InlineKeyboardButton(text="< - 𝟤𝟢ˢ", callback_data="seek_backward_20"),
-             InlineKeyboardButton(text="• ᴘʀᴏᴍᴏ •", url=f"https://t.me/m/JqzgmqVmODM1"),
-             InlineKeyboardButton(text="𝟤𝟢ˢ + >", callback_data="seek_forward_20")
+             InlineKeyboardButton(text="< - 𝟤𝟢 s", callback_data="seek_backward_20"),
+             InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", url=f"https://t.me/lll_BADNAM_BABY_llll?text=𝖧ᴇʏ%20ʙᴀʙʏ%20%20😄%20ɪ%20ᴡᴀɴᴛ%20ᴘᴀɪᴅ%20ᴘʀᴏᴍᴏᴛɪᴏɴ,%20ɢɪᴠᴇ%20ᴍᴇ%20ᴘʀɪᴄᴇ%20ʟɪsᴛ%20😙"),
+             InlineKeyboardButton(text="𝟤𝟢 s+ >", callback_data="seek_forward_20")
          ],
-        [
-            InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true"),
+            [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close"),
+
         ]
     ]
     return buttons
@@ -130,6 +120,7 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
         ],
     ]
     return buttons
+                
 
 
 def livestream_markup(_, videoid, user_id, mode, channel, fplay):
@@ -179,11 +170,3 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
         ],
     ]
     return buttons
-
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 😎
-# 
-# 🧑‍💻 Developer : t.me/TheSigmaCoder
-# 🔗 Source link : GitHub.com/Im-Notcoder/Shivi-V2
-# 📢 Telegram channel : t.me/Purvi_Bots
-# ===========================================================
