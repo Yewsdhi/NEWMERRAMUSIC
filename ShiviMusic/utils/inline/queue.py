@@ -71,8 +71,8 @@ def aq_markup(_, chat_id):
             InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true")
         ],
         [
-            InlineKeyboardButton(text="ᴍᴜsɪᴄ-ʙᴏᴛ", url="https://t.me/Chikurobot"),
-            InlineKeyboardButton(text="ᴀʟʟ-ʙᴏᴛs", url="https://t.me/kriti_update/21"),
+            InlineKeyboardButton(text="ᴍᴜsɪᴄ-ʙᴏᴛ", url="https://t.me/Kirtisongbot"),
+            InlineKeyboardButton(text="ᴀʟʟ-ʙᴏᴛs", url="https://t.me/Kirti_update"),
         ],
         [
             InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", user_id=OWNER_ID),
