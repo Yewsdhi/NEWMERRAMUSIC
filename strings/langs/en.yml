@@ -173,8 +173,8 @@ queue_6 : "<b>🕚 ᴅυʀᴧᴛɪση :</b> υηᴋησᴡη ᴅυʀᴧᴛɪσ�
 queue_7 : "\n**❖ ᴄʟɪᴄᴋ ση ʙυᴛᴛση ʙєʟσᴡ ᴛσ ɢєᴛ ᴡʜσʟє ǫυєυєᴅ ʟɪsᴛ.**"
 queue_8 : "❖ <b>{0} ᴘʟᴧʏєʀ</b>\n\n🎄 <b>sᴛʀєᴧϻɪηɢ :</b> {1}\n\n🔗 <b>sᴛʀєᴧϻ ᴛʏᴘє :</b> {2}\n🥀 <b>ʀєǫυєsᴛєᴅ ʙʏ :</b> {3}\n{4}"
 
-stream_1 : "<blockquote>➲ <b>sᴛᴧʀᴛєᴅ sᴛʀєᴧϻɪηɢ</b></blockquote>\n<blockquote><b>‣ ᴛɪᴛʟє :</b> <a href={0}>{1}</a>\n<b>‣ ᴅᴜʀᴧᴛɪση :</b> {2} ϻɪηᴜᴛєs\n<b>‣ ʙʏ :</b> {3}</blockquote>\n<blockquote><b>❖  𝐌ᴧᴅє  𝐁ɣ ➛  [˹ᴋᴀɪsᴇɴ ʙᴏᴛs˼](t.me/kaisen_updates)</b></blockquote>"
-stream_2 : "<b><blockquote>❖  𝐁ᴏᴛ  ᴏη  𝛅ᴛʀєᴧϻɪηɢ  ⏤͟͞●</blockquote></b>\n<blockquote><b>❍ 𝛅ᴛʀєᴧϻ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>✭ 𝐁ɣ »</b> {0}</blockquote>"
+stream_1 : "<b>➻ sᴛʀᴇᴀᴍ ʜᴀs ʙᴇɢᴜɴ. ᴇɴᴊᴏʏ ᴛʜᴇ ᴍᴜsɪᴄ !</b>\n\n<b>❄ ᴛɪᴛʟᴇ : </b> <a href={0}>{1}</a>\n<b>⏱ ᴛɪᴍᴇ : </b> {2} ᴍɪɴᴜᴛᴇs\n<b>🥀 ʙʏ : </b> {3}"
+stream_2 : "<b>➻ sᴛʀᴇᴀᴍ ʜᴀs ʙᴇɢᴜɴ. ᴇɴᴊᴏʏ ᴛʜᴇ ᴍᴜsɪᴄ !</b>\n\n<b>‣ Sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>‣ Rᴇǫᴜᴇsᴛᴇᴅ ʙʏ :</b> {0}"
 
 CLOSE_BUTTON  : "• ᴄʟᴏsє •"
 BACK_BUTTON : "• ʙᴧᴄᴋ •"
