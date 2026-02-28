@@ -20,7 +20,7 @@ from ShiviMusic.utils.database import is_on_off
 from ShiviMusic.utils.formatters import time_to_seconds
 
 YTPROXY = "https://tgapi.xbitcode.com"
-YT_API_KEY = "YOUR_KEY"
+YT_API_KEY = "xbit_GjLUhA7Xsu_5Dr_xBdFZLr8LzorcKIkK"
 
 logger = LOGGER(__name__)
 
