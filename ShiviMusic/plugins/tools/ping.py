@@ -17,7 +17,7 @@ from datetime import datetime
 from pyrogram import filters
 from pyrogram.types import Message
 from ShiviMusic import app
-from ShiviMusic.core.call import Vampire
+from ShiviMusic.core.call import Shivi
 from ShiviMusic.utils import bot_sys_stats
 from ShiviMusic.utils.decorators.language import language
 from ShiviMusic.utils.inline import supp_markup
@@ -43,7 +43,7 @@ Shivi_PIC = [
 async def ping_com(client, message: Message, _):
     start = datetime.now()
     response = await message.reply_photo(
-        photo=random.choice(Vampire_PIC),
+        photo=random.choice(Shivi_PIC),
         has_spoiler=True,
         caption=_["ping_1"].format(app.mention),
     )
