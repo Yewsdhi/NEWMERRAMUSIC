@@ -15,24 +15,24 @@ import config
 class BUTTONS(object):
     ABUTTON = [
     [
-        InlineKeyboardButton("˹ sυᴘᴘσʀᴛ ˼", url="https://t.me/kirti_supprot_group"),
-        InlineKeyboardButton("˹ υᴘᴅᴧᴛєs ˼", url="https://t.me/Kirti_update")
+        InlineKeyboardButton("sυᴘᴘσʀᴛ", url="https://t.me/kirti_supprot_group"),
+        InlineKeyboardButton("υᴘᴅᴧᴛєs", url="https://t.me/Kirti_update")
     ],
     [
-        InlineKeyboardButton("˹ ❍ᴡηєʀ ˼", user_id=config.OWNER_ID),
+        InlineKeyboardButton("❍ᴡηєʀ", user_id=config.OWNER_ID),
         InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper")
     ]
 ]
 
     INFO_BUTTON = [
     [
-        InlineKeyboardButton("˹ ʀєᴘσ ˼", callback_data="gib_source"),
-        InlineKeyboardButton("˹ ʏᴛ-ᴀᴘɪ ˼", callback_data="bot_info_data"),
-        InlineKeyboardButton("˹ ʟᴧηɢᴜᴧɢє ˼", callback_data="LG"),
+        InlineKeyboardButton("ʀєᴘσ", callback_data="gib_source"),
+        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 💸", callback_data="bot_info_data"),
+        InlineKeyboardButton("ʟᴧηɢᴜᴧɢє", callback_data="LG"),
     ],
     [
         
-        InlineKeyboardButton("˹ ᴘʀɪᴠᴧᴄʏ ˼", url="https://telegra.ph/Privacy-Policy--Shivi-Bots-by-BADNAM-BABY-08-06"),
+        InlineKeyboardButton("ᴘʀɪᴠᴧᴄʏ", url="https://telegra.ph/Privacy-Policy--Shivi-Bots-by-BADNAM-BABY-08-06"),
         InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper"),
     ]
     ]
