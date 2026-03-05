@@ -13,12 +13,12 @@ from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
-from ytSearch import VideosSearch
+
 from ShiviMusic import LOGGER
 from ShiviMusic.utils.database import is_on_off
 from ShiviMusic.utils.formatters import time_to_seconds
 from config import YT_API_KEY, YTPROXY_URL as YTPROXY
-
+from py_yt import VideosSearch
 logger = LOGGER(__name__)
 
 def cookie_txt_file():
