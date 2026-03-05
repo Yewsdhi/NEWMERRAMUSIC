@@ -1,18 +1,22 @@
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Kirti 😎
+# ===========================================================
+# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 🚀
+# 
+# This source code is under MIT License 📜
+# ❌ Unauthorized forking, importing, or using this code
+#    without giving proper credit will result in legal action ⚠️
+# 
+# 📩 DM for permission : @MrRockytg
+# ===========================================================
 
-# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
-# 🔗 Source link : https://github.com/Badnam019
-# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
-# =======================================================
-
-import time, asyncio
+import time
 import random
+import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from youtubesearchpython.__future__ import VideosSearch
 
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import config
 from ShiviMusic import app
 from ShiviMusic.misc import _boot_
@@ -33,7 +37,8 @@ from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
-NEXIO = [
+
+NEXI_VID = [
     "https://files.catbox.moe/38tth5.jpg",
     "https://files.catbox.moe/ggfe0n.jpg",
     "https://files.catbox.moe/bv1u4q.jpg",
@@ -52,49 +57,26 @@ NEXIO = [
 ]
 
 
-KRITI_STKR = [
-    "CAACAgUAAxkBAAIBO2i1Spi48ZdWCNehv-GklSI9aRYWAAJ9GAACXB-pVds_sm8brMEqHgQ",
-    "CAACAgUAAxkBAAIBOmi1Sogwaoh01l5-e-lJkK1VNY6MAAIlGAACKI6wVVNEvN-6z3Z7HgQ",
-    "CAACAgUAAxkBAAIBPGi1Spv1tlx90xM1Q7TRNyL0fhcJAAKDGgACZSupVbmJpWW9LmXJHgQ",
-    "CAACAgUAAxkBAAIBPWi1SpxJZKxuWYsZ_G06j_G_9QGkAAIsHwACdd6xVd2HOWQPA_qtHgQ",
-    "CAACAgUAAxkBAAIBPmi1Sp4QFoLkZ0oN3d01kZQOHQRwAAI4FwACDDexVVp91U_1BZKFHgQ",
-    "CAACAgUAAxkBAAIBP2i1SqFoa4yqgl1QSISZrQ4VuYWgAAIpFQACvTqpVWqbFSKOnWYxHgQ",
-    "CAACAgUAAxkBAAIBQGi1Sqk3OGQ2jRW2rN6ZVZ7vWY2ZAAJZHQACCa-pVfefqZZtTHEdHgQ",
-]
-
-EFFECT_IDS = [
-    5046509860389126442,
-    5107584321108051014,
-    5104841245755180586,
-    5159385139981059251,
-]
-
-emojis = ["🥰", "🔥", "💖", "😁", "😎", "🌚", "❤️‍🔥", "♥️", "🎉", "🙈"]
-
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
 @LanguageStart
 async def start_pm(client, message: Message, _):
     await add_served_user(message.from_user.id)
-    
-    await message.react(random.choice(emojis))
-
-    sticker = await message.reply_sticker(random.choice(KRITI_STKR))
-    await asyncio.sleep(1)
-    await sticker.delete()
 
     if len(message.text.split()) > 1:
         name = message.text.split(None, 1)[1]
 
-        if name.startswith("help"):
+        if name[0:3] == "del":
+            await del_plist_msg(client=client, message=message, _=_)
+        
+        if name[0:4] == "help":
             keyboard = help_pannel(_)
             return await message.reply_photo(
-                random.choice(NEXIO),
-                has_spoiler=True,
+                random.choice(NEXI_VID),
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
             )
 
-        if name.startswith("sud"):
+        if name[0:3] == "sud":
             await sudoers_list(client=client, message=message, _=_)
             if await is_on_off(2):
                 return await app.send_message(
@@ -103,7 +85,7 @@ async def start_pm(client, message: Message, _):
                 )
             return
 
-        if name.startswith("inf"):
+        if name[0:3] == "inf":
             m = await message.reply_text("🔎")
             query = (str(name)).replace("info_", "", 1)
             query = f"https://www.youtube.com/watch?v={query}"
@@ -117,7 +99,6 @@ async def start_pm(client, message: Message, _):
                 channel = result["channel"]["name"]
                 link = result["link"]
                 published = result["publishedTime"]
-
             searched_text = _["start_6"].format(
                 title, duration, views, published, channellink, channel, app.mention
             )
@@ -130,11 +111,9 @@ async def start_pm(client, message: Message, _):
                 ]
             )
             await m.delete()
-            return await app.send_photo(
+            await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
-                has_spoiler=True,
-                message_effect_id=random.choice(EFFECT_IDS),
                 caption=searched_text,
                 reply_markup=key,
             )
@@ -143,21 +122,10 @@ async def start_pm(client, message: Message, _):
                     chat_id=config.LOGGER_ID,
                     text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
-
     else:
-        Shivi = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
-        await asyncio.sleep(0.4)
-        await Shivi.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
-        await asyncio.sleep(0.4)
-        await Shivi.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
-        await asyncio.sleep(0.4)
-        await Shivi.delete()
-
         out = private_panel(_)
         await message.reply_photo(
-            random.choice(NEXIO),
-            has_spoiler=True,
-            message_effect_id=random.choice(EFFECT_IDS),
+            random.choice(NEXI_VID),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
         )
@@ -165,8 +133,7 @@ async def start_pm(client, message: Message, _):
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
                 text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
-            )
-
+            )          
 
 
 @app.on_message(filters.command(["start"]) & filters.group & ~BANNED_USERS)
@@ -175,8 +142,7 @@ async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
     await message.reply_photo(
-        random.choice(NEXIO),
-        has_spoiler=True,
+        random.choice(NEXI_VID),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
     )
@@ -211,8 +177,7 @@ async def welcome(client, message: Message):
 
                 out = start_panel(_)
                 await message.reply_photo(
-                    random.choice(NEXIO),
-                    has_spoiler=True,
+                    random.choice(NEXI_VID),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
@@ -226,10 +191,10 @@ async def welcome(client, message: Message):
         except Exception as ex:
             print(ex)
 
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Kirti 😎
-
-# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
-# 🔗 Source link : https://github.com/Badnam019
-# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
-# =======================================================
+# ===========================================================
+# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 😎
+# 
+# 🧑‍💻 Developer : t.me/MrRockytg
+# 🔗 Source link : t.me/Rockyxsupport
+# 📢 Telegram channel : t.me/Rockyxupdate
+# ===========================================================
