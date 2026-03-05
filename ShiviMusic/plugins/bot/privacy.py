@@ -15,7 +15,7 @@ from ShiviMusic import app
 @app.on_message(filters.command("privacy"))
 async def privacy_command(client: Client, message: Message):
     await message.reply_photo(
-        photo="https://files.catbox.moe/0jpf7u.jpg",
+        photo="https://files.catbox.moe/czojlb.jpg",
         caption="**➻ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ ᴋɪʀᴛɪ ʙᴏᴛѕ ᴘʀɪᴠᴀᴄʏ ᴘᴏʟɪᴄʏ.**\n\n**⊚ ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ ᴛʜᴇɴ ꜱᴇᴇ ᴘʀɪᴠᴀᴄʏ ᴘᴏʟɪᴄʏ 🔏**",
         reply_markup=InlineKeyboardMarkup(
             [
