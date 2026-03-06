@@ -173,9 +173,9 @@ queue_6 : "<b>🕚 ᴅυʀᴧᴛɪση :</b> υηᴋησᴡη ᴅυʀᴧᴛɪσ�
 queue_7 : "\n**❖ ᴄʟɪᴄᴋ ση ʙυᴛᴛση ʙєʟσᴡ ᴛσ ɢєᴛ ᴡʜσʟє ǫυєυєᴅ ʟɪsᴛ.**"
 queue_8 : "❖ <b>{0} ᴘʟᴧʏєʀ</b>\n\n🎄 <b>sᴛʀєᴧϻɪηɢ :</b> {1}\n\n🔗 <b>sᴛʀєᴧϻ ᴛʏᴘє :</b> {2}\n🥀 <b>ʀєǫυєsᴛєᴅ ʙʏ :</b> {3}\n{4}"
 
-stream_1 = "<b><blockquote><emoji id=5368324170671202286>🔥</emoji> sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ <emoji id=5368324170671202286>🔥</emoji></blockquote></b>\n<blockquote><b>🎵 ᴛɪᴛᴛʟᴇ »</b> <a href={0}>{1}</a>\n<b>⏱ ᴅᴜʀᴀᴛɪᴏɴ »</b> {2} ᴍɪɴᴜᴛᴇs\n<b>👤 ʙʏ »</b> {3}</blockquote>\n<blockquote><b>❖ ᴍᴀᴅᴇ ʙʏ ➛ <a href='https://t.me/Kirti_update'>˹𝐊𝝸ɤ𝞃𝝸 𝝱𝝾𝞃𝘀˼</a></b></blockquote>"
+stream_1 : "<b><blockquote><emoji id=5368324170671202286>🔥</emoji> sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ <emoji id=5368324170671202286>🔥</emoji></blockquote></b>\n<blockquote><b>🎵 ᴛɪᴛᴛʟᴇ »</b> <a href={0}>{1}</a>\n<b>⏱ ᴅᴜʀᴀᴛɪᴏɴ »</b> {2} ᴍɪɴᴜᴛᴇs\n<b>👤 ʙʏ »</b> {3}</blockquote>\n<blockquote><b>❖ ᴍᴀᴅᴇ ʙʏ ➛ <a href='https://t.me/Kirti_update'>˹𝐊𝝸ɤ𝞃𝝸 𝝱𝝾𝞃𝘀˼</a></b></blockquote>"
 
-stream_2 = "<b><blockquote><emoji id=5368324170671202286>🔥</emoji> sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ <emoji id=5368324170671202286>🔥</emoji></blockquote></b>\n<blockquote><b>📡 sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>👤 ʙʏ »</b> {0}</blockquote>"
+stream_2 : "<b><blockquote><emoji id=5368324170671202286>🔥</emoji> sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ <emoji id=5368324170671202286>🔥</emoji></blockquote></b>\n<blockquote><b>📡 sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>👤 ʙʏ »</b> {0}</blockquote>"
 
 
 CLOSE_BUTTON  : "• ᴄʟᴏsє •"
