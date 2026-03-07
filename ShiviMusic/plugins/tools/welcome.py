@@ -172,6 +172,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         )
 
         msg = await app.send_photo(
+          has_spoiler=True,
             chat_id,
             photo=welcomeimg,
             caption=f"""
