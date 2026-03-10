@@ -4,7 +4,7 @@ from pyrogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton
 )
-from ShiviMusic import ShiviMusic as app
+from ShiviMusic import app
 
 
 @app.on_message(filters.video_chat_started)
