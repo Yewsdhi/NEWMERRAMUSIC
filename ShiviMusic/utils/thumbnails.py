@@ -8,151 +8,96 @@ from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
-CACHE_DIR = "cache"
-os.makedirs(CACHE_DIR, exist_ok=True)
-
-DUAL_TONES = [
-    ((20, 20, 20), (240, 240, 240)),
-    ((25, 30, 45), (250, 250, 250)),
-    ((15, 40, 65), (230, 230, 230)),
-    ((55, 10, 80), (255, 245, 255))
-]
-
-def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
-    ellipsis = "…"
-    try:
-        if font.getlength(text) <= max_w:
-            return text
-        for i in range(len(text)-1, 0, -1):
-            if font.getlength(text[:i] + ellipsis) <= max_w:
-                return text[:i] + ellipsis
-    except:
-        return text[:max_w//10] + "…" if len(text) > max_w//10 else text
-    return ellipsis
+WIDTH = 1280
+HEIGHT = 720
 
 
-async def get_thumb(videoid: str, player_username: str = None) -> str:
-    if player_username is None:
-        player_username = app.username
-
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_hexagon.png")
-    if os.path.exists(cache_path):
-        return cache_path
+def format_time(sec):
+    m = sec // 60
+    s = sec % 60
+    return f"{m:02d}:{s:02d}"
 
 
-    try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search = await results.next()
-        data = search.get("result", [])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Unknown Title")).title()
-        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown Views")
-    except:
-        title, thumbnail, duration, views = "Unknown", YOUTUBE_IMG_URL, None, "Unknown"
+def generate_player(title, channel, botname, duration, current, thumb_url):
 
-    is_live = not duration or str(duration).lower() in {"live", "live now", ""}
-    duration_text = "Live" if is_live else duration or "Unknown"
-
-    thumb_path = os.path.join(CACHE_DIR, f"thumb_{videoid}.png")
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(thumbnail) as r:
-                if r.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
-                        await f.write(await r.read())
-    except:
-        return YOUTUBE_IMG_URL
-
-    
-    bg = Image.open(thumb_path).resize((1280, 720)).convert("RGB")
-    bg = bg.filter(ImageFilter.GaussianBlur(30)).convert("RGBA")
-    overlay = Image.new("RGBA", (1280, 720), (255, 255, 255, 40))
-    bg = Image.alpha_composite(bg, overlay)
-
-    thumb = Image.open(thumb_path).resize((520, 520)).convert("RGBA")
-
-    hex_points = [
-        (260, 0),
-        (520, 130),
-        (520, 390),
-        (260, 520),
-        (0, 390),
-        (0, 130)
-    ]
-
-    mask = Image.new("L", (520, 520), 0)
-    draw_mask = ImageDraw.Draw(mask)
-    draw_mask.polygon(hex_points, fill=255)
-
-    hex_thumb = Image.new("RGBA", (520, 520), (0, 0, 0, 0))
-    hex_thumb.paste(thumb, (0, 0), mask)
-
-    border_img = Image.new("RGBA", (600, 600), (0, 0, 0, 0))
-    d = ImageDraw.Draw(border_img)
-    offset = 40
-
-    border_hex = [(x + offset, y + offset) for x, y in hex_points]
-
-    d.polygon(border_hex, outline=(90, 0, 60, 255), width=26)
-
-    d.polygon(border_hex, outline=(255, 100, 200, 180), width=10)
-
-    d.polygon(border_hex, outline=(255, 40, 150, 255), width=16)
-
-    bg.paste(border_img, (60, 60), border_img)
-    bg.paste(hex_thumb, (100, 100), hex_thumb)
-
+    bg = Image.new("RGB", (WIDTH, HEIGHT), (255, 140, 0))
     draw = ImageDraw.Draw(bg)
 
+    # download thumbnail
+    r = requests.get(thumb_url)
+    with open("thumb.jpg", "wb") as f:
+        f.write(r.content)
+
+    thumb = Image.open("thumb.jpg").resize((360, 360))
+    bg.paste(thumb, (850, 170))
+
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 44)
-        meta_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
-        tag_font = ImageFont.truetype("ShiviMusic/assets/font2.ttf", 28)
+        title_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 80)
+        small_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 45)
     except:
-        title_font = meta_font = tag_font = ImageFont.load_default()
+        title_font = small_font = ImageFont.load_default()
 
-    title_x = 700
-    title_y = 180
-    title_text = trim_to_width(title, title_font, 480)
-    draw.text((title_x, title_y), title_text, fill=(0, 0, 0), font=title_font)
+    # title
+    draw.text((120, 220), title, fill="black", font=title_font)
 
-    meta = (
-        f"YouTube | {views}\n"
-        f"Duration | {duration_text}\n"
-        f"Player | @{player_username}\n"
-    )
-    draw.multiline_text(
-        (title_x, title_y + 90),
-        meta,
-        fill=(0, 0, 0),
-        spacing=10,
-        font=meta_font
-    )
-    
-    bar_y = title_y + 240
-    bar_w = 390
-
-    draw.rounded_rectangle(
-        (title_x, bar_y, title_x + bar_w, bar_y + 14),
-        8,
-        fill=(255, 255, 255, 80)
+    # channel
+    draw.text(
+        (120, 340),
+        f"Channel: {channel}",
+        fill="black",
+        font=small_font
     )
 
-    draw.rounded_rectangle(
-        (title_x, bar_y, title_x + bar_w // 2, bar_y + 14),
-        8,
+    # bot
+    draw.text(
+        (120, 410),
+        f"Playing on: @{botname}",
+        fill="black",
+        font=small_font
+    )
+
+    # progress bar
+    bar_x = 120
+    bar_y = 520
+    bar_w = 650
+    bar_h = 16
+
+    progress = int((current / duration) * bar_w)
+
+    draw.rectangle(
+        (bar_x, bar_y, bar_x + bar_w, bar_y + bar_h),
+        fill=(220, 220, 220)
+    )
+
+    draw.rectangle(
+        (bar_x, bar_y, bar_x + progress, bar_y + bar_h),
         fill=(0, 0, 0)
     )
 
-    brand = "DEV :- BADNAM OP"
-    w = tag_font.getlength(brand)
-    draw.text((1280 - w - 50, 680), brand, fill=(0, 0, 0), font=tag_font)
+    draw.ellipse(
+        (
+            bar_x + progress - 10,
+            bar_y - 6,
+            bar_x + progress + 10,
+            bar_y + 10
+        ),
+        fill="black"
+    )
 
-    try:
-        os.remove(thumb_path)
-    except:
-        pass
+    draw.text(
+        (120, 560),
+        format_time(current),
+        fill="black",
+        font=small_font
+    )
 
-    bg.save(cache_path)
-    return cache_path
+    draw.text(
+        (720, 560),
+        format_time(duration),
+        fill="black",
+        font=small_font
+    )
+
+    bg.save("player.png")
+
+    return "player.png"
