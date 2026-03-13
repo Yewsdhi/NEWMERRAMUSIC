@@ -4,7 +4,7 @@ from pyrogram.types import Message
 from py_yt import VideosSearch
 
 from ShiviMusic import app
-from ShiviMusic.core.call import call Shivi
+from ShiviMusic.core.call import call, Shivi
 from ShiviMusic.utils.database import get_autoplay, set_autoplay
 from ShiviMusic.utils.queue import get_queue
 from ShiviMusic.utils.stream import stream
