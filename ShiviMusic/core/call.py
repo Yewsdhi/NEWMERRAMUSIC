@@ -18,7 +18,7 @@ from ShiviMusic.utils.database import (add_active_chat, add_active_video_chat,
                                        remove_active_chat,
                                        remove_active_video_chat, set_loop)
 from ShiviMusic.utils.exceptions import AssistantErr
-from KanhaMusic.utils.formatters import (check_duration, seconds_to_min,
+from ShiviMusic.utils.formatters import (check_duration, seconds_to_min,
                                          speed_converter)
 from ShiviMusic.utils.inline.play import stream_markup
 from ShiviMusic.utils.stream.autoclear import auto_clean
