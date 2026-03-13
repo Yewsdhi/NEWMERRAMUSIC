@@ -1,7 +1,7 @@
 import random
 from pyrogram import filters
 from pyrogram.types import Message
-from youtubesearchpython import VideosSearch
+from py_yt import VideosSearch
 
 from ShiviMusic import app
 from ShiviMusic.core.call import call Shivi
