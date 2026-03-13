@@ -27,3 +27,4 @@ opencv-python
 beautifulsoup4
 py-yt-search
 PyGithub==2.3.0
+psutil
