@@ -1,133 +1,147 @@
+# -----------------------------------------------
+# 🔸 StrangerMusic Project
+# 🔹 Developed & Maintained by: Shashank Shukla (https://github.com/itzshukla)
+# 📅 Copyright © 2022 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by ItzShukla
+# -----------------------------------------------
 import os
-import aiohttp
+import re
 import aiofiles
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
+import aiohttp
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
+# Constants
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
+PANEL_W, PANEL_H = 763, 545
+PANEL_X = (1280 - PANEL_W) // 2
+PANEL_Y = 88
+TRANSPARENCY = 170
+INNER_OFFSET = 36
 
-async def spotify_thumb(videoid):
+THUMB_W, THUMB_H = 542, 273
+THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
+THUMB_Y = PANEL_Y + INNER_OFFSET
 
-    cache = f"{CACHE_DIR}/{videoid}_spotify.png"
-    if os.path.exists(cache):
-        return cache
+TITLE_X = 377
+META_X = 377
+TITLE_Y = THUMB_Y + THUMB_H + 10
+META_Y = TITLE_Y + 45
 
+BAR_X, BAR_Y = 388, META_Y + 45
+BAR_RED_LEN = 280
+BAR_TOTAL_LEN = 480
+
+ICONS_W, ICONS_H = 415, 45
+ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
+ICONS_Y = BAR_Y + 48
+
+MAX_TITLE_WIDTH = 580
+
+def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
+    ellipsis = "…"
+    if font.getlength(text) <= max_w:
+        return text
+    for i in range(len(text) - 1, 0, -1):
+        if font.getlength(text[:i] + ellipsis) <= max_w:
+            return text[:i] + ellipsis
+    return ellipsis
+
+async def get_thumb(videoid: str) -> str:
+    cache_path = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    if os.path.exists(cache_path):
+        return cache_path
+
+    # YouTube video data fetch
+    results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
     try:
-        search = VideosSearch(
-            f"https://www.youtube.com/watch?v={videoid}",
-            limit=1
-        )
+        results_data = await results.next()
+        result_items = results_data.get("result", [])
+        if not result_items:
+            raise ValueError("No results found.")
+        data = result_items[0]
+        title = re.sub(r"\W+", " ", data.get("title", "Unsupported Title")).title()
+        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
+        duration = data.get("duration")
+        views = data.get("viewCount", {}).get("short", "Unknown Views")
+    except Exception:
+        title, thumbnail, duration, views = "Unsupported Title", YOUTUBE_IMG_URL, None, "Unknown Views"
 
-        data = (await search.next())["result"][0]
+    is_live = not duration or str(duration).strip().lower() in {"", "live", "live now"}
+    duration_text = "Live" if is_live else duration or "Unknown Mins"
 
-        title = data["title"]
-        thumb = data["thumbnails"][0]["url"]
-        duration = data.get("duration", "Unknown")
-        views = data.get("viewCount", {}).get("short", "0")
+    # Download thumbnail
+    thumb_path = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(thumbnail) as resp:
+                if resp.status == 200:
+                    async with aiofiles.open(thumb_path, "wb") as f:
+                        await f.write(await resp.read())
+    except Exception:
+        return YOUTUBE_IMG_URL
 
-    except:
-        title = "Unknown Song"
-        thumb = YOUTUBE_IMG_URL
-        duration = "0:00"
-        views = "0"
+    # Create base image
+    base = Image.open(thumb_path).resize((1280, 720)).convert("RGBA")
+    bg = ImageEnhance.Brightness(base.filter(ImageFilter.BoxBlur(10))).enhance(0.6)
 
-    thumb_path = f"{CACHE_DIR}/yt_{videoid}.png"
+    # Frosted glass panel
+    panel_area = bg.crop((PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H))
+    overlay = Image.new("RGBA", (PANEL_W, PANEL_H), (255, 255, 255, TRANSPARENCY))
+    frosted = Image.alpha_composite(panel_area, overlay)
+    mask = Image.new("L", (PANEL_W, PANEL_H), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, PANEL_W, PANEL_H), 50, fill=255)
+    bg.paste(frosted, (PANEL_X, PANEL_Y), mask)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get(thumb) as r:
-            if r.status == 200:
-                async with aiofiles.open(thumb_path, "wb") as f:
-                    await f.write(await r.read())
-
-    # ---------------- BG ---------------- #
-
-    bg = Image.new("RGB", (1280, 720), (15, 20, 18))
-
-    overlay = Image.new("RGBA", (1280, 720), (0, 255, 120, 40))
-    bg = Image.alpha_composite(bg.convert("RGBA"), overlay)
-
-    # ---------------- ALBUM COVER ---------------- #
-
-    album = Image.open(thumb_path).resize((420, 420)).convert("RGBA")
-
-    mask = Image.new("L", (420, 420), 0)
-    draw_mask = ImageDraw.Draw(mask)
-    draw_mask.rounded_rectangle((0,0,420,420), 40, fill=255)
-
-    album_round = Image.new("RGBA",(420,420))
-    album_round.paste(album,(0,0),mask)
-
-    bg.paste(album_round,(120,150),album_round)
-
+    # Draw details
     draw = ImageDraw.Draw(bg)
-
-    # ---------------- FONTS ---------------- #
-
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/font.ttf",48)
-        meta_font = ImageFont.truetype("ShiviMusic/assets/font.ttf",28)
-    except:
-        title_font = meta_font = ImageFont.load_default()
+        title_font = ImageFont.truetype("ShiviMusic/assets/assets/font2.ttf", 32)
+        regular_font = ImageFont.truetype("ShiviMusic/assets/assets/font.ttf", 18)
+    except OSError:
+        title_font = regular_font = ImageFont.load_default()
 
-    # ---------------- TITLE ---------------- #
+    thumb = base.resize((THUMB_W, THUMB_H))
+    tmask = Image.new("L", thumb.size, 0)
+    ImageDraw.Draw(tmask).rounded_rectangle((0, 0, THUMB_W, THUMB_H), 20, fill=255)
+    bg.paste(thumb, (THUMB_X, THUMB_Y), tmask)
 
-    draw.text(
-        (620,220),
-        title[:40],
-        fill=(255,255,255),
-        font=title_font
-    )
+    draw.text((TITLE_X, TITLE_Y), trim_to_width(title, title_font, MAX_TITLE_WIDTH), fill="black", font=title_font)
+    draw.text((META_X, META_Y), f"YouTube | {views}", fill="black", font=regular_font)
 
-    meta = f"Views : {views}\nDuration : {duration}"
+    # Progress bar
+    draw.line([(BAR_X, BAR_Y), (BAR_X + BAR_RED_LEN, BAR_Y)], fill="red", width=6)
+    draw.line([(BAR_X + BAR_RED_LEN, BAR_Y), (BAR_X + BAR_TOTAL_LEN, BAR_Y)], fill="gray", width=5)
+    draw.ellipse([(BAR_X + BAR_RED_LEN - 7, BAR_Y - 7), (BAR_X + BAR_RED_LEN + 7, BAR_Y + 7)], fill="red")
 
-    draw.multiline_text(
-        (620,300),
-        meta,
-        fill=(200,200,200),
-        spacing=8,
-        font=meta_font
-    )
+    draw.text((BAR_X, BAR_Y + 15), "00:00", fill="black", font=regular_font)
+    end_text = "Live" if is_live else duration_text
+    draw.text((BAR_X + BAR_TOTAL_LEN - (90 if is_live else 60), BAR_Y + 15), end_text, fill="red" if is_live else "black", font=regular_font)
 
-    # ---------------- PROGRESS BAR ---------------- #
+    # Icons
+    icons_path = "ShiviMusic/assets/assets/play_icons.png"
+    if os.path.isfile(icons_path):
+        ic = Image.open(icons_path).resize((ICONS_W, ICONS_H)).convert("RGBA")
+        r, g, b, a = ic.split()
+        black_ic = Image.merge("RGBA", (r.point(lambda *_: 0), g.point(lambda *_: 0), b.point(lambda *_: 0), a))
+        bg.paste(black_ic, (ICONS_X, ICONS_Y), black_ic)
 
-    bar_x = 620
-    bar_y = 420
-    bar_w = 420
+    # Cleanup and save
+    try:
+        os.remove(thumb_path)
+    except OSError:
+        pass
 
-    draw.rounded_rectangle(
-        (bar_x,bar_y,bar_x+bar_w,bar_y+14),
-        8,
-        fill=(70,70,70)
-    )
-
-    draw.rounded_rectangle(
-        (bar_x,bar_y,bar_x+bar_w//2,bar_y+14),
-        8,
-        fill=(30,215,96)
-    )
-
-    # ---------------- SPOTIFY LOGO STYLE ---------------- #
-
-    draw.text(
-        (620,470),
-        "Spotify Style Player",
-        fill=(30,215,96),
-        font=meta_font
-    )
-
-    draw.text(
-        (1050,680),
-        "BADNAM OP",
-        fill=(255,255,255),
-        font=meta_font
-    )
-
-    bg.save(cache)
-
-    os.remove(thumb_path)
-
-    return cache
+    bg.save(cache_path)
+    return cache_path
