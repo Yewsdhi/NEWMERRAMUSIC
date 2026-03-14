@@ -112,11 +112,11 @@ async def get_thumb(videoid):
     draw.text((text_x, 180), title1[0], fill="white", font=title_font)
     draw.text((text_x, 230), title1[1], fill="white", font=title_font)
 
-    draw.text((text_x, 320), f"{channel} | {views}", fill="white", font=normal_font)
+    draw.text((text_x, 380), f"{channel} | {views}", fill="white", font=normal_font)
 
     # ---------- PROGRESS BAR ---------- #
 
-    draw.line((text_x, 380, text_x + 350, 380), fill="red", width=9)
+    draw.line((text_x, 390, text_x + 350, 380), fill="red", width=9)
     draw.line((text_x + 350, 380, text_x + 580, 380), fill="white", width=8)
 
     draw.text((text_x, 400), "00:00", fill="white", font=normal_font)
@@ -129,10 +129,10 @@ async def get_thumb(videoid):
     bbox = draw.textbbox((0, 0), watermark, font=normal_font)
     text_width = bbox[2] - bbox[0]
 
-    x = 1280 - text_width - 20
+    x = 1280 - text_width - 0
     y = 680
 
-    draw.text((x, y), watermark, fill=(255, 0, 0), font=normal_font)
+    draw.text((x, y), watermark, fill=(280, 0, 0), font=normal_font)
 
     # ---------- SAVE ---------- #
 
