@@ -1,42 +1,55 @@
 # ======================================================
-# ©️ 2025-26 All Rights Reserved by Revange 😎
-
-# 🧑‍💻 Developer : t.me/dmcatelegram
-# 🔗 Source link : https://github.com/hexamusic/REVANGEMUSIC
-# 📢 Telegram channel : t.me/dmcatelegram
-# =======================================================
+# ©️ 2025-26 Neon Player Thumbnail Generator
+# ======================================================
 
 import os
 import re
 import random
 import aiofiles
 import aiohttp
+
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
+
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
+
+# ================== CACHE ==================
 
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
+THUMB_VERSION = "neon_v1"
+
+# ================== PANEL ==================
+
 PANEL_W, PANEL_H = 763, 545
 PANEL_X = (1280 - PANEL_W) // 2
 PANEL_Y = 88
+
 TRANSPARENCY = 170
 INNER_OFFSET = 36
+
+# ================== THUMB ==================
 
 THUMB_W, THUMB_H = 542, 273
 THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
 THUMB_Y = PANEL_Y + INNER_OFFSET
 
+# ================== TEXT ==================
+
 TITLE_X = 377
-META_X = 377
 TITLE_Y = THUMB_Y + THUMB_H + 10
+
 META_Y = TITLE_Y + 45
+
+# ================== PLAYER BAR ==================
 
 BAR_X, BAR_Y = 388, META_Y + 45
 BAR_RED_LEN = 280
 BAR_TOTAL_LEN = 480
+
+# ================== ICONS ==================
 
 ICONS_W, ICONS_H = 415, 45
 ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
@@ -44,153 +57,313 @@ ICONS_Y = BAR_Y + 48
 
 MAX_TITLE_WIDTH = 580
 
+# ================== COLORS ==================
+
 SHUKLA_COLOR = [
-    (188, 250, 152),   
-    (110, 180, 245),   
-    (242, 179, 240),   
-    (249, 255, 158),   
-    (164, 163, 240),
-    (135, 250, 244),
-    (255, 255, 255),
+    (188,250,152),
+    (110,180,245),
+    (242,179,240),
+    (249,255,158),
+    (164,163,240),
+    (135,250,244),
 ]
 
-def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
-    ellipsis = "…"
+NEON_PINK = (255,0,170)
+NEON_BLUE = (0,255,255)
+
+# ======================================================
+
+def trim_to_width(text,font,max_w):
+
+    ellipsis="…"
+
     try:
-        if font.getlength(text) <= max_w:
+
+        if font.getlength(text)<=max_w:
             return text
-        for i in range(len(text) - 1, 0, -1):
-            if font.getlength(text[:i] + ellipsis) <= max_w:
-                return text[:i] + ellipsis
+
+        for i in range(len(text)-1,0,-1):
+
+            if font.getlength(text[:i]+ellipsis)<=max_w:
+                return text[:i]+ellipsis
+
     except AttributeError:
-        return text[:max_w // 10] + "…" if len(text) > max_w // 10 else text
+
+        return text[:max_w//10]+"…" if len(text)>max_w//10 else text
+
     return ellipsis
 
-async def get_thumb(videoid: str, player_username: str = None) -> str:
+# ======================================================
+
+async def get_thumb(videoid,player_username=None):
+
     if player_username is None:
         player_username = app.username
 
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    cache_path = os.path.join(CACHE_DIR,f"{videoid}_{THUMB_VERSION}.png")
+
     if os.path.exists(cache_path):
         return cache_path
 
+# ================== YOUTUBE INFO ==================
+
     try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search_result = await results.next()
-        data = search_result.get("result", [])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Unsupported Title")).title()
-        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
+
+        results = VideosSearch(
+            f"https://www.youtube.com/watch?v={videoid}",
+            limit=1
+        )
+
+        search = await results.next()
+
+        res = search.get("result",[])
+
+        if not res:
+            raise Exception
+
+        data = res[0]
+
+        title = re.sub(r"\W+"," ",data.get("title","Unknown")).title()
+
+        thumbnail = data.get("thumbnails",[{}])[0].get(
+            "url",
+            YOUTUBE_IMG_URL
+        )
+
         duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown Views")
+
+        views = data.get("viewCount",{}).get(
+            "short",
+            "Unknown Views"
+        )
+
     except Exception:
-        title, thumbnail, duration, views = "Unsupported Title", YOUTUBE_IMG_URL, None, "Unknown Views"
 
-    is_live = not duration or str(duration).strip().lower() in {"", "live", "live now"}
-    duration_text = "Live" if is_live else duration or "Unknown Mins"
+        title = "Unsupported Title"
+        thumbnail = YOUTUBE_IMG_URL
+        duration = None
+        views = "Unknown Views"
 
-    thumb_path = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+# ================== LIVE CHECK ==================
+
+    is_live = not duration or str(duration).lower() in {"","live","live now"}
+
+    duration_text = "LIVE" if is_live else duration
+
+# ================== DOWNLOAD THUMB ==================
+
+    thumb_path = os.path.join(CACHE_DIR,f"{videoid}.png")
+
     try:
+
         async with aiohttp.ClientSession() as session:
+
             async with session.get(thumbnail) as resp:
-                if resp.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
+
+                if resp.status==200:
+
+                    async with aiofiles.open(thumb_path,"wb") as f:
+
                         await f.write(await resp.read())
+
     except Exception:
+
         return YOUTUBE_IMG_URL
 
-    base = Image.open(thumb_path).resize((1280, 720)).convert("RGBA")
-    bg = ImageEnhance.Brightness(base.filter(ImageFilter.BoxBlur(10))).enhance(0.6)
+# ================== IMAGE LOAD ==================
 
-    panel_area = bg.crop((PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H))
-    random_color = random.choice(SHUKLA_COLOR)
-    rgba_color = (*random_color, TRANSPARENCY)
-    overlay = Image.new("RGBA", (PANEL_W, PANEL_H), rgba_color)
-    frosted = Image.alpha_composite(panel_area, overlay)
-    mask = Image.new("L", (PANEL_W, PANEL_H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, PANEL_W, PANEL_H), 50, fill=255)
-    bg.paste(frosted, (PANEL_X, PANEL_Y), mask)
+    base = Image.open(thumb_path).resize((1280,720)).convert("RGBA")
+
+    bg = ImageEnhance.Brightness(
+        base.filter(ImageFilter.BoxBlur(10))
+    ).enhance(0.6)
+
+# ================== PANEL ==================
+
+    panel = bg.crop((PANEL_X,PANEL_Y,PANEL_X+PANEL_W,PANEL_Y+PANEL_H))
+
+    color = random.choice(SHUKLA_COLOR)
+
+    overlay = Image.new(
+        "RGBA",
+        (PANEL_W,PANEL_H),
+        (*color,TRANSPARENCY)
+    )
+
+    frosted = Image.alpha_composite(panel,overlay)
+
+    mask = Image.new("L",(PANEL_W,PANEL_H),0)
+
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0,0,PANEL_W,PANEL_H),
+        50,
+        fill=255
+    )
+
+    bg.paste(frosted,(PANEL_X,PANEL_Y),mask)
 
     draw = ImageDraw.Draw(bg)
 
+# ================== FONTS ==================
+
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/f.ttf", 32)
-        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 18)
-        shukla_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
-    except OSError:
-        title_font = regular_font = shukla_font = ImageFont.load_default()
 
-    BORDER_SIZE = 6
-    thumb_with_border = Image.new("RGBA", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), (255, 255, 255, 0))
+        title_font = ImageFont.truetype(
+            "ShiviMusic/assets/f.ttf",
+            32
+        )
 
-    border_mask = Image.new("L", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 0)
-    ImageDraw.Draw(border_mask).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=255
+        font = ImageFont.truetype(
+            "ShiviMusic/assets/font.ttf",
+            20
+        )
+
+    except:
+
+        title_font = font = ImageFont.load_default()
+
+# ================== THUMB ==================
+
+    thumb = base.resize((THUMB_W,THUMB_H))
+
+    bg.paste(thumb,(THUMB_X,THUMB_Y))
+
+# ================== TITLE ==================
+
+    title = trim_to_width(title,title_font,MAX_TITLE_WIDTH)
+
+# glow effect
+    for i in range(4,0,-1):
+
+        draw.text(
+            (TITLE_X+i,TITLE_Y+i),
+            title,
+            fill=NEON_BLUE,
+            font=title_font
+        )
+
+    draw.text(
+        (TITLE_X,TITLE_Y),
+        title,
+        fill=(255,255,255),
+        font=title_font
     )
-    ImageDraw.Draw(thumb_with_border).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=(255, 255, 255, 255)
+
+# ================== META ==================
+
+    meta = f"YouTube | {views}"
+
+    draw.text(
+        (TITLE_X,META_Y),
+        meta,
+        fill=(255,255,255),
+        font=font
     )
 
-    thumb = base.resize((THUMB_W, THUMB_H)).convert("RGBA")
-    thumb_mask = Image.new("L", (THUMB_W, THUMB_H), 0)
-    ImageDraw.Draw(thumb_mask).rounded_rectangle((0, 0, THUMB_W, THUMB_H), 20, fill=255)
-    thumb_with_border.paste(thumb, (BORDER_SIZE, BORDER_SIZE), thumb_mask)
+# ================== NEON PLAYER ==================
 
-    bg.paste(thumb_with_border, (THUMB_X - BORDER_SIZE, THUMB_Y - BORDER_SIZE), border_mask)
+# background bar
 
-    draw.text((TITLE_X, TITLE_Y), trim_to_width(title, title_font, MAX_TITLE_WIDTH), fill="black", font=title_font)
+    draw.line(
+        [(BAR_X,BAR_Y),(BAR_X+BAR_TOTAL_LEN,BAR_Y)],
+        fill=(40,40,40),
+        width=8
+    )
 
-    left_text = f"YouTube | {views}"
-    right_text = f"Player | @{player_username}"
-    left_w = regular_font.getlength(left_text)
-    right_w = regular_font.getlength(right_text)
-    gap = 30
-    total_width = left_w + gap + right_w
-    start_x = PANEL_X + (PANEL_W - total_width) // 2
+# glow
 
-    draw.text((start_x, META_Y), left_text, fill="red", font=regular_font)
-    draw.text((start_x + left_w + gap, META_Y), right_text, fill="red", font=regular_font)
+    for g in range(10,0,-2):
 
-    draw.line([(BAR_X, BAR_Y), (BAR_X + BAR_RED_LEN, BAR_Y)], fill="red", width=6)
-    draw.line([(BAR_X + BAR_RED_LEN, BAR_Y), (BAR_X + BAR_TOTAL_LEN, BAR_Y)], fill="gray", width=5)
-    draw.ellipse([(BAR_X + BAR_RED_LEN - 7, BAR_Y - 7), (BAR_X + BAR_RED_LEN + 7, BAR_Y + 7)], fill="red")
-    draw.text((BAR_X, BAR_Y + 15), "00:00", fill="black", font=regular_font)
-    draw.text((BAR_X + BAR_TOTAL_LEN - (90 if is_live else 60), BAR_Y + 15),
-              duration_text, fill="red" if is_live else "black", font=regular_font)
+        draw.line(
+            [(BAR_X,BAR_Y),(BAR_X+BAR_RED_LEN,BAR_Y)],
+            fill=NEON_BLUE,
+            width=g
+        )
 
-    icons_path = "ShiviMusic/assets/play_icons.png"
-    if os.path.isfile(icons_path):
-        ic = Image.open(icons_path).resize((ICONS_W, ICONS_H)).convert("RGBA")
-        r, g, b, a = ic.split()
-        black_ic = Image.merge("RGBA", (r.point(lambda *_: 0), g.point(lambda *_: 0), b.point(lambda *_: 0), a))
-        bg.paste(black_ic, (ICONS_X, ICONS_Y), black_ic)
+# main bar
 
-    padding = 25
+    draw.line(
+        [(BAR_X,BAR_Y),(BAR_X+BAR_RED_LEN,BAR_Y)],
+        fill=NEON_PINK,
+        width=6
+    )
 
-    
-    shashank_text = "IG :- @II_oxygen_op"
-    shashank_x = padding
-    shashank_y = padding
-    draw.text((shashank_x, shashank_y), shashank_text, fill=(255, 255, 0), font=shukla_font)
+# circle
 
-    shukla_text = "DEV :- @Kirti_update"
-    shukla_w = shukla_font.getlength(shukla_text)
-    shukla_x = 1280 - shukla_w - padding
-    shukla_y = padding
-    draw.text((shukla_x, shukla_y), shukla_text, fill=(255, 255, 0), font=shukla_font)
+    draw.ellipse(
 
+        [
+            (BAR_X+BAR_RED_LEN-10,BAR_Y-10),
+            (BAR_X+BAR_RED_LEN+10,BAR_Y+10)
+        ],
+
+        fill=NEON_BLUE
+
+    )
+
+# ================== TIME ==================
+
+    draw.text(
+        (BAR_X,BAR_Y+15),
+        "00:00",
+        fill="white",
+        font=font
+    )
+
+    draw.text(
+        (BAR_X+BAR_TOTAL_LEN-60,BAR_Y+15),
+        duration_text,
+        fill="white",
+        font=font
+    )
+
+# ================== ICONS ==================
+
+    icons = "ShiviMusic/assets/play_icons.png"
+
+    if os.path.isfile(icons):
+
+        ic = Image.open(icons).resize(
+            (ICONS_W,ICONS_H)
+        ).convert("RGBA")
+
+        r,g,b,a = ic.split()
+
+        neon_ic = Image.merge(
+
+            "RGBA",
+
+            (
+                r.point(lambda _:0),
+                g.point(lambda _:255),
+                b.point(lambda _:255),
+                a
+            )
+
+        )
+
+        bg.paste(neon_ic,(ICONS_X,ICONS_Y),neon_ic)
+
+# ================== DEV TEXT ==================
+
+    draw.text(
+        (25,25),
+        "DEV : @Kirti_update",
+        fill=(255,255,0),
+        font=font
+    )
+
+# ================== SAVE ==================
 
     try:
         os.remove(thumb_path)
-    except OSError:
+    except:
         pass
 
     bg.save(cache_path)
+
     return cache_path
 
 # ======================================================
-# ©️ 2025-26 All Rights Reserved by Revange 😎
-
-# 🧑‍💻 Developer : t.me/dmcatelegram
-# 🔗 Source link : https://github.com/hexamusic/REVANGEMUSIC
-# 📢 Telegram channel : t.me/dmcatelegram
-# =======================================================
+# END
+# ======================================================
