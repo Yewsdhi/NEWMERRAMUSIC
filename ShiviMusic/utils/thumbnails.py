@@ -1,4 +1,4 @@
-mport os
+import os
 import re
 import random
 import aiofiles
@@ -145,7 +145,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         fill=(0, 0, 0)
     )
 
-    brand = "OWN :- SHIVI"
+    brand = "DEV :- BADNAM OP"
     w = tag_font.getlength(brand)
     draw.text((1280 - w - 50, 680), brand, fill=(0, 0, 0), font=tag_font)
 
