@@ -7,140 +7,142 @@ from py_yt import VideosSearch
 from ShiviMusic import app
 from config import YOUTUBE_IMG_URL
 
+# Constants
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-# ---------------- IMAGE SIZE ---------------- #
+PANEL_W, PANEL_H = 763, 545
+PANEL_X = (1280 - PANEL_W) // 2
+PANEL_Y = 88
+TRANSPARENCY = 170
+INNER_OFFSET = 36
 
-def changeImageSize(maxWidth, maxHeight, image):
-    widthRatio = maxWidth / image.size[0]
-    heightRatio = maxHeight / image.size[1]
-    newWidth = int(widthRatio * image.size[0])
-    newHeight = int(heightRatio * image.size[1])
-    return image.resize((newWidth, newHeight))
+THUMB_W, THUMB_H = 542, 273
+THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
+THUMB_Y = PANEL_Y + INNER_OFFSET
 
+TITLE_X = 377
+META_X = 377
+TITLE_Y = THUMB_Y + THUMB_H + 10
+META_Y = TITLE_Y + 45
 
-# ---------------- TITLE TRUNCATE ---------------- #
+BAR_X, BAR_Y = 388, META_Y + 45
+BAR_RED_LEN = 280
+BAR_TOTAL_LEN = 480
 
-def truncate(text):
-    words = text.split(" ")
-    text1 = ""
-    text2 = ""
+ICONS_W, ICONS_H = 415, 45
+ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
+ICONS_Y = BAR_Y + 48
 
-    for word in words:
-        if len(text1) + len(word) < 30:
-            text1 += " " + word
-        elif len(text2) + len(word) < 30:
-            text2 += " " + word
+MAX_TITLE_WIDTH = 580
 
-    return [text1.strip(), text2.strip()]
+def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
+    ellipsis = "…"
+    if font.getlength(text) <= max_w:
+        return text
+    for i in range(len(text) - 1, 0, -1):
+        if font.getlength(text[:i] + ellipsis) <= max_w:
+            return text[:i] + ellipsis
+    return ellipsis
 
+async def get_thumb(videoid: str) -> str:
+    cache_path = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    if os.path.exists(cache_path):
+        return cache_path
 
-# ---------------- CIRCLE CROP ---------------- #
-
-def crop_center_circle(img, size=400, border=20):
-    img = img.resize((size, size))
-
-    mask = Image.new("L", (size, size), 0)
-    draw = ImageDraw.Draw(mask)
-    draw.ellipse((0, 0, size, size), fill=255)
-
-    result = Image.new("RGBA", (size, size))
-    result.paste(img, (0, 0), mask)
-
-    return result
-
-
-# ---------------- THUMB GENERATOR ---------------- #
-
-async def get_thumb(videoid):
-
-    final_path = f"{CACHE_DIR}/{videoid}_v4.png"
-
-    if os.path.exists(final_path):
-        return final_path
-
-    url = f"https://www.youtube.com/watch?v={videoid}"
-    results = VideosSearch(url, limit=1)
-
-    data = (await results.next())["result"][0]
-
-    title = re.sub("\W+", " ", data.get("title", "Unknown Title")).title()
-    duration = data.get("duration", "Unknown")
-    thumbnail = data["thumbnails"][0]["url"].split("?")[0]
-    views = data.get("viewCount", {}).get("short", "Unknown Views")
-    channel = data.get("channel", {}).get("name", "Unknown Channel")
-
-    thumb_path = f"{CACHE_DIR}/{videoid}.png"
-
-    async with aiohttp.ClientSession() as session:
-        async with session.get(thumbnail) as resp:
-            if resp.status == 200:
-                async with aiofiles.open(thumb_path, mode="wb") as f:
-                    await f.write(await resp.read())
-
-    youtube = Image.open(thumb_path)
-
-    image1 = changeImageSize(1280, 720, youtube)
-    image2 = image1.convert("RGBA")
-
-    background = image2.filter(ImageFilter.BoxBlur(20))
-    background = ImageEnhance.Brightness(background).enhance(0.6)
-
-    draw = ImageDraw.Draw(background)
-
-    # ---------- FONTS ---------- #
-
+    # YouTube video data fetch
+    results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/assets/font3.ttf", 45)
-        normal_font = ImageFont.truetype("ShiviMusic/assets/assets/font.ttf", 30)
-    except:
-        title_font = ImageFont.load_default()
-        normal_font = ImageFont.load_default()
+        results_data = await results.next()
+        result_items = results_data.get("result", [])
+        if not result_items:
+            raise ValueError("No results found.")
+        data = result_items[0]
+        title = re.sub(r"\W+", " ", data.get("title", "Unsupported Title")).title()
+        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
+        duration = data.get("duration")
+        views = data.get("viewCount", {}).get("short", "Unknown Views")
+    except Exception:
+        title, thumbnail, duration, views = "Unsupported Title", YOUTUBE_IMG_URL, None, "Unknown Views"
 
-    # ---------- CIRCLE THUMB ---------- #
+    is_live = not duration or str(duration).strip().lower() in {"", "live", "live now"}
+    duration_text = "Live" if is_live else duration or "Unknown Mins"
 
-    circle = crop_center_circle(youtube, 400)
-    background.paste(circle, (120, 160), circle)
+    # Download thumbnail
+    thumb_path = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(thumbnail) as resp:
+                if resp.status == 200:
+                    async with aiofiles.open(thumb_path, "wb") as f:
+                        await f.write(await resp.read())
+    except Exception:
+        return YOUTUBE_IMG_URL
 
-    # ---------- TEXT ---------- #
+    # Create base image
+    base = Image.open(thumb_path).resize((1280, 720)).convert("RGBA")
+    bg = ImageEnhance.Brightness(base.filter(ImageFilter.BoxBlur(10))).enhance(0.6)
 
-    text_x = 565
+    # Frosted glass panel
+    panel_area = bg.crop((PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H))
+    overlay = Image.new("RGBA", (PANEL_W, PANEL_H), (255, 255, 255, TRANSPARENCY))
+    frosted = Image.alpha_composite(panel_area, overlay)
+    mask = Image.new("L", (PANEL_W, PANEL_H), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, PANEL_W, PANEL_H), 50, fill=255)
+    bg.paste(frosted, (PANEL_X, PANEL_Y), mask)
 
-    title1 = truncate(title)
+    # Draw details
+    draw = ImageDraw.Draw(bg)
+    try:
+        title_font = ImageFont.truetype("ShiviMusic/assets/font2.ttf", 32)
+        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 18)
+    except OSError:
+        title_font = regular_font = ImageFont.load_default()
 
-    draw.text((text_x, 180), title1[0], fill="white", font=title_font)
-    draw.text((text_x, 230), title1[1], fill="white", font=title_font)
+    thumb = base.resize((THUMB_W, THUMB_H))
+    tmask = Image.new("L", thumb.size, 0)
+    ImageDraw.Draw(tmask).rounded_rectangle((0, 0, THUMB_W, THUMB_H), 20, fill=255)
+    bg.paste(thumb, (THUMB_X, THUMB_Y), tmask)
 
-    draw.text((text_x, 380), f"{channel} | {views}", fill="white", font=normal_font)
+    draw.text((TITLE_X, TITLE_Y), trim_to_width(title, title_font, MAX_TITLE_WIDTH), fill="black", font=title_font)
+    draw.text((META_X, META_Y), f"YouTube | {views}", fill="black", font=regular_font)
 
-    # ---------- PROGRESS BAR ---------- #
+    # Progress bar
+    draw.line([(BAR_X, BAR_Y), (BAR_X + BAR_RED_LEN, BAR_Y)], fill="red", width=6)
+    draw.line([(BAR_X + BAR_RED_LEN, BAR_Y), (BAR_X + BAR_TOTAL_LEN, BAR_Y)], fill="gray", width=5)
+    draw.ellipse([(BAR_X + BAR_RED_LEN - 7, BAR_Y - 7), (BAR_X + BAR_RED_LEN + 7, BAR_Y + 7)], fill="red")
 
-    draw.line((text_x, 390, text_x + 350, 380), fill="red", width=9)
-    draw.line((text_x + 350, 380, text_x + 580, 380), fill="white", width=8)
+    draw.text((BAR_X, BAR_Y + 15), "00:00", fill="black", font=regular_font)
+    end_text = "Live" if is_live else duration_text
+    draw.text((BAR_X + BAR_TOTAL_LEN - (90 if is_live else 60), BAR_Y + 15), end_text, fill="red" if is_live else "black", font=regular_font)
 
-    draw.text((text_x, 400), "00:00", fill="white", font=normal_font)
-    draw.text((1080, 400), duration, fill="white", font=normal_font)
+    # Icons
+    icons_path = "ShiviMusic/assets/play_icons.png"
+    if os.path.isfile(icons_path):
+        ic = Image.open(icons_path).resize((ICONS_W, ICONS_H)).convert("RGBA")
+        r, g, b, a = ic.split()
+        black_ic = Image.merge("RGBA", (r.point(lambda *_: 0), g.point(lambda *_: 0), b.point(lambda *_: 0), a))
+        bg.paste(black_ic, (ICONS_X, ICONS_Y), black_ic)
 
-    # ---------- WATERMARK ---------- #
+    # ================= POWERED BY =================
 
-    watermark = "Powered by Badnam OP"
+    power_text = "Powered by Badnam OP"
+    text_w = power_font.getlength(power_text)
 
-    bbox = draw.textbbox((0, 0), watermark, font=normal_font)
-    text_width = bbox[2] - bbox[0]
+    draw.text(
+        ((1280 - text_w) / 2, 680),
+        power_text,
+        fill="black",
+        font=power_font
+    )
 
-    x = 1280 - text_width - 0
-    y = 680
-
-    draw.text((x, y), watermark, fill=(280, 0, 0), font=normal_font)
-
-    # ---------- SAVE ---------- #
-
-    background.save(final_path)
+    # ================= SAVE =================
 
     try:
         os.remove(thumb_path)
     except:
         pass
 
-    return final_path
+    bg.save(cache_path)
+
+    return cache_path
