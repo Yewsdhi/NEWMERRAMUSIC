@@ -71,12 +71,12 @@ def aq_markup(_, chat_id):
             InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true")
         ],
         [
-            InlineKeyboardButton(text="ᴍᴜsɪᴄ-ʙᴏᴛ", url="https://t.me/Kirtisongbot"),
-            InlineKeyboardButton(text="ᴀʟʟ-ʙᴏᴛs", url="https://t.me/Kirti_update"),
+            InlineKeyboardButton(text="⌯ ᴍᴜsɪᴄ-ʙᴏᴛ ⌯", url="https://t.me/Kirtisongbot"),
+            InlineKeyboardButton(text="⌯ ᴀʟʟ-ʙᴏᴛs ⌯", url="https://t.me/Kirti_update"),
         ],
         [
-            InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", user_id=OWNER_ID),
-            InlineKeyboardButton(text="ᴄʟᴏsᴇ", callback_data="close"),
+            InlineKeyboardButton(text="⌯ ᴘʀᴏᴍᴏ ⌯", user_id=OWNER_ID),
+            InlineKeyboardButton(text="⌯ ᴄʟᴏsᴇ ⌯", callback_data="close"),
         ],
     ]
 
