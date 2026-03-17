@@ -39,21 +39,21 @@ from strings import get_string
 
 
 NEXI_VID = [
-    "https://files.catbox.moe/38tth5.jpg",
-    "https://files.catbox.moe/ggfe0n.jpg",
-    "https://files.catbox.moe/bv1u4q.jpg",
-    "https://files.catbox.moe/dsmljb.jpg",
-    "https://files.catbox.moe/l7gc2l.jpg",
-    "https://files.catbox.moe/g2bmrf.jpg",
-    "https://files.catbox.moe/9a8x0f.jpg",
-    "https://files.catbox.moe/u451su.jpg",
-    "https://files.catbox.moe/rf4toh.jpg",
-    "https://files.catbox.moe/6tt01m.jpg",
-    "https://files.catbox.moe/5es8qq.jpg",
-    "https://files.catbox.moe/ydqnmt.jpg",
-    "https://files.catbox.moe/7jds0u.jpg",
-    "https://files.catbox.moe/hwydcv.jpg",
-    "https://files.catbox.moe/y4m0yk.jpg",
+    "https://files.catbox.moe/4dag72.jpg",
+    "https://files.catbox.moe/8tscun.jpg",
+    "https://files.catbox.moe/bil9o3.jpg",
+    "https://files.catbox.moe/69iigg.jpg",
+    "https://files.catbox.moe/18368t.jpg",
+    "https://files.catbox.moe/wsesja.jpg",
+    "https://files.catbox.moe/4lnygg.jpg",
+    "https://files.catbox.moe/jz7q9v.jpg",
+    "https://files.catbox.moe/rc1nof.jpg",
+    "https://files.catbox.moe/0s7q4k.jpg",
+    "https://files.catbox.moe/z1x4ba.jpg",
+    "https://files.catbox.moe/187bms.jpg",
+    "https://files.catbox.moe/s5c7vp.jpg",
+    "https://files.catbox.moe/d4416d.jpg",
+    "https://files.catbox.moe/fy2lf1.jpg",
 ]
 
 
