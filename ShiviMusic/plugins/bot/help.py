@@ -26,21 +26,21 @@ from ShiviMusic.utils.stuffs.helper import Helper
 
 
 START_IMG = [
-    "https://files.catbox.moe/x5lytj.jpg",
-    "https://files.catbox.moe/psya34.jpg",
-    "https://files.catbox.moe/leaexg.jpg",
-    "https://files.catbox.moe/b0e4vk.jpg",
-    "https://files.catbox.moe/1b1wap.jpg",
-    "https://files.catbox.moe/ommjjk.jpg",
-    "https://files.catbox.moe/onurxm.jpg",
-    "https://files.catbox.moe/97v75k.jpg",
-    "https://files.catbox.moe/t833zy.jpg",
-    "https://files.catbox.moe/472piq.jpg",
-    "https://files.catbox.moe/qwjeyk.jpg",
-    "https://files.catbox.moe/t0hopv.jpg",
-    "https://files.catbox.moe/u5ux0j.jpg",
-    "https://files.catbox.moe/h1yk4w.jpg",
-    "https://files.catbox.moe/gl5rg8.jpg",
+    "https://files.catbox.moe/et1kky.jpg",
+    "https://files.catbox.moe/r6xs75.jpg",
+    "https://files.catbox.moe/qropc3.jpg",
+    "https://files.catbox.moe/nlbahf.jpg",
+    "https://files.catbox.moe/njrl6e.jpg",
+    "https://files.catbox.moe/7p0po1.jpg",
+    "https://files.catbox.moe/9sxqlx.jpg",
+    "https://files.catbox.moe/xrme38.jpg",
+    "https://files.catbox.moe/1nz3wk.jpg",
+    "https://files.catbox.moe/ev9586.jpg",
+    "https://files.catbox.moe/hjfr1n.jpg",
+    "https://files.catbox.moe/68c2m9.jpg",
+    "https://files.catbox.moe/1ol7pj.jpg",
+    "https://files.catbox.moe/v9hqvi.jpg",
+    "https://files.catbox.moe/v9hqvi.jpg",
 ]
 
 @app.on_message(filters.command(["help"]) & filters.private & ~BANNED_USERS)
@@ -124,6 +124,7 @@ async def helper_cb(client, CallbackQuery):
 @app.on_callback_query(filters.regex("back_cb") & ~BANNED_USERS)
 async def back_cb(client, CallbackQuery):
     photo = random.choice(START_IMG)
+       has_spoiler=True,
     bot = await client.get_me()
     bot_mention = bot.mention
 
