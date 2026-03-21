@@ -114,7 +114,7 @@ async def settings_back_markup(client, CallbackQuery: CallbackQuery, _):
         return await CallbackQuery.edit_message_media(
             InputMediaPhoto(
                 media=random.choice(NEXI_VID),
-                 has_spoiler=True,
+                 has_spoiler=True, 
                 caption=_["start_2"].format(
                     CallbackQuery.from_user.mention,
                     app.mention
