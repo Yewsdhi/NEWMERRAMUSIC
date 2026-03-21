@@ -70,7 +70,7 @@ async def start_pm(client, message: Message, _):
             keyboard = help_pannel(_)
             await message.reply_photo(
                 random.choice(SHASHANK_IMG),
-                 has_spoiler=True
+                 has_spoiler=True,
                 caption=_['help_1'].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
                 message_effect_id=random.choice(EFFECT_IDS),
