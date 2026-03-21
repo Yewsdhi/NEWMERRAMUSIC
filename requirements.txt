@@ -11,7 +11,7 @@ motor
 pillow==9.5.0
 py-tgcalls
 pykeyboard
-kurigram
+pyrofork
 python-dotenv
 pyyaml==6.0.1
 requests
