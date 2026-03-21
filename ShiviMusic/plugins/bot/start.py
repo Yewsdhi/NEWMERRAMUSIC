@@ -24,7 +24,7 @@ from ShiviMusic.utils.decorators.language import LanguageStart
 from ShiviMusic.utils.formatters import get_readable_time
 from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from strings import get_string
-from config import BANNED_USERS, SHASHANK_IMG
+from config import BANNED_USERS, SHIVI_IMG
 
 EFFECT_IDS = [
     5046509860389126442,
@@ -44,7 +44,7 @@ async def start_pm(client, message: Message, _):
         if name.startswith("help"):
             keyboard = help_pannel(_)
             await message.reply_photo(
-                random.choice(SHASHANK_IMG),
+                random.choice(SHIVI_IMG),
                 caption=_['help_1'].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
                 message_effect_id=random.choice(EFFECT_IDS),
@@ -95,7 +95,7 @@ async def start_pm(client, message: Message, _):
         served_users = len(await get_served_users())
         UP, CPU, RAM, DISK = await bot_sys_stats()
         await message.reply_photo(
-            random.choice(SHASHANK_IMG),
+            random.choice(SHIVI_IMG),
             caption=_["start_2"].format(message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats),
             reply_markup=InlineKeyboardMarkup(out),
             message_effect_id=random.choice(EFFECT_IDS),
@@ -112,7 +112,7 @@ async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
     await message.reply_photo(
-        random.choice(SHASHANK_IMG),
+        random.choice(SHIVI_IMG),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
         message_effect_id=random.choice(EFFECT_IDS),
@@ -150,7 +150,7 @@ async def welcome(client, message: Message):
 
                 out = start_panel(_)
                 await message.reply_photo(
-                    random.choice(SHASHANK_IMG),
+                    random.choice(SHIVI_IMG),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
