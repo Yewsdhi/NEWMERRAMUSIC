@@ -1,60 +1,61 @@
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 🚀
-# 
-# This source code is under MIT License 📜
-# ❌ Unauthorized forking, importing, or using this code
-#    without giving proper credit will result in legal action ⚠️
-# 
-# 📩 DM for permission : @MrRockytg
-# ===========================================================
-
-import time
-import random
+# -----------------------------------------------
+# 🔸 StrangerMusic Project
+# 🔹 Developed & Maintained by: Shashank Shukla (https://github.com/itzshukla)
+# 📅 Copyright © 2022 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by ItzShukla
+# -----------------------------------------------
 import asyncio
+import random
+import time
 from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-from youtubesearchpython.__future__ import VideosSearch
-
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
+from py_yt import VideosSearch
 import config
 from ShiviMusic import app
 from ShiviMusic.misc import _boot_
 from ShiviMusic.plugins.sudo.sudoers import sudoers_list
-from ShiviMusic.utils.database import get_served_chats, get_served_users, get_sudoers
 from ShiviMusic.utils import bot_sys_stats
 from ShiviMusic.utils.database import (
     add_served_chat,
     add_served_user,
     blacklisted_chats,
     get_lang,
+    get_served_chats,
+    get_served_users,
     is_banned_user,
     is_on_off,
 )
 from ShiviMusic.utils.decorators.language import LanguageStart
 from ShiviMusic.utils.formatters import get_readable_time
 from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
-from config import BANNED_USERS
 from strings import get_string
+from config import BANNED_USERS
 
-
-NEXI_VID = [
-    "https://files.catbox.moe/38tth5.jpg",
-    "https://files.catbox.moe/ggfe0n.jpg",
-    "https://files.catbox.moe/bv1u4q.jpg",
-    "https://files.catbox.moe/dsmljb.jpg",
-    "https://files.catbox.moe/l7gc2l.jpg",
-    "https://files.catbox.moe/g2bmrf.jpg",
-    "https://files.catbox.moe/9a8x0f.jpg",
-    "https://files.catbox.moe/u451su.jpg",
-    "https://files.catbox.moe/rf4toh.jpg",
-    "https://files.catbox.moe/6tt01m.jpg",
-    "https://files.catbox.moe/5es8qq.jpg",
-    "https://files.catbox.moe/ydqnmt.jpg",
-    "https://files.catbox.moe/7jds0u.jpg",
-    "https://files.catbox.moe/hwydcv.jpg",
-    "https://files.catbox.moe/y4m0yk.jpg",
+EFFECT_IDS = [
+    5046509860389126442,
+    5107584321108051014,
+    5104841245755180586,
+    5159385139981059251,
 ]
+
+SHASHANK_IMG = [
+    "https://files.catbox.moe/dw0as6.jpg",
+    "https://files.catbox.moe/t2m1pv.jpg",
+    "https://files.catbox.moe/lsbotb.jpg",
+    "https://files.catbox.moe/huuy1f.jpg",
+    "https://files.catbox.moe/7vfivr.jpg",
+    "https://files.catbox.moe/dqtuv2.jpg",
+    "https://files.catbox.moe/ac3tzn.jpg"
+]
+
 
 
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
@@ -65,32 +66,25 @@ async def start_pm(client, message: Message, _):
     if len(message.text.split()) > 1:
         name = message.text.split(None, 1)[1]
 
-        if name[0:3] == "del":
-            await del_plist_msg(client=client, message=message, _=_)
-        
-        if name[0:4] == "help":
+        if name.startswith("help"):
             keyboard = help_pannel(_)
-            return await message.reply_photo(
-                random.choice(NEXI_VID),
-                 has_spoiler=True,
-                caption=_["help_1"].format(config.SUPPORT_CHAT),
+            await message.reply_photo(
+                random.choice(SHASHANK_IMG),
+                caption=_['help_1'].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
+                message_effect_id=random.choice(EFFECT_IDS),
             )
-
-        if name[0:3] == "sud":
+        elif name.startswith("sud"):
             await sudoers_list(client=client, message=message, _=_)
             if await is_on_off(2):
-                return await app.send_message(
+                await app.send_message(
                     chat_id=config.LOGGER_ID,
-                    text=f"✦ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>sᴜᴅᴏʟɪsᴛ</b>.\n\n<b>✦ ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>\n<b>✦ ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username}",
+                    text=f"❖ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>sᴜᴅᴏʟɪsᴛ</b>.\n\n<b>๏ ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>๏ ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
-            return
-
-        if name[0:3] == "inf":
-            m = await message.reply_text("🔎")
-            query = (str(name)).replace("info_", "", 1)
-            query = f"https://www.youtube.com/watch?v={query}"
+        elif name.startswith("inf"):
+            query = name.replace("info_", "", 1)
             results = VideosSearch(query, limit=1)
+
             for result in (await results.next())["result"]:
                 title = result["title"]
                 duration = result["duration"]
@@ -100,44 +94,42 @@ async def start_pm(client, message: Message, _):
                 channel = result["channel"]["name"]
                 link = result["link"]
                 published = result["publishedTime"]
-            searched_text = _["start_6"].format(
-                title, duration, views, published, channellink, channel, app.mention
-            )
-            key = InlineKeyboardMarkup(
+
+            searched_text = _["start_6"].format(title, duration, views, published, channellink, channel, app.mention)
+            key = InlineKeyboardMarkup([
                 [
-                    [
-                        InlineKeyboardButton(text=_["S_B_8"], url=link),
-                        InlineKeyboardButton(text=_["S_B_9"], url=config.SUPPORT_CHAT),
-                    ],
-                ]
-            )
-            await m.delete()
+                    InlineKeyboardButton(text=_["S_B_8"], url=link),
+                    InlineKeyboardButton(text=_["S_B_9"], url=config.SUPPORT_CHAT),
+                ],
+            ])
             await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
-                 has_spoiler=True,
                 caption=searched_text,
                 reply_markup=key,
+                message_effect_id=random.choice(EFFECT_IDS),
             )
             if await is_on_off(2):
-                return await app.send_message(
+                await app.send_message(
                     chat_id=config.LOGGER_ID,
-                    text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
+                    text=f"❖ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>๏ ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>๏ ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
                 )
     else:
         out = private_panel(_)
+        served_chats = len(await get_served_chats())
+        served_users = len(await get_served_users())
+        UP, CPU, RAM, DISK = await bot_sys_stats()
         await message.reply_photo(
-            random.choice(NEXI_VID),
-             has_spoiler=True,
-            caption=_["start_2"].format(message.from_user.mention, app.mention),
+            random.choice(SHASHANK_IMG),
+            caption=_["start_2"].format(message.from_user.mention, app.mention, UP, DISK, CPU, RAM, served_users, served_chats),
             reply_markup=InlineKeyboardMarkup(out),
+            message_effect_id=random.choice(EFFECT_IDS),
         )
         if await is_on_off(2):
-            return await app.send_message(
+            await app.send_message(
                 chat_id=config.LOGGER_ID,
-                text=f"✦ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>sᴜᴅᴏʟɪsᴛ</b>.\n\n<b>✦ ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>\n<b>✦ ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username}",
-            )          
-
+                text=f"❖ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ.\n\n<b>๏ ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>๏ ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
+            )
 
 @app.on_message(filters.command(["start"]) & filters.group & ~BANNED_USERS)
 @LanguageStart
@@ -145,13 +137,12 @@ async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
     await message.reply_photo(
-        random.choice(NEXI_VID),
-         has_spoiler=True,
+        random.choice(SHASHANK_IMG),
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
+        message_effect_id=random.choice(EFFECT_IDS),
     )
     return await add_served_chat(message.chat.id)
-
 
 @app.on_message(filters.new_chat_members, group=-1)
 async def welcome(client, message: Message):
@@ -159,15 +150,18 @@ async def welcome(client, message: Message):
         try:
             language = await get_lang(message.chat.id)
             _ = get_string(language)
+
             if await is_banned_user(member.id):
                 try:
                     await message.chat.ban_member(member.id)
                 except:
                     pass
+
             if member.id == app.id:
                 if message.chat.type != ChatType.SUPERGROUP:
                     await message.reply_text(_["start_4"])
                     return await app.leave_chat(message.chat.id)
+
                 if message.chat.id in await blacklisted_chats():
                     await message.reply_text(
                         _["start_5"].format(
@@ -181,8 +175,7 @@ async def welcome(client, message: Message):
 
                 out = start_panel(_)
                 await message.reply_photo(
-                    random.choice(NEXI_VID),
-                     has_spoiler=True,
+                    random.choice(SHASHANK_IMG),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
@@ -190,16 +183,9 @@ async def welcome(client, message: Message):
                         app.mention,
                     ),
                     reply_markup=InlineKeyboardMarkup(out),
+                    message_effect_id=random.choice(EFFECT_IDS),
                 )
                 await add_served_chat(message.chat.id)
                 await message.stop_propagation()
         except Exception as ex:
             print(ex)
-
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 😎
-# 
-# 🧑‍💻 Developer : t.me/MrRockytg
-# 🔗 Source link : t.me/Rockyxsupport
-# 📢 Telegram channel : t.me/Rockyxupdate
-# ===========================================================
