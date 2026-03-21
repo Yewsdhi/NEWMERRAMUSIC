@@ -24,7 +24,7 @@ from ShiviMusic.utils.decorators.language import LanguageStart
 from ShiviMusic.utils.formatters import get_readable_time
 from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from strings import get_string
-from config import BANNED_USERS, SHIVI_IMG
+from config import BANNED_USERS
 
 EFFECT_IDS = [
     5046509860389126442,
