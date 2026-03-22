@@ -58,7 +58,6 @@ def stream_markup_timer(_, chat_id, played, dur):
             InlineKeyboardButton(
                 text=f"{played} {bar} {dur}",
                 callback_data="GetTimer",
-                style=ButtonStyle.PRIMARY,
             )
         ],
         [
@@ -71,14 +70,12 @@ def stream_markup_timer(_, chat_id, played, dur):
                 text="α∂∂ мє",
                 url="https://t.me/ChaahatMusicBot?startgroup=true",
                 icon_custom_emoji_id=5395476176527447827,
-                style=ButtonStyle.SUCCESS
                 
             ),
             InlineKeyboardButton(
                 text="ѕυρροʀᴛ",
                 url="https://t.me/Mecobots",
                 icon_custom_emoji_id=5438600169325095982,
-                style=ButtonStyle.DANGER
             
             )
         ],
@@ -101,14 +98,12 @@ def stream_markup(_, chat_id):
                 text="α∂∂ мє",
                 url="https://t.me/ChaahatMusicBot?startgroup=true",
                 icon_custom_emoji_id=5395476176527447827,
-                style=ButtonStyle.DANGER
                 
             ),
             InlineKeyboardButton(
                 text="ѕυρροʀᴛ",
                 url="https://t.me/Mecobots",
                 icon_custom_emoji_id=5438600169325095982,
-                style=ButtonStyle.DANGER
             
             )
         ],
