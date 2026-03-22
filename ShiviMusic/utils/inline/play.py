@@ -8,10 +8,10 @@
 
 import math
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from SHUKLAMUSIC import app
+from ShiviMusic import app
 import config
 from pyrogram.enums import ButtonStyle
-from SHUKLAMUSIC.utils.formatters import time_to_seconds
+from ShiviMusic.utils.formatters import time_to_seconds
 
 
 def track_markup(_, videoid, user_id, channel, fplay):
