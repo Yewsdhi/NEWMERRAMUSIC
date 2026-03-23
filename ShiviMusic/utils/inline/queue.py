@@ -1,5 +1,12 @@
+# ======================================================
+# ©️ 2025-26 All Rights Reserved by Kirti 😎
+
+# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
+# 🔗 Source link : https://github.com/Badnam019
+# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
+# =======================================================
+
 from typing import Union
-from config import OWNER_ID
 from ShiviMusic import app
 from ShiviMusic.utils.formatters import time_to_seconds
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -68,18 +75,28 @@ def queue_back_markup(_, CPLAY):
 def aq_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true")
+            InlineKeyboardButton(
+                text="ᴊᴏɪɴ ɴᴏᴡ",
+                url=f"https://t.me/Kirti_update"
+            ),
+            InlineKeyboardButton(
+                text="ɢʀᴏᴜᴘ ᴄʜᴧᴛ",
+                url="https://t.me/kirti_supprot_group"
+            ),
         ],
         [
-            InlineKeyboardButton(text="⌯ ᴍᴜsɪᴄ-ʙᴏᴛ ⌯", url="https://t.me/Kritiprobot"),
-            InlineKeyboardButton(text="⌯ ᴀʟʟ-ʙᴏᴛs ⌯", url="https://t.me/Kirti_update"),
-        ],
-        [
-            InlineKeyboardButton(text="⌯ ᴘʀᴏᴍᴏ ⌯", user_id=OWNER_ID),
-            InlineKeyboardButton(text="⌯ ᴄʟᴏsᴇ ⌯", callback_data="close"),
+            InlineKeyboardButton(
+                text="ᴄʟᴏsᴇ",
+                callback_data="close"
+            )
         ],
     ]
-
     return buttons
 
+# ======================================================
+# ©️ 2025-26 All Rights Reserved by Kirti 😎
 
+# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
+# 🔗 Source link : https://github.com/Badnam019
+# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
+# =======================================================
