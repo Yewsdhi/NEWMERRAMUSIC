@@ -26,3 +26,4 @@ httpx
 opencv-python
 beautifulsoup4
 py-yt-search
+psutil
