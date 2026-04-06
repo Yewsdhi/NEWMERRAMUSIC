@@ -15,11 +15,11 @@ import config
 class BUTTONS(object):
     ABUTTON = [
     [
-        InlineKeyboardButton("sᴜᴘᴘʀᴏᴛ", url="https://t.me/kirti_supprot_group"),
-        InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/Kirti_update")
+        InlineKeyboardButton("sᴜᴘᴘʀᴏᴛ 🌱", url="https://t.me/kirti_supprot_group"),
+        InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs 🍫", url="https://t.me/Kirti_update")
     ],
     [
-        InlineKeyboardButton("ᴏᴡɴᴇʀ", user_id=config.OWNER_ID),
+        InlineKeyboardButton("ᴏᴡɴᴇʀ 🌾", user_id=config.OWNER_ID),
         InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper")
     ]
 ]
