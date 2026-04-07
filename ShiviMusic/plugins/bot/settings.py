@@ -139,8 +139,8 @@ async def gib_repo_callback(_, callback_query):
         reply_markup=InlineKeyboardMarkup(
             [
                 [
-                    InlineKeyboardButton(text="• ʙᴧᴄᴋ •", callback_data="back_cb"),
-                    InlineKeyboardButton(text="• ᴄʟᴏsє •", callback_data="close")
+                    InlineKeyboardButton(text="• ʙᴧᴄᴋ 📼", callback_data="back_cb"),
+                    InlineKeyboardButton(text="• ᴄʟᴏsє 🎟️", callback_data="close")
                 ]
             ]
         ),
@@ -152,7 +152,7 @@ async def show_bot_info(c: app, q: CallbackQuery):
     x = await c.send_message(q.message.chat.id, "ᴄʜᴇᴀᴋɪɴɢ ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ...")
     delta_ping = time() - start
     await x.delete()
-    txt = f"""ʏᴏᴜᴛᴜʙᴇ ᴀᴘɪ sᴛᴀᴛᴜs...💌
+    txt = f"""ʏᴏᴜᴛᴜʙᴇ ᴀᴘɪ sᴛᴀᴛᴜs...🎟️
 
 • ᴅᴀᴛᴀʙᴀsᴇ : ᴏɴʟɪɴᴇ
 • ʏᴏᴜᴛᴜʙᴇ ᴀᴘɪ : ʀᴇsᴘᴏɴsɪᴠᴇ
