@@ -178,19 +178,19 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             caption=f"""
 **⏤͟͟͞͞★ ʜᴇʟʟᴏ ᴅᴇᴀʀ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ : {member.chat.title}**
 
-<u>**❖ ᴜsᴇʀ sʜᴏʀᴛ ɪɴғᴏ**</u>
+<u>**📼 ᴜsᴇʀ sʜᴏʀᴛ ɪɴғᴏ**</u>
 
 **➻ ɴᴀᴍᴇ »** {user.mention}
 **➻ ᴄʜᴀᴛ_ɪᴅ »** `{user.id}`
 **➻ ᴜ_ɴᴀᴍᴇ »** @{user.username}
 
-**➻ ᴛʜᴀɴᴋs ғᴏʀ ᴊᴏɪɴɪɴɢ ᴜs ⚡️~!
-❅─────✧❅✦❅✧─────❅**
+**➻ ᴛʜᴀɴᴋs ғᴏʀ ᴊᴏɪɴɪɴɢ ᴜs 📼~!
+🌸─────💮🌸💐🌻🎟️─────📼**
 """,
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
-                        "⊚ ᴧᴅᴅ ᴍᴇ ᴛᴏ ʏᴏυʀ ᴄʜᴧᴛ ⊚",
+                        "⊚ ᴧᴅᴅ ᴍᴇ ᴛᴏ ʏᴏυʀ ᴄʜᴧᴛ 🎟️",
                         url=f"https://t.me/{app.username}?startgroup=true"
                     )
                 ]
