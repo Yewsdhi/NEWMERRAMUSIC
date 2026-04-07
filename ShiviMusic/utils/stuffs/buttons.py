@@ -27,13 +27,13 @@ class BUTTONS(object):
     INFO_BUTTON = [
     [
         InlineKeyboardButton("ʀᴇᴘᴏ", callback_data="gib_source"),
-        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 🚩", callback_data="bot_info_data"),
-        InlineKeyboardButton("ʟᴀɴɢᴜɢᴇ", callback_data="LG"),
+        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 🎟️", callback_data="bot_info_data"),
+        InlineKeyboardButton("ʟᴀɴɢᴜɢᴇ 📼", callback_data="LG"),
     ],
     [
         
-        InlineKeyboardButton("ᴘʀɪᴠᴧᴄʏ", url="https://telegra.ph/Privacy-Policy--Shivi-Bots-by-BADNAM-BABY-08-06"),
-        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper"),
+        InlineKeyboardButton("ᴘʀɪᴠᴧᴄʏ 🌸", url="https://telegra.ph/Privacy-Policy--Shivi-Bots-by-BADNAM-BABY-08-06"),
+        InlineKeyboardButton("• ʙᴧᴄᴋ 📼", callback_data="settingsback_helper"),
     ]
     ]
     
@@ -41,7 +41,7 @@ class BUTTONS(object):
 
     INFO_NEW = [
     [
-        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settings_back_helper")
+        InlineKeyboardButton("• ʙᴧᴄᴋ 🌾", callback_data="settings_back_helper")
     ],
     ]
     
