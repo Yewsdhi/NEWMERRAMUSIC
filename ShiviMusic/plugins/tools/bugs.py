@@ -1,143 +1,115 @@
 # ======================================================
 # ©️ 2025-26 All Rights Reserved by Kirti 😎
-# ======================================================
+
+# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
+# 🔗 Source link : https://github.com/Badnam019
+# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
+# =======================================================
 
 from datetime import datetime
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message, CallbackQuery
-from config import OWNER_ID as owner_id, BUG_LOG_CHAT, BOT_USERNAME
-from ShiviMusic import app
+from config import OWNER_ID as owner_id
+from KRITIMUSIC import app
 
+def content(msg: Message) -> [None, str]:
+    text_to_return = msg.text
 
-# ================== GET BUG TEXT ==================
-def content(msg: Message):
-    if not msg.text:
+    if msg.text is None:
         return None
-    parts = msg.text.split(maxsplit=1)
-    return parts[1] if len(parts) > 1 else None
+    if " " in text_to_return:
+        try:
+            return msg.text.split(None, 1)[1]
+        except IndexError:
+            return None
+    else:
+        return None
 
 
-# ================== BUG COMMAND ==================
 @app.on_message(filters.command("bug"))
 async def bugs(_, msg: Message):
-
-    # ❌ Private block
-    if msg.chat.type == "private":
-        return await msg.reply_text(
-            "❌ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ᴡᴏʀᴋs ᴏɴʟʏ ɪɴ ɢʀᴏᴜᴘs."
-        )
+    if msg.chat.username:
+        chat_username = f"@{msg.chat.username}/`{msg.chat.id}`"
+    else:
+        chat_username = f"ᴩʀɪᴠᴀᴛᴇ ɢʀᴏᴜᴩ/`{msg.chat.id}`"
 
     bugs = content(msg)
+    
+    user_id = msg.from_user.id
+    mention = f"[{msg.from_user.first_name}](tg://user?id={msg.from_user.id})"
+  
+    datetimes_fmt = "%d-%m-%Y"
+    datetimes = datetime.utcnow().strftime(datetimes_fmt)
 
-    # ❌ No bug text
-    if not bugs:
-        return await msg.reply_text(
-            "❌ ɴᴏ ʙᴜɢ ғᴏᴜɴᴅ.\n\n➜ ᴛʀʏ : `/bug music not playing`"
-        )
+    owner_user = await app.get_users(owner_id)
+    owner_mention = f"[{owner_user.first_name}](tg://user?id={owner_id})"
 
-    # 👤 User info
-    user = msg.from_user
-    user_id = user.id
-    mention = f"[{user.first_name}](tg://user?id={user_id})"
-
-    # 💬 Chat info
-    chat_name = f"@{msg.chat.username}" if msg.chat.username else "ᴘʀɪᴠᴀᴛᴇ ɢʀᴏᴜᴘ"
-    chat_id = msg.chat.id
-
-    # 📅 Date
-    date = datetime.utcnow().strftime("%d-%m-%Y")
-
-    # 🐞 Bug Report Text
     bug_report = f"""
-╭━〔 🐞 ʙᴜɢ ʀᴇᴘᴏʀᴛ 〕━╮
+**#ɴᴇᴡ_ʙᴜɢ_ʀᴇᴘᴏʀᴛ**
 
-➤ ᴜsᴇʀ : {mention}
-➤ ɪᴅ : `{user_id}`
+**ʜᴇʟʟᴏ {owner_mention} ᴀ ɴᴇᴡ ʙᴜɢ ғᴏᴜɴᴅ**
 
-➤ ᴄʜᴀᴛ : {chat_name}
-➤ ᴄʜᴀᴛ ɪᴅ : `{chat_id}`
+**ʀᴇᴩᴏʀᴛᴇᴅ ʙʏ :-** {mention}
+**ᴜsᴇʀ ɪᴅ :-** `{user_id}`
+**ᴄʜᴀᴛ :-** {chat_username}
 
-➤ ʙᴜɢ : `{bugs}`
+**ʙᴜɢ :-** `{bugs}`
 
-➤ ᴅᴀᴛᴇ : {date}
+**ᴇᴠᴇɴᴛ sᴛᴀᴍᴩ :-** {datetimes}"""
 
-╰━━━━━━━━━━━━━━━╯
-"""
+    if msg.chat.type == "private":
+        await msg.reply_text("<b>» ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ ɪs ᴏɴʟʏ ғᴏʀ ɢʀᴏᴜᴩs.</b>")
+        return
 
-    # ================== USER REPLY ==================
-    await msg.reply_text(
-        f"""
-╭⎯⎯⎯⎯⎯⎯⎯⎯⎯
-│  ✦ ʙᴜɢ sᴜʙᴍɪᴛᴛᴇᴅ ✦
-│
-│  🐞 ʙᴜɢ : `{bugs}`
-│
-│  ⚡ ʏᴏᴜʀ ʀᴇᴘᴏʀᴛ ʜᴀs ʙᴇᴇɴ
-│  sᴇɴᴛ ᴛᴏ ᴅᴇᴠᴇʟᴏᴘᴇʀ
-│
-╰⎯⎯⎯⎯⎯⎯⎯⎯⎯
-""",
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "➕ ᴀᴅᴅ ᴍᴇ ʙᴀʙʏ",
-                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true"
-                    )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "❌ ᴄʟᴏsᴇ",
-                        callback_data="close_data"
-                    )
-                ],
-            ]
-        ),
-        disable_web_page_preview=True
-    )
-
-    # ================== SAFE VIEW BUG BUTTON ==================
-    view_url = msg.link if msg.chat.username else "https://t.me"
-
-    # ================== SEND TO LOG ==================
-    await app.send_photo(
-        BUG_LOG_CHAT,-1003804980753,
-        photo="https://files.catbox.moe/s8lc80.jpg",
-        caption=bug_report,
-        reply_markup=InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton("🔍 ᴠɪᴇᴡ ʙᴜɢ", url=view_url),
-                    InlineKeyboardButton(
-                        "➕ ᴀᴅᴅ ᴍᴇ ʙᴀʙʏ",
-                        url=f"https://t.me/{BOT_USERNAME}?startgroup=true"
-                    ),
-                ],
-                [
-                    InlineKeyboardButton(
-                        "❌ ᴄʟᴏsᴇ",
-                        callback_data="close_send_photo"
-                    )
-                ],
-            ]
-        ),
-    )
+    if user_id == owner_id:
+        if bugs:
+            await msg.reply_text(
+                "<b>» ᴀʀᴇ ʏᴏᴜ ᴄᴏᴍᴇᴅʏ ᴍᴇ 🤣, ʏᴏᴜ'ʀᴇ ᴛʜᴇ ᴏᴡɴᴇʀ ᴏғ ᴛʜᴇ ʙᴏᴛ.</b>",
+            )
+            return
+        else:
+            await msg.reply_text("ᴄʜᴜᴍᴛɪʏᴀ ᴏᴡɴᴇʀ!")
+    elif user_id != owner_id:
+        if bugs:
+            await msg.reply_text(
+                f"<b>ʙᴜɢ ʀᴇᴩᴏʀᴛ : {bugs}</b>\n\n"
+                "<b>» ʙᴜɢ sᴜᴄᴄᴇssғᴜʟʟʏ ʀᴇᴩᴏʀᴛᴇᴅ ᴀᴛ sᴜᴩᴩᴏʀᴛ ᴄʜᴀᴛ !</b>",
+                reply_markup=InlineKeyboardMarkup(
+                    [[InlineKeyboardButton("⌯ ᴄʟᴏsᴇ ⌯", callback_data="close_data")]]
+                ),
+            )
+            await app.send_photo(
+                -1003804980753,
+                photo="https://files.catbox.moe/s8lc80.jpg",
+                caption=f"{bug_report}",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("⌯ ᴠɪєᴡ ʙυɢ ⌯", url=f"{msg.link}"),
+                        InlineKeyboardButton("⌯ ᴄʟσsє ⌯", callback_data="close_send_photo")
+                    ]
+                    ]
+                ),
+            )
+        else:
+            await msg.reply_text(
+                f"<b>» ɴᴏ ʙᴜɢ ᴛᴏ ʀᴇᴩᴏʀᴛ. ᴛʀʏ `/bug not work` ɪɴ ᴍsɢ ʀᴇᴘʟʏ</b>",
+            )
 
 
-# ================== CLOSE BUTTON ==================
+
+
 @app.on_callback_query(filters.regex("close_send_photo"))
-async def close_send_photo(_, query: CallbackQuery):
-    member = await app.get_chat_member(query.message.chat.id, query.from_user.id)
-
-    if member.status not in ["administrator", "creator"]:
-        return await query.answer(
-            "❌ ʏᴏᴜ ᴄᴀɴ'ᴛ ᴄʟᴏsᴇ ᴛʜɪs.",
-            show_alert=True
-        )
-
-    await query.message.delete()
-
+async def close_send_photo(_,  query :CallbackQuery):
+    is_admin = await app.get_chat_member(query.message.chat.id, query.from_user.id)
+    if not is_admin.privileges.can_delete_messages:
+        await query.answer("ʏᴏᴜ ᴅᴏɴ'ᴛ ʜᴀᴠᴇ ʀɪɢʜᴛs ᴛᴏ ᴄʟᴏsᴇ ᴛʜɪs.", show_alert=True)
+    else:
+        await query.message.delete()
 
 # ======================================================
-# 🔥 Powered by Kirti Bots 😎
-# ======================================================
+# ©️ 2025-26 All Rights Reserved by Kirti 😎
+
+# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
+# 🔗 Source link : https://github.com/Badnam019
+# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
+# =======================================================
