@@ -1,196 +1,257 @@
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Revange 😎
-
-# 🧑‍💻 Developer : t.me/dmcatelegram
-# 🔗 Source link : https://github.com/hexamusic/REVANGEMUSIC
-# 📢 Telegram channel : t.me/dmcatelegram
-# =======================================================
-
 import os
 import re
-import random
 import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
-from youtubesearchpython.__future__ import VideosSearch
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
+from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
+# ══════════════════════════════════════════════════════════════════
+#  CACHE
+# ══════════════════════════════════════════════════════════════════
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-PANEL_W, PANEL_H = 763, 545
-PANEL_X = (1280 - PANEL_W) // 2
-PANEL_Y = 88
-TRANSPARENCY = 170
-INNER_OFFSET = 36
+# ══════════════════════════════════════════════════════════════════
+#  CANVAS
+# ══════════════════════════════════════════════════════════════════
+W, H = 1280, 720
 
-THUMB_W, THUMB_H = 542, 273
-THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
-THUMB_Y = PANEL_Y + INNER_OFFSET
+# ══════════════════════════════════════════════════════════════════
+#  COLORS — pixel-scanned from reference image
+# ══════════════════════════════════════════════════════════════════
+BG_TOP         = ( 18,  27,  34)   # top-left background
+BG_BOT         = ( 28,  37,  46)   # bottom background
+TEXT_WHITE     = (254, 254, 254)   # song title color
+ARTIST_GREY    = (212, 212, 212)   # artist name (slightly grey-white)
+PLAYING_GREY   = (131, 138, 146)   # "Playing" label
+DURATION_GREY  = (179, 180, 182)   # "Duration: …" text
+BRAND_GREY     = (160, 165, 171)   # "Powered by …" text
+CARD_BG        = (  0,   4,   6)   # card fill when no art
 
-TITLE_X = 377
-META_X = 377
-TITLE_Y = THUMB_Y + THUMB_H + 10
-META_Y = TITLE_Y + 45
+# ══════════════════════════════════════════════════════════════════
+#  CARD GEOMETRY — pixel-scanned (1920x1080 source → 1280x720 output)
+#  Source: left=180, right=828, top=220, bottom=898
+#  Scale:  1280/1920 = 0.6667,  720/1080 = 0.6667
+# ══════════════════════════════════════════════════════════════════
+CARD_X   = 120   # 180  × 0.6667
+CARD_Y   = 146   # 220  × 0.6667
+CARD_R   = 552   # 828  × 0.6667
+CARD_B   = 598   # 898  × 0.6667
+CARD_RAD =  20   # rounded corner radius
 
-BAR_X, BAR_Y = 388, META_Y + 45
-BAR_RED_LEN = 280
-BAR_TOTAL_LEN = 480
+# ══════════════════════════════════════════════════════════════════
+#  TEXT POSITIONS — pixel-scanned from source, scaled to 1280x720
+#  Playing: source y=347, x=905
+#  Title:   source y=451, x=905
+#  Artist:  source y=588, x=905
+#  Duration:source y=667, x=905
+#  Brand:   source y=971 / 1010, x=1626
+# ══════════════════════════════════════════════════════════════════
+TX        = 603   # 905 × 0.6667 — shared left x for all text
+TY_LABEL  = 231   # "Playing" top
+TY_TITLE  = 300   # Song title top
+TY_ARTIST = 392   # Artist name top
+TY_DUR    = 444   # Duration top
+BRAND_Y1  = 647   # "Powered" line top
+BRAND_Y2  = 673   # "by <name>" line top
 
-ICONS_W, ICONS_H = 415, 45
-ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
-ICONS_Y = BAR_Y + 48
+# ══════════════════════════════════════════════════════════════════
+#  FONT SIZES — derived from pixel heights in reference
+#  Playing: rendered h=36px → ~32pt
+#  Title:   rendered h=66px → ~62pt
+#  Artist:  rendered h=24px → ~44pt (bold renders larger)
+#  Duration:rendered h=24px → ~28pt
+# ══════════════════════════════════════════════════════════════════
+SZ_PLAYING  = 32
+SZ_TITLE    = 62
+SZ_ARTIST   = 44
+SZ_DURATION = 28
+SZ_BRAND    = 22
 
-MAX_TITLE_WIDTH = 580
+# ══════════════════════════════════════════════════════════════════
+#  WAVE — bottom-right lighter bump
+#  BG_BOT first appears at y=530 on right, y=556 on left
+#  Large ellipse: bounding box tuned to match this curve
+# ══════════════════════════════════════════════════════════════════
+WAVE_ELLIPSE = (150, 420, 1380, 820)   # (x0,y0,x1,y1) bounding box
 
-SHUKLA_COLOR = [
-    (188, 250, 152),   
-    (110, 180, 245),   
-    (242, 179, 240),   
-    (249, 255, 158),   
-    (164, 163, 240),
-    (135, 250, 244),
-    (255, 255, 255),
-]
 
-def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
-    ellipsis = "…"
+# ─────────────────────────────────────────────────────────────────
+#  HELPERS
+# ─────────────────────────────────────────────────────────────────
+def _trim(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
     try:
         if font.getlength(text) <= max_w:
             return text
         for i in range(len(text) - 1, 0, -1):
-            if font.getlength(text[:i] + ellipsis) <= max_w:
-                return text[:i] + ellipsis
-    except AttributeError:
-        return text[:max_w // 10] + "…" if len(text) > max_w // 10 else text
-    return ellipsis
+            t = text[:i] + "…"
+            if font.getlength(t) <= max_w:
+                return t
+    except Exception:
+        pass
+    return text[:12] + "…"
 
+
+def _font(path: str, size: int) -> ImageFont.FreeTypeFont:
+    try:
+        return ImageFont.truetype(path, size)
+    except Exception:
+        return ImageFont.load_default()
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  CORE RENDERER
+# ═══════════════════════════════════════════════════════════════════
+def _make_thumb(
+    raw_path:        str,
+    title:           str,
+    channel:         str,
+    duration_text:   str,
+    player_username: str,
+    cache_path:      str,
+) -> str:
+
+    REG  = "ShiviMusic/assets/font.ttf"
+    BOLD = "ShiviMusic/assets/font2.ttf"
+
+    # ── 1. GRADIENT BACKGROUND ───────────────────────────────────
+    # Exact two-tone: BG_TOP at top → BG_BOT at bottom
+    bg   = Image.new("RGBA", (W, H))
+    draw = ImageDraw.Draw(bg)
+    for y in range(H):
+        t = y / (H - 1)
+        r = int(BG_TOP[0] + (BG_BOT[0] - BG_TOP[0]) * t)
+        g = int(BG_TOP[1] + (BG_BOT[1] - BG_TOP[1]) * t)
+        b = int(BG_TOP[2] + (BG_BOT[2] - BG_TOP[2]) * t)
+        draw.line([(0, y), (W, y)], fill=(r, g, b, 255))
+
+    # ── 2. WAVE — bottom bump (BG_BOT ellipse, soft edges) ───────
+    # In reference: BG_BOT color forms a smooth elliptical bump
+    # rising from y≈530 right-side to y≈556 left-side
+    wave = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(wave).ellipse(WAVE_ELLIPSE, fill=(*BG_BOT, 255))
+    bg.alpha_composite(wave.filter(ImageFilter.GaussianBlur(22)))
+    draw = ImageDraw.Draw(bg)
+
+    # ── 3. FONTS ─────────────────────────────────────────────────
+    f_label   = _font(REG,  SZ_PLAYING)
+    f_title   = _font(BOLD, SZ_TITLE)
+    f_artist  = _font(BOLD, SZ_ARTIST)
+    f_dur     = _font(REG,  SZ_DURATION)
+    f_brand   = _font(BOLD, SZ_BRAND)
+
+    MAX_W = W - TX - 40  # max text width before ellipsis
+
+    # ── 4. TEXT: "Playing" label ──────────────────────────────────
+    draw.text((TX, TY_LABEL), "Playing", fill=PLAYING_GREY, font=f_label)
+
+    # ── 5. TEXT: Song title (large bold white) ────────────────────
+    draw.text((TX, TY_TITLE), _trim(title, f_title, MAX_W),
+              fill=TEXT_WHITE, font=f_title)
+
+    # ── 6. TEXT: Artist / Channel (medium bold, slightly grey-white)
+    draw.text((TX, TY_ARTIST), _trim(channel, f_artist, MAX_W),
+              fill=ARTIST_GREY, font=f_artist)
+
+    # ── 7. TEXT: Duration ─────────────────────────────────────────
+    draw.text((TX, TY_DUR), f"Duration: {duration_text}",
+              fill=DURATION_GREY, font=f_dur)
+
+    # ── 8. TEXT: "Powered by Shivi" — bottom right, right-aligned ─
+    line1 = "Powered"
+    line2 = f"by {player_username}"
+    l1w   = int(f_brand.getlength(line1))
+    l2w   = int(f_brand.getlength(line2))
+    mbw   = max(l1w, l2w)
+    bx    = W - mbw - 48          # right margin = 48px
+    draw.text((bx + (mbw - l1w), BRAND_Y1), line1, fill=BRAND_GREY, font=f_brand)
+    draw.text((bx + (mbw - l2w), BRAND_Y2), line2, fill=BRAND_GREY, font=f_brand)
+
+    # ── 9. CARD SHADOW ────────────────────────────────────────────
+    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    ImageDraw.Draw(shadow).rounded_rectangle(
+        (CARD_X + 10, CARD_Y + 10, CARD_R + 10, CARD_B + 10),
+        radius=CARD_RAD, fill=(0, 0, 0, 150),
+    )
+    bg.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(14)))
+    draw = ImageDraw.Draw(bg)
+
+    # ── 10. CARD BACKGROUND ───────────────────────────────────────
+    draw.rounded_rectangle(
+        (CARD_X, CARD_Y, CARD_R, CARD_B),
+        radius=CARD_RAD, fill=(*CARD_BG, 255),
+    )
+
+    # ── 11. ALBUM ART inside card ─────────────────────────────────
+    try:
+        art_w = CARD_R - CARD_X   # 432px
+        art_h = CARD_B - CARD_Y   # 452px
+        art   = Image.open(raw_path).convert("RGB").resize(
+            (art_w, art_h), Image.LANCZOS
+        )
+        mask = Image.new("L", (art_w, art_h), 0)
+        ImageDraw.Draw(mask).rounded_rectangle(
+            (0, 0, art_w - 1, art_h - 1), radius=CARD_RAD, fill=255,
+        )
+        bg.paste(art, (CARD_X, CARD_Y), mask)
+    except Exception:
+        pass   # card BG already drawn
+
+    # ── 12. SAVE ──────────────────────────────────────────────────
+    bg.convert("RGB").save(cache_path, "PNG")
+    return cache_path
+
+
+# ═══════════════════════════════════════════════════════════════════
+#  PUBLIC API
+# ═══════════════════════════════════════════════════════════════════
 async def get_thumb(videoid: str, player_username: str = None) -> str:
     if player_username is None:
         player_username = app.username
 
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    cache_path = os.path.join(CACHE_DIR, f"{videoid}_thumb.png")
     if os.path.exists(cache_path):
         return cache_path
 
+    # Fetch YouTube metadata
     try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search_result = await results.next()
-        data = search_result.get("result", [])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Unsupported Title")).title()
-        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown Views")
+        results   = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
+        search    = await results.next()
+        data      = search.get("result", [])[0]
+        title     = re.sub(r"\W+", " ", data.get("title", "Unknown")).strip().title()
+        thumb_url = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
+        duration  = data.get("duration")
+        channel   = data.get("channel", {}).get("name", "YouTube")
     except Exception:
-        title, thumbnail, duration, views = "Unsupported Title", YOUTUBE_IMG_URL, None, "Unknown Views"
+        title, thumb_url, duration, channel = "Unknown", YOUTUBE_IMG_URL, None, "YouTube"
 
-    is_live = not duration or str(duration).strip().lower() in {"", "live", "live now"}
-    duration_text = "Live" if is_live else duration or "Unknown Mins"
+    is_live       = not duration or str(duration).lower() in {"live", "live now", ""}
+    duration_text = "LIVE" if is_live else (duration or "Unknown")
 
-    thumb_path = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+    # Download art
+    raw_path = os.path.join(CACHE_DIR, f"raw_{videoid}.jpg")
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(thumbnail) as resp:
+            async with session.get(thumb_url) as resp:
                 if resp.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
+                    async with aiofiles.open(raw_path, "wb") as f:
                         await f.write(await resp.read())
+                else:
+                    return YOUTUBE_IMG_URL
     except Exception:
         return YOUTUBE_IMG_URL
 
-    base = Image.open(thumb_path).resize((1280, 720)).convert("RGBA")
-    bg = ImageEnhance.Brightness(base.filter(ImageFilter.BoxBlur(10))).enhance(0.6)
-
-    panel_area = bg.crop((PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H))
-    random_color = random.choice(SHUKLA_COLOR)
-    rgba_color = (*random_color, TRANSPARENCY)
-    overlay = Image.new("RGBA", (PANEL_W, PANEL_H), rgba_color)
-    frosted = Image.alpha_composite(panel_area, overlay)
-    mask = Image.new("L", (PANEL_W, PANEL_H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, PANEL_W, PANEL_H), 50, fill=255)
-    bg.paste(frosted, (PANEL_X, PANEL_Y), mask)
-
-    draw = ImageDraw.Draw(bg)
+    # Render
+    try:
+        result = _make_thumb(raw_path, title, channel, duration_text, player_username, cache_path)
+    except Exception:
+        result = YOUTUBE_IMG_URL
 
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/f.ttf", 44)
-        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
-        shukla_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 28)
-    except OSError:
-        title_font = regular_font = shukla_font = ImageFont.load_default()
-
-    BORDER_SIZE = 6
-    thumb_with_border = Image.new("RGBA", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), (255, 255, 255, 0))
-
-    border_mask = Image.new("L", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 0)
-    ImageDraw.Draw(border_mask).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=255
-    )
-    ImageDraw.Draw(thumb_with_border).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=(255, 255, 255, 255)
-    )
-
-    thumb = base.resize((THUMB_W, THUMB_H)).convert("RGBA")
-    thumb_mask = Image.new("L", (THUMB_W, THUMB_H), 0)
-    ImageDraw.Draw(thumb_mask).rounded_rectangle((0, 0, THUMB_W, THUMB_H), 20, fill=255)
-    thumb_with_border.paste(thumb, (BORDER_SIZE, BORDER_SIZE), thumb_mask)
-
-    bg.paste(thumb_with_border, (THUMB_X - BORDER_SIZE, THUMB_Y - BORDER_SIZE), border_mask)
-
-    draw.text((TITLE_X, TITLE_Y), trim_to_width(title, title_font, MAX_TITLE_WIDTH), fill="black", font=title_font)
-
-    left_text = f"YouTube | {views}"
-    right_text = f"Player | @{player_username}"
-    left_w = regular_font.getlength(left_text)
-    right_w = regular_font.getlength(right_text)
-    gap = 30
-    total_width = left_w + gap + right_w
-    start_x = PANEL_X + (PANEL_W - total_width) // 2
-
-    draw.text((start_x, META_Y), left_text, fill="red", font=regular_font)
-    draw.text((start_x + left_w + gap, META_Y), right_text, fill="red", font=regular_font)
-
-    draw.line([(BAR_X, BAR_Y), (BAR_X + BAR_RED_LEN, BAR_Y)], fill="red", width=6)
-    draw.line([(BAR_X + BAR_RED_LEN, BAR_Y), (BAR_X + BAR_TOTAL_LEN, BAR_Y)], fill="gray", width=5)
-    draw.ellipse([(BAR_X + BAR_RED_LEN - 7, BAR_Y - 7), (BAR_X + BAR_RED_LEN + 7, BAR_Y + 7)], fill="red")
-    draw.text((BAR_X, BAR_Y + 15), "00:00", fill="black", font=regular_font)
-    draw.text((BAR_X + BAR_TOTAL_LEN - (90 if is_live else 60), BAR_Y + 15),
-              duration_text, fill="red" if is_live else "black", font=regular_font)
-
-    icons_path = "ShiviMusic/assets/play_icons.png"
-    if os.path.isfile(icons_path):
-        ic = Image.open(icons_path).resize((ICONS_W, ICONS_H)).convert("RGBA")
-        r, g, b, a = ic.split()
-        black_ic = Image.merge("RGBA", (r.point(lambda *_: 0), g.point(lambda *_: 0), b.point(lambda *_: 0), a))
-        bg.paste(black_ic, (ICONS_X, ICONS_Y), black_ic)
-
-    padding = 25
-
-    
-    shashank_text = "IG :- @Kirti_update"
-    shashank_x = padding
-    shashank_y = padding
-    draw.text((shashank_x, shashank_y), shashank_text, fill=(255, 255, 0), font=shukla_font)
-
-    shukla_text = "DEV :- @lll_BADNAM_BABY_lll"
-    shukla_w = shukla_font.getlength(shukla_text)
-    shukla_x = 1280 - shukla_w - padding
-    shukla_y = padding
-    draw.text((shukla_x, shukla_y), shukla_text, fill=(255, 255, 0), font=shukla_font)
-
-
-    try:
-        os.remove(thumb_path)
-    except OSError:
+        os.remove(raw_path)
+    except Exception:
         pass
 
-    bg.save(cache_path)
-    return cache_path
-
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Revange 😎
-
-# 🧑‍💻 Developer : t.me/dmcatelegram
-# 🔗 Source link : https://github.com/hexamusic/REVANGEMUSIC
-# 📢 Telegram channel : t.me/dmcatelegram
-# =======================================================
+    return result
