@@ -8,30 +8,26 @@
 
 
 from ShiviMusic import app
-from ShiviMusic.utils.database import get_assistant
 
-from pyrogram import Client, filters, enums
+from pyrogram import filters, enums
 from pyrogram.types import (
     ChatMemberUpdated,
-    ChatJoinRequest,
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     Message,
 )
 
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance, ImageChops
+from PIL import Image, ImageDraw, ImageFont, ImageEnhance
 from motor.motor_asyncio import AsyncIOMotorClient
 from config import MONGO_DB_URI
 
 import asyncio
-import random
-import os
 from logging import getLogger
 
 LOGGER = getLogger(__name__)
 
 mongo = AsyncIOMotorClient(MONGO_DB_URI)
-db = mongo["Shivi_DB"]
+db = mongo["Wel_DB"]
 welcomedb = db["welcome_toggle_system"]
 
 async def get_welcome(chat_id: int):
@@ -57,7 +53,7 @@ async def disable_welcome(chat_id: int):
 class temp:
     MELCOW = {}
 
-def circle(pfp, size=(390, 390), brightness_factor=1.4):
+def circle(pfp, size=(720, 720), brightness_factor=1.4):
     pfp = pfp.resize(size).convert("RGBA")
     pfp = ImageEnhance.Brightness(pfp).enhance(brightness_factor)
 
@@ -68,21 +64,34 @@ def circle(pfp, size=(390, 390), brightness_factor=1.4):
     pfp.putalpha(mask)
     return pfp
 
-
 def welcomepic(pic, user, chatname, id, uname, brightness_factor=1.3):
-    background = Image.open("ShiviMusic/assets/shiviwel2.png").convert("RGBA")
+    background = Image.open("ShiviMusic/assets/wel2.png").convert("RGBA")
 
     pfp = Image.open(pic).convert("RGBA")
-    pfp = circle(pfp, size=(390, 390), brightness_factor=brightness_factor)
+    pfp = circle(pfp, size=(720, 720), brightness_factor=brightness_factor)
 
-    background.paste(pfp, (90, 115), pfp)
+    background.paste(pfp, (520, 420), pfp)
+
     draw = ImageDraw.Draw(background)
- 
+
+    font_path = "ShiviMusic/assets/font2.ttf"
+
+    font_id = ImageFont.truetype(font_path, 100)
+    font_username = ImageFont.truetype(font_path, 100)
+
+    username_text = f"@{uname}" if uname else "Not Set"
+
+
+    draw.text((1920, 1340), str(id), font=font_id, fill="#ffffff")
+    draw.text((1920, 1480), username_text, font=font_username, fill="#ffffff")
+
     output_path = f"downloads/welcome_{id}.png"
     background.save(output_path)
 
     return output_path
- 
+
+
+
 @app.on_message(filters.command("welcome") & filters.group)
 async def welcome_cmd(_, message: Message):
 
@@ -189,7 +198,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
-                        "⊚ ᴧᴅᴅ ᴍᴇ ᴛᴏ ʏᴏυʀ ᴄʜᴧᴛ ⊚",
+                        "ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ",
                         url=f"https://t.me/{app.username}?startgroup=true"
                     )
                 ]
@@ -197,7 +206,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         )
 
         async def delete_welcome():
-            await asyncio.sleep(30)
+            await asyncio.sleep(300)
             try:
                 await msg.delete()
                 if f"welcome-{chat_id}" in temp.MELCOW:
@@ -206,7 +215,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
                 pass
 
         asyncio.create_task(delete_welcome())
-        temp.MELCOW[f"welcome-{chat_id}"] = msg
+        temp.MELCOW[f"welcome-{chat_id}"] = msg  
 
 
 # ======================================================
