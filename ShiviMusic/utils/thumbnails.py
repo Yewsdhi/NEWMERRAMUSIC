@@ -113,9 +113,9 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw = ImageDraw.Draw(bg)
 
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/f.ttf", 32)
-        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 18)
-        shukla_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
+        title_font = ImageFont.truetype("ShiviMusic/assets/f.ttf", 44)
+        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
+        shukla_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 28)
     except OSError:
         title_font = regular_font = shukla_font = ImageFont.load_default()
 
