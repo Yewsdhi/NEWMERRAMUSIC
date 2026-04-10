@@ -147,7 +147,7 @@ def _make_thumb(
     # ── 4. TEXT: "Playing" label ──────────────────────────────────
     draw.text((TX, TY_LABEL), "Playing", fill=PLAYING_GREY, font=f_label)
 
-    # ── 5. TEXT: Song title (large bold white) ────────────────────
+    # ── 5. TEXT: Song title (large bold red) ────────────────────
     draw.text((TX, TY_TITLE), _trim(title, f_title, MAX_W),
               fill=TEXT_WHITE, font=f_title)
 
