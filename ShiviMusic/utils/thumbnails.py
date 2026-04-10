@@ -1,97 +1,24 @@
 import os
 import re
-import aiofiles
+import colorsys
 import aiohttp
+import aiofiles
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
+
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
-# ══════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════
 #  CACHE
-# ══════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-# ══════════════════════════════════════════════════════════════════
-#  CANVAS
-# ══════════════════════════════════════════════════════════════════
 W, H = 1280, 720
 
-# ══════════════════════════════════════════════════════════════════
-#  COLORS — pixel-scanned from reference image
-# ══════════════════════════════════════════════════════════════════
-BG_TOP         = ( 18,  27,  34)   # top-left background
-BG_BOT         = ( 28,  37,  46)   # bottom background
-TEXT_WHITE     = (254, 254, 254)   # song title color
-ARTIST_GREY    = (212, 212, 212)   # artist name (slightly grey-white)
-PLAYING_GREY   = (131, 138, 146)   # "Playing" label
-DURATION_GREY  = (179, 180, 182)   # "Duration: …" text
-BRAND_GREY     = (160, 165, 171)   # "Powered by …" text
-CARD_BG        = (  0,   4,   6)   # card fill when no art
-
-# ══════════════════════════════════════════════════════════════════
-#  CARD GEOMETRY — pixel-scanned (1920x1080 source → 1280x720 output)
-#  Source: left=180, right=828, top=220, bottom=898
-#  Scale:  1280/1920 = 0.6667,  720/1080 = 0.6667
-# ══════════════════════════════════════════════════════════════════
-CARD_X   = 120   # 180  × 0.6667
-CARD_Y   = 146   # 220  × 0.6667
-CARD_R   = 552   # 828  × 0.6667
-CARD_B   = 598   # 898  × 0.6667
-CARD_RAD =  20   # rounded corner radius
-
-# ══════════════════════════════════════════════════════════════════
-#  TEXT POSITIONS — pixel-scanned from source, scaled to 1280x720
-#  Playing: source y=347, x=905
-#  Title:   source y=451, x=905
-#  Artist:  source y=588, x=905
-#  Duration:source y=667, x=905
-#  Brand:   source y=971 / 1010, x=1626
-# ══════════════════════════════════════════════════════════════════
-TX        = 603   # 905 × 0.6667 — shared left x for all text
-TY_LABEL  = 231   # "Playing" top
-TY_TITLE  = 300   # Song title top
-TY_ARTIST = 392   # Artist name top
-TY_DUR    = 444   # Duration top
-BRAND_Y1  = 647   # "Powered" line top
-BRAND_Y2  = 673   # "by <name>" line top
-
-# ══════════════════════════════════════════════════════════════════
-#  FONT SIZES — derived from pixel heights in reference
-#  Playing: rendered h=36px → ~32pt
-#  Title:   rendered h=66px → ~62pt
-#  Artist:  rendered h=24px → ~44pt (bold renders larger)
-#  Duration:rendered h=24px → ~28pt
-# ══════════════════════════════════════════════════════════════════
-SZ_PLAYING  = 32
-SZ_TITLE    = 62
-SZ_ARTIST   = 44
-SZ_DURATION = 28
-SZ_BRAND    = 22
-
-# ══════════════════════════════════════════════════════════════════
-#  WAVE — bottom-right lighter bump
-#  BG_BOT first appears at y=530 on right, y=556 on left
-#  Large ellipse: bounding box tuned to match this curve
-# ══════════════════════════════════════════════════════════════════
-WAVE_ELLIPSE = (150, 420, 1380, 820)   # (x0,y0,x1,y1) bounding box
-
-
-# ─────────────────────────────────────────────────────────────────
-#  HELPERS
-# ─────────────────────────────────────────────────────────────────
-def _trim(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
-    try:
-        if font.getlength(text) <= max_w:
-            return text
-        for i in range(len(text) - 1, 0, -1):
-            t = text[:i] + "…"
-            if font.getlength(t) <= max_w:
-                return t
-    except Exception:
-        pass
-    return text[:12] + "…"
+FONT_BOLD   = "ShiviMusic/assets/font2.ttf"
+FONT_NORMAL = "ShiviMusic/assets/font.ttf"
 
 
 def _font(path: str, size: int) -> ImageFont.FreeTypeFont:
@@ -101,136 +28,219 @@ def _font(path: str, size: int) -> ImageFont.FreeTypeFont:
         return ImageFont.load_default()
 
 
-# ═══════════════════════════════════════════════════════════════════
-#  CORE RENDERER
-# ═══════════════════════════════════════════════════════════════════
-def _make_thumb(
-    raw_path:        str,
-    title:           str,
-    channel:         str,
-    duration_text:   str,
-    player_username: str,
-    cache_path:      str,
-) -> str:
+def _extract_palette(img: Image.Image):
+    small  = img.convert("RGB").resize((80, 45), Image.LANCZOS)
+    pixels = list(small.getdata())
+    best_color, best_score = None, -1
+    for px in pixels[::2]:
+        r, g, b = px[0]/255.0, px[1]/255.0, px[2]/255.0
+        h, s, v = colorsys.rgb_to_hsv(r, g, b)
+        if v < 0.25 or s < 0.35: continue
+        if v > 0.95 and s < 0.2: continue
+        score = s * v
+        if score > best_score:
+            best_score = score
+            best_color = (r, g, b)
+    if best_color is None:
+        return (180,180,180),(220,220,220),(100,100,100)
+    r, g, b = best_color
+    h, s, v = colorsys.rgb_to_hsv(r, g, b)
+    base  = tuple(int(x*255) for x in colorsys.hsv_to_rgb(h, min(s*1.1,1.0), min(v,1.0)))
+    light = tuple(int(x*255) for x in colorsys.hsv_to_rgb(h, max(s*0.5,0.15), min(v*1.4,1.0)))
+    dark  = tuple(int(x*255) for x in colorsys.hsv_to_rgb(h, min(s*1.3,1.0), v*0.4))
+    return base, light, dark
 
-    REG  = "ShiviMusic/assets/font.ttf"
-    BOLD = "ShiviMusic/assets/font2.ttf"
 
-    # ── 1. GRADIENT BACKGROUND ───────────────────────────────────
-    # Exact two-tone: BG_TOP at top → BG_BOT at bottom
-    bg   = Image.new("RGBA", (W, H))
-    draw = ImageDraw.Draw(bg)
-    for y in range(H):
-        t = y / (H - 1)
-        r = int(BG_TOP[0] + (BG_BOT[0] - BG_TOP[0]) * t)
-        g = int(BG_TOP[1] + (BG_BOT[1] - BG_TOP[1]) * t)
-        b = int(BG_TOP[2] + (BG_BOT[2] - BG_TOP[2]) * t)
-        draw.line([(0, y), (W, y)], fill=(r, g, b, 255))
-
-    # ── 2. WAVE — bottom bump (BG_BOT ellipse, soft edges) ───────
-    # In reference: BG_BOT color forms a smooth elliptical bump
-    # rising from y≈530 right-side to y≈556 left-side
-    wave = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(wave).ellipse(WAVE_ELLIPSE, fill=(*BG_BOT, 255))
-    bg.alpha_composite(wave.filter(ImageFilter.GaussianBlur(22)))
-    draw = ImageDraw.Draw(bg)
-
-    # ── 3. FONTS ─────────────────────────────────────────────────
-    f_label   = _font(REG,  SZ_PLAYING)
-    f_title   = _font(BOLD, SZ_TITLE)
-    f_artist  = _font(BOLD, SZ_ARTIST)
-    f_dur     = _font(REG,  SZ_DURATION)
-    f_brand   = _font(BOLD, SZ_BRAND)
-
-    MAX_W = W - TX - 40  # max text width before ellipsis
-
-    # ── 4. TEXT: "Playing" label ──────────────────────────────────
-    draw.text((TX, TY_LABEL), "Playing", fill=PLAYING_GREY, font=f_label)
-
-    # ── 5. TEXT: Song title (large bold red) ────────────────────
-    draw.text((TX, TY_TITLE), _trim(title, f_title, MAX_W),
-              fill=TEXT_WHITE, font=f_title)
-
-    # ── 6. TEXT: Artist / Channel (medium bold, slightly grey-white)
-    draw.text((TX, TY_ARTIST), _trim(channel, f_artist, MAX_W),
-              fill=ARTIST_GREY, font=f_artist)
-
-    # ── 7. TEXT: Duration ─────────────────────────────────────────
-    draw.text((TX, TY_DUR), f"Duration: {duration_text}",
-              fill=DURATION_GREY, font=f_dur)
-
-    # ── 8. TEXT: "Powered by Shivi" — bottom right, right-aligned ─
-    line1 = "Powered"
-    line2 = f"by {player_username}"
-    l1w   = int(f_brand.getlength(line1))
-    l2w   = int(f_brand.getlength(line2))
-    mbw   = max(l1w, l2w)
-    bx    = W - mbw - 48          # right margin = 48px
-    draw.text((bx + (mbw - l1w), BRAND_Y1), line1, fill=BRAND_GREY, font=f_brand)
-    draw.text((bx + (mbw - l2w), BRAND_Y2), line2, fill=BRAND_GREY, font=f_brand)
-
-    # ── 9. CARD SHADOW ────────────────────────────────────────────
-    shadow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    ImageDraw.Draw(shadow).rounded_rectangle(
-        (CARD_X + 10, CARD_Y + 10, CARD_R + 10, CARD_B + 10),
-        radius=CARD_RAD, fill=(0, 0, 0, 150),
-    )
-    bg.alpha_composite(shadow.filter(ImageFilter.GaussianBlur(14)))
-    draw = ImageDraw.Draw(bg)
-
-    # ── 10. CARD BACKGROUND ───────────────────────────────────────
-    draw.rounded_rectangle(
-        (CARD_X, CARD_Y, CARD_R, CARD_B),
-        radius=CARD_RAD, fill=(*CARD_BG, 255),
-    )
-
-    # ── 11. ALBUM ART inside card ─────────────────────────────────
+def _trim(draw, text: str, font, max_w: int) -> str:
     try:
-        art_w = CARD_R - CARD_X   # 432px
-        art_h = CARD_B - CARD_Y   # 452px
-        art   = Image.open(raw_path).convert("RGB").resize(
-            (art_w, art_h), Image.LANCZOS
-        )
-        mask = Image.new("L", (art_w, art_h), 0)
-        ImageDraw.Draw(mask).rounded_rectangle(
-            (0, 0, art_w - 1, art_h - 1), radius=CARD_RAD, fill=255,
-        )
-        bg.paste(art, (CARD_X, CARD_Y), mask)
+        if draw.textlength(text, font=font) <= max_w:
+            return text
+        while len(text) > 1 and draw.textlength(text+"...", font=font) > max_w:
+            text = text[:-1]
+        return text + "..."
     except Exception:
-        pass   # card BG already drawn
+        return text[:28] + "..."
 
-    # ── 12. SAVE ──────────────────────────────────────────────────
+
+def _clean_views_public(raw: str) -> str:
+    if not raw or raw.strip().upper() == "N/A":
+        return "N/A"
+    cleaned = re.sub(r"\s*views?\s*", "", raw, flags=re.IGNORECASE).strip()
+    cleaned = re.sub(r"([KMBT])\1+", r"\1", cleaned, flags=re.IGNORECASE)
+    return f"{cleaned} views" if cleaned else "N/A"
+
+
+def _make_thumb(raw_path, title, channel, duration_text, views_text, cache_path):
+
+    try:
+        art_orig = Image.open(raw_path).convert("RGB")
+    except Exception:
+        art_orig = Image.new("RGB", (400,400), (30,20,15))
+
+    # ── 1. BACKGROUND ──────────────────────────────────────────
+    # Blurred art + heavily darkened warm-black
+    bg_blur  = art_orig.resize((W,H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(50))
+    dark_base = Image.new("RGB", (W,H), (8,5,3))
+    bg = Image.blend(bg_blur, dark_base, alpha=0.72).convert("RGBA")
+
+    # Vignette
+    vig = Image.new("RGBA", (W,H), (0,0,0,0))
+    vd  = ImageDraw.Draw(vig)
+    for i in range(0, 220, 3):
+        a = int(210 * (1 - i/220)**2.0)
+        vd.rectangle([i, i, W-i, H-i], outline=(0,0,0,a), width=3)
+    bg.alpha_composite(vig)
+
+    # ── 2. PALETTE ─────────────────────────────────────────────
+    c_base, c_light, c_dark = _extract_palette(art_orig)
+
+    # ── 3. CARD GEOMETRY ───────────────────────────────────────
+    # Card slightly smaller, centered vertically with breathing room
+    CARD_L, CARD_T = 112, 135
+    CARD_W, CARD_H = 400, 450      # slightly smaller, more breathing room
+    CARD_R = CARD_L + CARD_W       # 520
+    CARD_B = CARD_T + CARD_H       # 590
+    CARD_RAD = 22
+
+    # Dark plate: 18px padding around card
+    PAD    = 18
+    PL, PT = CARD_L - PAD, CARD_T - PAD
+    PR, PB = CARD_R + PAD, CARD_B + PAD
+    PRAD   = CARD_RAD + 12
+
+    # ── LAYER 1: Far drop shadow (large, soft, offset) ────────
+    shad1 = Image.new("RGBA", (W,H), (0,0,0,0))
+    ImageDraw.Draw(shad1).rounded_rectangle(
+        [PL+14, PT+20, PR+14, PB+20],
+        radius=PRAD+6, fill=(0,0,0,160))
+    bg.alpha_composite(shad1.filter(ImageFilter.GaussianBlur(32)))
+
+    # ── LAYER 2: Close shadow (tighter, darker) ───────────────
+    shad2 = Image.new("RGBA", (W,H), (0,0,0,0))
+    ImageDraw.Draw(shad2).rounded_rectangle(
+        [PL+4, PT+6, PR+4, PB+6],
+        radius=PRAD+2, fill=(0,0,0,210))
+    bg.alpha_composite(shad2.filter(ImageFilter.GaussianBlur(12)))
+
+    # ── LAYER 3: Strong color glow directly around card ───────
+    glow = Image.new("RGBA", (W,H), (0,0,0,0))
+    gd   = ImageDraw.Draw(glow)
+    for spread, alpha in [(40,25),(28,50),(18,80),(10,110),(4,140)]:
+        gd.rounded_rectangle(
+            [CARD_L-spread, CARD_T-spread,
+             CARD_R+spread, CARD_B+spread],
+            radius=CARD_RAD+spread, fill=(*c_base, alpha))
+    bg.alpha_composite(glow.filter(ImageFilter.GaussianBlur(14)))
+
+    # Dark plate
+    plate_img = Image.new("RGBA", (W,H), (0,0,0,0))
+    ImageDraw.Draw(plate_img).rounded_rectangle(
+        [PL, PT, PR, PB], radius=PRAD, fill=(12,8,5,238))
+    bg.alpha_composite(plate_img)
+
+    # Album art
+    art  = art_orig.resize((CARD_W,CARD_H), Image.LANCZOS).convert("RGBA")
+    mask = Image.new("L", (CARD_W,CARD_H), 0)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        [0, 0, CARD_W-1, CARD_H-1], radius=CARD_RAD, fill=255)
+    art.putalpha(mask)
+    bg.paste(art, (CARD_L, CARD_T), art)
+
+    # White border around art
+    bord = Image.new("RGBA", (W,H), (0,0,0,0))
+    ImageDraw.Draw(bord).rounded_rectangle(
+        [CARD_L-3, CARD_T-3, CARD_R+3, CARD_B+3],
+        radius=CARD_RAD+3, outline=(255,255,255,235), width=3)
+    bg.alpha_composite(bord)
+
+    draw = ImageDraw.Draw(bg)
+
+    # ── 4. RIGHT PANEL ─────────────────────────────────────────
+    RX, RX_END = 612, 1242
+    MAX_TW = RX_END - RX
+
+    f_title = _font(FONT_BOLD,   60)
+    f_sub   = _font(FONT_NORMAL, 37)
+    f_time  = _font(FONT_BOLD,   31)
+
+    # Title — vertically ~center of canvas
+    TITLE_Y = 242
+    draw.text((RX, TITLE_Y), _trim(draw, title, f_title, MAX_TW),
+              font=f_title, fill=(255,255,255,255))
+
+    # Artist
+    ARTIST_Y = TITLE_Y + 84
+    draw.text((RX, ARTIST_Y),
+              _trim(draw, f"Artist: {channel}", f_sub, MAX_TW),
+              font=f_sub, fill=(185,185,185,215))
+
+    # Views
+    VIEWS_Y = ARTIST_Y + 50
+    draw.text((RX, VIEWS_Y),
+              _trim(draw, f"Views: {views_text}", f_sub, MAX_TW),
+              font=f_sub, fill=(185,185,185,215))
+
+    # ── 5. PROGRESS BAR ────────────────────────────────────────
+    BAR_Y  = VIEWS_Y + 104
+    BAR_X1 = RX
+    BAR_X2 = RX_END
+    BAR_H  = 6
+
+    # Grey track
+    draw.rounded_rectangle(
+        [BAR_X1, BAR_Y, BAR_X2, BAR_Y+BAR_H],
+        radius=BAR_H//2, fill=(90,90,90,200))
+
+    # Fill ~47%
+    filled_x = BAR_X1 + int((BAR_X2-BAR_X1) * (80/169))
+
+    # White fill
+    draw.rounded_rectangle(
+        [BAR_X1, BAR_Y, filled_x, BAR_Y+BAR_H],
+        radius=BAR_H//2, fill=(235,235,235,255))
+
+    # Knob
+    KX, KY, KR = filled_x, BAR_Y+BAR_H//2, 10
+    draw.ellipse([KX-KR+2, KY-KR+2, KX+KR+2, KY+KR+2], fill=(0,0,0,70))
+    draw.ellipse([KX-KR,   KY-KR,   KX+KR,   KY+KR  ], fill=(255,255,255,255))
+
+    # ── 6. TIME LABELS ─────────────────────────────────────────
+    TIME_Y = BAR_Y + BAR_H + 16
+    draw.text((BAR_X1, TIME_Y), "01:20", font=f_time, fill=(185,185,185,215))
+
+    dur_str = duration_text if duration_text else "0:00"
+    try:
+        dur_w = int(draw.textlength(dur_str, font=f_time))
+    except Exception:
+        dur_w = 65
+    draw.text((BAR_X2-dur_w, TIME_Y), dur_str, font=f_time, fill=(185,185,185,215))
+
+    # ── 7. SAVE ────────────────────────────────────────────────
     bg.convert("RGB").save(cache_path, "PNG")
     return cache_path
 
 
-# ═══════════════════════════════════════════════════════════════════
+# ══════════════════════════════════════════════════════════════
 #  PUBLIC API
-# ═══════════════════════════════════════════════════════════════════
-async def get_thumb(videoid: str, player_username: str = None) -> str:
-    if player_username is None:
-        player_username = app.username
-
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_thumb.png")
+# ══════════════════════════════════════════════════════════════
+async def get_thumb(videoid: str, user_id=None) -> str:
+    cache_path = os.path.join(CACHE_DIR, f"{videoid}.png")
     if os.path.exists(cache_path):
         return cache_path
 
-    # Fetch YouTube metadata
     try:
-        results   = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search    = await results.next()
-        data      = search.get("result", [])[0]
-        title     = re.sub(r"\W+", " ", data.get("title", "Unknown")).strip().title()
-        thumb_url = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration  = data.get("duration")
-        channel   = data.get("channel", {}).get("name", "YouTube")
+        results    = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
+        search     = await results.next()
+        data       = search.get("result", [])[0]
+        title      = re.sub(r"[\x00-\x1f\x7f]", "", data.get("title","Unknown")).strip()
+        thumb_url  = data.get("thumbnails",[{}])[-1].get("url", YOUTUBE_IMG_URL).split("?")[0]
+        duration   = data.get("duration") or "0:00"
+        channel    = data.get("channel",{}).get("name","YouTube")
+        views_raw  = data.get("viewCount",{}).get("short","N/A")
+        views_text = _clean_views_public(views_raw)
     except Exception:
-        title, thumb_url, duration, channel = "Unknown", YOUTUBE_IMG_URL, None, "YouTube"
+        return YOUTUBE_IMG_URL
 
-    is_live       = not duration or str(duration).lower() in {"live", "live now", ""}
-    duration_text = "LIVE" if is_live else (duration or "Unknown")
-
-    # Download art
     raw_path = os.path.join(CACHE_DIR, f"raw_{videoid}.jpg")
     try:
         async with aiohttp.ClientSession() as session:
@@ -243,9 +253,15 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     except Exception:
         return YOUTUBE_IMG_URL
 
-    # Render
     try:
-        result = _make_thumb(raw_path, title, channel, duration_text, player_username, cache_path)
+        result = _make_thumb(
+            raw_path      = raw_path,
+            title         = title,
+            channel       = channel,
+            duration_text = duration,
+            views_text    = views_text,
+            cache_path    = cache_path,
+        )
     except Exception:
         result = YOUTUBE_IMG_URL
 
