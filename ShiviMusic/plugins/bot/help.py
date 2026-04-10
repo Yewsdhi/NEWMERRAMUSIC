@@ -87,6 +87,10 @@ async def help_com_group(client, message: Message, _):
 async def helper_cb(client, CallbackQuery):
     await CallbackQuery.edit_message_text(Helper.HELP_WEL, reply_markup=InlineKeyboardMarkup(BUTTONS.INFO_NEW))
 
+@app.on_callback_query(filters.regex("lock_cb") & ~BANNED_USERS)
+async def helper_cb(client, CallbackQuery):
+    await CallbackQuery.edit_message_text(Helper.HELP_LOCK, reply_markup=InlineKeyboardMarkup(BUTTONS.INFO_NEW))
+
 @app.on_callback_query(filters.regex("night_cb") & ~BANNED_USERS)
 async def helper_cb(client, CallbackQuery):
     await CallbackQuery.edit_message_text(Helper.HELP_NIGHT, reply_markup=InlineKeyboardMarkup(BUTTONS.INFO_NEW))
