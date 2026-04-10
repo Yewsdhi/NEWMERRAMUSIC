@@ -9,9 +9,6 @@ from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
-# ══════════════════════════════════════════════════════════════
-# CACHE
-# ══════════════════════════════════════════════════════════════
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -58,7 +55,6 @@ def _make_thumb(raw_path, title, channel, duration_text, views_text, cache_path)
     dark = Image.new("RGB", (W,H), (8,5,3))
     bg = Image.blend(bg, dark, 0.72).convert("RGBA")
 
-    # Card
     CARD_L, CARD_T = 112, 135
     CARD_W, CARD_H = 400, 450
 
@@ -72,7 +68,6 @@ def _make_thumb(raw_path, title, channel, duration_text, views_text, cache_path)
 
     # ── WHITE BORDER ──
     BORDER_SIZE = 6
-
     border_layer = Image.new("RGBA", (W, H), (0,0,0,0))
     bdraw = ImageDraw.Draw(border_layer)
 
@@ -87,11 +82,23 @@ def _make_thumb(raw_path, title, channel, duration_text, views_text, cache_path)
         outline=(255,255,255,255),
         width=BORDER_SIZE
     )
-
     bg.alpha_composite(border_layer)
 
     draw = ImageDraw.Draw(bg)
 
+    # ── LEFT TEXT (BADNAM BABY) ──
+    left_text = "BADNAM BABY"
+    f_left = _font(FONT_BOLD, 42)
+
+    LX = CARD_L + 20
+    LY = CARD_T - 60   # 👈 upar slightly
+
+    # shadow
+    draw.text((LX+2, LY+2), left_text, font=f_left, fill=(0,0,0,150))
+    # main
+    draw.text((LX, LY), left_text, font=f_left, fill=(255,255,255,230))
+
+    # RIGHT TEXT
     RX = 612
     MAX_TW = 600
 
@@ -136,9 +143,6 @@ def _make_thumb(raw_path, title, channel, duration_text, views_text, cache_path)
     return cache_path
 
 
-# ══════════════════════════════════════════════════════════════
-# PUBLIC API
-# ══════════════════════════════════════════════════════════════
 async def get_thumb(videoid: str, user_id=None):
 
     cache_path = os.path.join(CACHE_DIR, f"{videoid}.png")
