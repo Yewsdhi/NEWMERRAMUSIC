@@ -102,7 +102,7 @@ def stream_markup(_, chat_id):
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}", style=ButtonStyle.DANGER),
          ],
         [
-             InlineKeyboardButton(text="⪢ - 𝟤𝟢 s", callback_data="seek_backward_20", style=ButtonStyle.PRIMARY),
+             InlineKeyboardButton(text="⋟ - 𝟤𝟢 s", callback_data="seek_backward_20", style=ButtonStyle.PRIMARY),
              InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", url=f"https://t.me/III_Yadav_op_III?text=𝖧ᴇʏ%20ʙᴀʙʏ%20%20😄%20ɪ%20ᴡᴀɴᴛ%20ᴘᴀɪᴅ%20ᴘʀᴏᴍᴏᴛɪᴏɴ,%20ɢɪᴠᴇ%20ᴍᴇ%20ᴘʀɪᴄᴇ%20ʟɪsᴛ%20😙", style=ButtonStyle.SUCCESS),
              InlineKeyboardButton(text="𝟤𝟢 s+ ⋟", callback_data="seek_forward_20", style=ButtonStyle.PRIMARY)
          ],
