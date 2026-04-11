@@ -113,7 +113,7 @@ def _make_thumb(raw_path, title, channel, duration, views, cache_path):
     draw.text((RX, 380), f"Views: {views}",
               font=f_sub, fill=(180, 180, 180))
 
-    # 🟢 GREEN PROGRESS BAR
+    # 🟢 RED PROGRESS BAR
     BAR_Y = 480
     draw.rectangle([RX, BAR_Y, RX + 600, BAR_Y + 6], fill=(80, 80, 80))
     draw.rectangle([RX, BAR_Y, RX + 300, BAR_Y + 6], fill=(0, 255, 150))  # GREEN
@@ -122,8 +122,8 @@ def _make_thumb(raw_path, title, channel, duration, views, cache_path):
     draw.text((RX, 500), "01:20", font=f_time, fill=(180, 180, 180))
     draw.text((RX + 500, 500), duration, font=f_time, fill=(180, 180, 180))
 
-    # 🟢 BRANDING (GREEN)
-    brand = "Powered by Kirti Bots"
+    # 🟢 BRANDING (YELLOW)
+    brand = "GITHUB BY KIRTI_BOTS"
     f_brand = _font(FONT_NORMAL, 28)
 
     try:
