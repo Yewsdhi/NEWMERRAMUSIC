@@ -206,7 +206,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         )
 
         async def delete_welcome():
-            await asyncio.sleep(300)
+            await asyncio.sleep(10)
             try:
                 await msg.delete()
                 if f"welcome-{chat_id}" in temp.MELCOW:
