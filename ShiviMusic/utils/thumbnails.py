@@ -1,196 +1,136 @@
-import os
-import re
-import aiohttp
-import aiofiles
-from PIL import Image, ImageDraw, ImageFont, ImageFilter
-
+import os, aiofiles, aiohttp
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
+from ShiviMusic import app
 
-# ══════════════════════════════════════════════════════════════
-# CONFIG
-# ══════════════════════════════════════════════════════════════
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-W, H = 1280, 720
+def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_width: int) -> str:
+    ellipsis = "..."
+    if font.getlength(text) <= max_width:
+        return text
+    for i in range(len(text), 0, -1):
+        new = text[:i] + ellipsis
+        if font.getlength(new) <= max_width:
+            return new
+    return ellipsis
 
-FONT_BOLD   = "ShiviMusic/assets/font2.ttf"
-FONT_NORMAL = "ShiviMusic/assets/font.ttf"
+async def get_thumb(videoid: str, player_username: str = None) -> str:
+    if player_username is None:
+        player_username = app.username
 
-# ══════════════════════════════════════════════════════════════
-# HELPERS
-# ══════════════════════════════════════════════════════════════
-def _font(path, size):
-    try:
-        return ImageFont.truetype(path, size)
-    except:
-        return ImageFont.load_default()
-
-
-def _trim(draw, text, font, max_w):
-    if not text:
-        return "Unknown"
-    try:
-        if draw.textlength(text, font=font) <= max_w:
-            return text
-        while len(text) > 1 and draw.textlength(text + "...", font=font) > max_w:
-            text = text[:-1]
-        return text + "..."
-    except:
-        return text[:28] + "..."
-
-
-def _clean_views(raw):
-    if not raw:
-        return "N/A"
-    cleaned = re.sub(r"\s*views?\s*", "", raw, flags=re.IGNORECASE)
-    return f"{cleaned} views"
-
-
-# ══════════════════════════════════════════════════════════════
-# THUMB MAKER
-# ══════════════════════════════════════════════════════════════
-def _make_thumb(raw_path, title, channel, duration, views, cache_path):
-
-    try:
-        art_orig = Image.open(raw_path).convert("RGB")
-    except:
-        art_orig = Image.new("RGB", (400, 400), (30, 20, 15))
-
-    # Background
-    bg = art_orig.resize((W, H), Image.LANCZOS).filter(ImageFilter.GaussianBlur(50))
-    dark = Image.new("RGB", (W, H), (8, 5, 3))
-    bg = Image.blend(bg, dark, 0.72).convert("RGBA")
-
-    # Card
-    CARD_L, CARD_T = 112, 135
-    CARD_W, CARD_H = 400, 450
-
-    art = art_orig.resize((CARD_W, CARD_H), Image.LANCZOS).convert("RGBA")
-
-    mask = Image.new("L", (CARD_W, CARD_H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, CARD_W, CARD_H], 22, fill=255)
-    art.putalpha(mask)
-
-    bg.paste(art, (CARD_L, CARD_T), art)
-
-    # 🟡 YELLOW BORDER
-    BORDER = 6
-    border = Image.new("RGBA", (W, H), (0, 0, 0, 0))
-    bdraw = ImageDraw.Draw(border)
-
-    bdraw.rounded_rectangle(
-        [
-            CARD_L - BORDER,
-            CARD_T - BORDER,
-            CARD_L + CARD_W + BORDER,
-            CARD_T + CARD_H + BORDER
-        ],
-        radius=22 + BORDER,
-        outline=(255, 215, 0, 255),  # GOLD YELLOW
-        width=BORDER
-    )
-
-    bg.alpha_composite(border)
-
-    draw = ImageDraw.Draw(bg)
-
-    RX = 612
-    MAX_TW = 600
-
-    f_title = _font(FONT_BOLD, 60)
-    f_sub   = _font(FONT_NORMAL, 37)
-    f_time  = _font(FONT_BOLD, 31)
-
-    # Text
-    draw.text((RX, 240), _trim(draw, title, f_title, MAX_TW),
-              font=f_title, fill=(255, 255, 255))
-
-    draw.text((RX, 330), f"Artist: {channel}",
-              font=f_sub, fill=(180, 180, 180))
-
-    draw.text((RX, 380), f"Views: {views}",
-              font=f_sub, fill=(180, 180, 180))
-
-    # 🟢 RED PROGRESS BAR
-    BAR_Y = 480
-    draw.rectangle([RX, BAR_Y, RX + 600, BAR_Y + 6], fill=(80, 80, 80))
-    draw.rectangle([RX, BAR_Y, RX + 300, BAR_Y + 6], fill=(0, 255, 150))  # GREEN
-
-    # Time
-    draw.text((RX, 500), "01:20", font=f_time, fill=(180, 180, 180))
-    draw.text((RX + 500, 500), duration, font=f_time, fill=(180, 180, 180))
-
-    # 🟢 BRANDING (YELLOW)
-    brand = "GITHUB BY KIRTI_BOTS"
-    f_brand = _font(FONT_NORMAL, 28)
-
-    try:
-        tw = int(draw.textlength(brand, font=f_brand))
-    except:
-        tw = 200
-
-    x = W - tw - 20
-    y = H - 50
-
-    # Shadow
-    draw.text((x + 2, y + 2), brand, font=f_brand, fill=(0, 0, 0, 180))
-
-    # Main text (GREEN)
-    draw.text((x, y), brand, font=f_brand, fill=(0, 255, 150, 255))
-
-    bg.convert("RGB").save(cache_path, "PNG")
-    return cache_path
-
-
-# ══════════════════════════════════════════════════════════════
-# MAIN FUNCTION
-# ══════════════════════════════════════════════════════════════
-async def get_thumb(videoid: str):
-
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}.png")
-
+    cache_path = os.path.join(CACHE_DIR, f"{videoid}_shashank.png")
     if os.path.exists(cache_path):
         return cache_path
 
     try:
         results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search = await results.next()
-        data = search["result"][0]
+        search_result = await results.next()
+        data = search_result.get("result", [])[0]
 
-        title = data.get("title", "Unknown")
-        thumb = data["thumbnails"][-1]["url"]
-        duration = data.get("duration", "0:00")
-        channel = data["channel"]["name"]
-        views = _clean_views(data.get("viewCount", {}).get("short", "N/A"))
+        title = data.get("title", "Unknown Title")
+        artist = data.get("channel", {}).get("name", "Unknown Artist")
+        duration = data.get("duration", "00:00")
+        views = data.get("viewCount", {}).get("short", "0 views")
+        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
+    except Exception:
+        title = "Unknown Title"
+        artist = "Unknown Artist"
+        duration = "05:00"
+        views = "1M views"
+        thumbnail = YOUTUBE_IMG_URL
 
+    thumb_path = os.path.join(CACHE_DIR, f"raw_{videoid}.jpg")
+    try:
+        async with aiohttp.ClientSession() as s:
+            async with s.get(thumbnail) as r:
+                if r.status == 200:
+                    async with aiofiles.open(thumb_path, "wb") as f:
+                        await f.write(await r.read())
     except:
         return YOUTUBE_IMG_URL
 
-    raw_path = os.path.join(CACHE_DIR, f"raw_{videoid}.jpg")
+    W, H = 1280, 720
+    img = Image.open(thumb_path).convert("RGBA")
+    bg = img.resize((W, H))
+    bg = bg.filter(ImageFilter.GaussianBlur(radius=40))
+    enhancer = ImageEnhance.Brightness(bg)
+    bg = enhancer.enhance(0.4) # Darken background
+
+    draw = ImageDraw.Draw(bg)
 
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(thumb) as resp:
-                if resp.status != 200:
-                    return YOUTUBE_IMG_URL
-
-                async with aiofiles.open(raw_path, "wb") as f:
-                    await f.write(await resp.read())
-
+        font_bold = "ShiviMusic/assets/font2.ttf"
+        font_med = "ShiviMusic/assets/font.ttf"
+        title_font = ImageFont.truetype(font_bold, 60)
+        artist_font = ImageFont.truetype(font_med, 40)
+        time_font = ImageFont.truetype(font_med, 32)
     except:
-        return YOUTUBE_IMG_URL
+        title_font = artist_font = time_font = ImageFont.load_default()
 
-    try:
-        result = _make_thumb(raw_path, title, channel, duration, views, cache_path)
-    except:
-        result = YOUTUBE_IMG_URL
+    frame_w, frame_h = 450, 450
+    frame_x, frame_y = 100, (H - frame_h) // 2 
 
+    album = img.resize((frame_w, frame_h), Image.LANCZOS)
+    
+    mask = Image.new("L", (frame_w, frame_h), 0)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, frame_w, frame_h), radius=40, fill=255)
+    
+    glow = Image.new("RGBA", (frame_w + 40, frame_h + 40), (0, 0, 0, 0))
+    ImageDraw.Draw(glow).rounded_rectangle((20, 20, frame_w + 20, frame_h + 20), radius=40, fill=(0, 0, 0, 150))
+    glow = glow.filter(ImageFilter.GaussianBlur(radius=15))
+    bg.paste(glow, (frame_x - 20, frame_y - 20), glow)
+
+    bg.paste(album, (frame_x, frame_y), mask)
+
+    draw.rounded_rectangle(
+        (frame_x, frame_y, frame_x + frame_w, frame_y + frame_h), 
+        radius=40, 
+        outline=(255, 255, 255, 80), 
+        width=6
+    )
+
+    text_x = 620
+    glass_rect = [text_x - 40, frame_y, W - 60, frame_y + frame_h]
+    overlay = Image.new('RGBA', (W, H), (0,0,0,0))
+    d_overlay = ImageDraw.Draw(overlay)
+    d_overlay.rounded_rectangle(glass_rect, radius=30, fill=(255, 255, 255, 25)) # Very faint white
+    bg.alpha_composite(overlay)
+
+    clean_title = trim_to_width(title, title_font, 600)
+    draw.text((text_x, frame_y + 40), clean_title, font=title_font, fill=(255, 255, 255, 255))
+    
+    clean_artist = trim_to_width(f"By {artist}", artist_font, 550)
+    draw.text((text_x, frame_y + 120), clean_artist, font=artist_font, fill=(200, 200, 200, 230))
+
+    draw.text((text_x, frame_y + 190), f"Views: {views}", font=time_font, fill=(180, 180, 180, 200))
+
+    bar_width = 500
+    bar_height = 8
+    bar_x_pos = text_x
+    bar_y_pos = frame_y + 320
+
+    draw.rounded_rectangle((bar_x_pos, bar_y_pos, bar_x_pos + bar_width, bar_y_pos + bar_height), radius=4, fill=(255, 255, 255, 50))
+    
+    progress = 0.4
+    draw.rounded_rectangle((bar_x_pos, bar_y_pos, bar_x_pos + (bar_width * progress), bar_y_pos + bar_height), radius=4, fill=(0, 200, 255, 255))
+    
+    circle_r = 10
+    draw.ellipse((bar_x_pos + (bar_width * progress) - circle_r, bar_y_pos + (bar_height/2) - circle_r, 
+                  bar_x_pos + (bar_width * progress) + circle_r, bar_y_pos + (bar_height/2) + circle_r), 
+                  fill=(255, 255, 255, 255))
+
+    draw.text((bar_x_pos, bar_y_pos + 25), "00:25", font=time_font, fill=(255, 255, 255, 200))
+    draw.text((bar_x_pos + bar_width - 80, bar_y_pos + 25), duration, font=time_font, fill=(255, 255, 255, 200))
+
+    bg = bg.convert("RGB")
+    bg.save(cache_path, quality=95)
+    
     try:
-        if os.path.exists(raw_path):
-            os.remove(raw_path)
+        os.remove(thumb_path)
     except:
         pass
 
-    return result
+    return cache_path
