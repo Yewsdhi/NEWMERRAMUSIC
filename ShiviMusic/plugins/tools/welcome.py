@@ -184,29 +184,37 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             chat_id,
             photo=welcomeimg,
             caption=f"""
-**⏤͟͟͞͞★ ʜᴇʟʟᴏ ᴅᴇᴀʀ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ : {member.chat.title}**
+**❅────✦ ᴡᴇʟᴄᴏᴍᴇ ✦────❅**
 
-<u>**❖ ᴜsᴇʀ sʜᴏʀᴛ ɪɴғᴏ**</u>
+▰▰▰▰▰▰▰▰▰▰▰▰▰
+**➻ ɢᴄ ɴᴀᴍᴇ »** {member.chat.title}
+▰▰▰▰▰▰▰▰▰▰▰▰▰
 
 **➻ ɴᴀᴍᴇ »** {user.mention}
-**➻ ᴄʜᴀᴛ_ɪᴅ »** `{user.id}`
+**➻ ɪᴅ »** `{user.id}`
 **➻ ᴜ_ɴᴀᴍᴇ »** @{user.username}
+**➻ ᴘʀᴇᴍɪᴜᴍ »** {'ʏᴇꜱ ✨' if user.is_premium else 'ɴᴏ'}
+**➻ ꜱᴄᴀᴍ »** {'ʏᴇꜱ ⚠️' if user.is_scam else 'ɴᴏ'}
+**➻ ᴛᴏᴛᴀʟ ᴍᴇᴍʙᴇʀꜱ »** `{count}`
+**➻ ᴘʀᴇᴍɪᴜᴍ ᴜꜱᴇʀꜱ »** `{premium_count}`
+**➻ ᴢᴏᴍʙɪᴇ ᴜꜱᴇʀꜱ »** `{deleted_count}`
 
+▰▰▰▰▰▰▰▰▰▰▰▰▰
 **➻ ᴛʜᴀɴᴋs ғᴏʀ ᴊᴏɪɴɪɴɢ ᴜs ⚡️~!
 ❅─────✧❅✦❅✧─────❅**
 """,
             reply_markup=InlineKeyboardMarkup([
+                [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ", url=f"https://t.me/{app.username}?startgroup=true")],
                 [
-                    InlineKeyboardButton(
-                        "ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ",
-                        url=f"https://t.me/{app.username}?startgroup=true"
-                    )
+                    InlineKeyboardButton("ᴠɪᴇᴡ ᴜꜱᴇʀ", url=f"tg://openmessage?user_id={user.id}"),
+                    InlineKeyboardButton("ꜱᴜᴘᴘᴏʀᴛ", url="https://t.me/Kirti_update")
                 ]
             ])
         )
 
+        
         async def delete_welcome():
-            await asyncio.sleep(10)
+            await asyncio.sleep(30)  
             try:
                 await msg.delete()
                 if f"welcome-{chat_id}" in temp.MELCOW:
@@ -215,7 +223,8 @@ async def greet_new_member(_, member: ChatMemberUpdated):
                 pass
 
         asyncio.create_task(delete_welcome())
-        temp.MELCOW[f"welcome-{chat_id}"] = msg  
+        
+        temp.MELCOW[f"welcome-{chat_id}"] = msg
 
 
 # ======================================================
