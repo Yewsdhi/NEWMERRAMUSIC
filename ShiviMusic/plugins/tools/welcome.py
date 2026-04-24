@@ -105,9 +105,7 @@ async def welcome_cmd(_, message: Message):
     state = await get_welcome(chat_id)   
     status = "ᴇɴᴀʙʟᴇᴅ" if state else "ᴅɪꜱᴀʙʟᴇᴅ"
 
-    btn = InlineKeyboardMarkup([
-        [
-            InlineKeyboardButton("ᴇɴᴀʙʟᴇ", callback_data=f"wlc_on_{chat_id}"),
+   InlineKeyboardButton("ᴇɴᴀʙʟᴇ", callback_data=f"wlc_on_{chat_id}"),
             InlineKeyboardButton("ᴅɪꜱᴀʙʟᴇ", callback_data=f"wlc_off_{chat_id}")
         ]
     ])
@@ -143,11 +141,11 @@ async def welcome_toggle(_, query):
 
     await query.answer()
 
-
 @app.on_chat_member_updated(filters.group, group=-3)
 async def greet_new_member(_, member: ChatMemberUpdated):
 
     chat_id = member.chat.id
+
     is_enabled = await get_welcome(chat_id)
     if not is_enabled:
         return
@@ -157,6 +155,16 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         return
 
     if member.new_chat_member and not member.old_chat_member and member.new_chat_member.status != "kicked":
+
+        count = await app.get_chat_members_count(chat_id)
+        premium_count = 0
+        deleted_count = 0
+        
+        async for member_user in app.get_chat_members(chat_id):
+            if member_user.user.is_premium:
+                premium_count += 1
+            if member_user.user.is_deleted:
+                deleted_count += 1
 
         try:
             pic = await app.download_media(
@@ -172,13 +180,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             except:
                 pass
 
-        welcomeimg = welcomepic(
-            pic,
-            user.first_name,
-            member.chat.title,
-            user.id,
-            user.username
-        )
+        welcomeimg = welcomepic(pic, user.first_name, member.chat.title, user.id, user.username)
 
         msg = await app.send_photo(
             chat_id,
@@ -207,7 +209,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
                 [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ", url=f"https://t.me/{app.username}?startgroup=true")],
                 [
                     InlineKeyboardButton("ᴠɪᴇᴡ ᴜꜱᴇʀ", url=f"tg://openmessage?user_id={user.id}"),
-                    InlineKeyboardButton("ꜱᴜᴘᴘᴏʀᴛ", url="https://t.me/Kirti_update")
+                    InlineKeyboardButton("ꜱᴜᴘᴘᴏʀᴛ", url="https://t.me/kuruvisupport")
                 ]
             ])
         )
