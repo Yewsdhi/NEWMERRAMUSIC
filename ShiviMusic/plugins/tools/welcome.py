@@ -105,7 +105,9 @@ async def welcome_cmd(_, message: Message):
     state = await get_welcome(chat_id)   
     status = "ᴇɴᴀʙʟᴇᴅ" if state else "ᴅɪꜱᴀʙʟᴇᴅ"
 
-   InlineKeyboardButton("ᴇɴᴀʙʟᴇ", callback_data=f"wlc_on_{chat_id}"),
+    btn = InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton("ᴇɴᴀʙʟᴇ", callback_data=f"wlc_on_{chat_id}"),
             InlineKeyboardButton("ᴅɪꜱᴀʙʟᴇ", callback_data=f"wlc_off_{chat_id}")
         ]
     ])
@@ -141,11 +143,11 @@ async def welcome_toggle(_, query):
 
     await query.answer()
 
+
 @app.on_chat_member_updated(filters.group, group=-3)
 async def greet_new_member(_, member: ChatMemberUpdated):
 
     chat_id = member.chat.id
-
     is_enabled = await get_welcome(chat_id)
     if not is_enabled:
         return
@@ -155,16 +157,6 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         return
 
     if member.new_chat_member and not member.old_chat_member and member.new_chat_member.status != "kicked":
-
-        count = await app.get_chat_members_count(chat_id)
-        premium_count = 0
-        deleted_count = 0
-        
-        async for member_user in app.get_chat_members(chat_id):
-            if member_user.user.is_premium:
-                premium_count += 1
-            if member_user.user.is_deleted:
-                deleted_count += 1
 
         try:
             pic = await app.download_media(
@@ -180,43 +172,41 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             except:
                 pass
 
-        welcomeimg = welcomepic(pic, user.first_name, member.chat.title, user.id, user.username)
+        welcomeimg = welcomepic(
+            pic,
+            user.first_name,
+            member.chat.title,
+            user.id,
+            user.username
+        )
 
         msg = await app.send_photo(
             chat_id,
             photo=welcomeimg,
             caption=f"""
-**❅────✦ ᴡᴇʟᴄᴏᴍᴇ ✦────❅**
+**⏤͟͟͞͞★ ʜᴇʟʟᴏ ᴅᴇᴀʀ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ : {member.chat.title}**
 
-▰▰▰▰▰▰▰▰▰▰▰▰▰
-**➻ ɢᴄ ɴᴀᴍᴇ »** {member.chat.title}
-▰▰▰▰▰▰▰▰▰▰▰▰▰
+<u>**❖ ᴜsᴇʀ sʜᴏʀᴛ ɪɴғᴏ**</u>
 
 **➻ ɴᴀᴍᴇ »** {user.mention}
-**➻ ɪᴅ »** `{user.id}`
+**➻ ᴄʜᴀᴛ_ɪᴅ »** `{user.id}`
 **➻ ᴜ_ɴᴀᴍᴇ »** @{user.username}
-**➻ ᴘʀᴇᴍɪᴜᴍ »** {'ʏᴇꜱ ✨' if user.is_premium else 'ɴᴏ'}
-**➻ ꜱᴄᴀᴍ »** {'ʏᴇꜱ ⚠️' if user.is_scam else 'ɴᴏ'}
-**➻ ᴛᴏᴛᴀʟ ᴍᴇᴍʙᴇʀꜱ »** `{count}`
-**➻ ᴘʀᴇᴍɪᴜᴍ ᴜꜱᴇʀꜱ »** `{premium_count}`
-**➻ ᴢᴏᴍʙɪᴇ ᴜꜱᴇʀꜱ »** `{deleted_count}`
 
-▰▰▰▰▰▰▰▰▰▰▰▰▰
 **➻ ᴛʜᴀɴᴋs ғᴏʀ ᴊᴏɪɴɪɴɢ ᴜs ⚡️~!
 ❅─────✧❅✦❅✧─────❅**
 """,
             reply_markup=InlineKeyboardMarkup([
-                [InlineKeyboardButton("ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ", url=f"https://t.me/{app.username}?startgroup=true")],
                 [
-                    InlineKeyboardButton("ᴠɪᴇᴡ ᴜꜱᴇʀ", url=f"tg://openmessage?user_id={user.id}"),
-                    InlineKeyboardButton("ꜱᴜᴘᴘᴏʀᴛ", url="https://t.me/kuruvisupport")
+                    InlineKeyboardButton(
+                        "ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ",
+                        url=f"https://t.me/{app.username}?startgroup=true"
+                    )
                 ]
             ])
         )
 
-        
         async def delete_welcome():
-            await asyncio.sleep(30)  
+            await asyncio.sleep(10)
             try:
                 await msg.delete()
                 if f"welcome-{chat_id}" in temp.MELCOW:
@@ -225,8 +215,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
                 pass
 
         asyncio.create_task(delete_welcome())
-        
-        temp.MELCOW[f"welcome-{chat_id}"] = msg
+        temp.MELCOW[f"welcome-{chat_id}"] = msg  
 
 
 # ======================================================
