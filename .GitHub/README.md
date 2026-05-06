@@ -88,9 +88,9 @@
 
 <h1 align="center">─「 ©️ ʟɪᴄᴇɴsᴇ ɴᴏᴛᴇ 」─</h1>
 
-<p>©️ 2025-26 ᴀʟʟ ʀɪɢʜᴛs ʀᴇsᴇʀᴠᴇᴅ ʙʏ <strong>ᴘᴜʀᴠɪ ʙᴏᴛs (<a href="https://github.com/Im-NotCoder">Im-Notcoder</a>)</strong> 🚀</p>
+<p>©️ 2025-26 ᴀʟʟ ʀɪɢʜᴛs ʀᴇsᴇʀᴠᴇᴅ ʙʏ <strong>ᴘᴜʀᴠɪ ʙᴏᴛs (<a href="https://github.com/kirtibots">Im-Notcoder</a>)</strong> 🚀</p>
 
-<p>• ᴛʜɪs <a href="https://github.com/Im-NotCoder/Shivi-V2">sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ</a> ɪs ʀᴇʟᴇᴀsᴇᴅ ᴜɴᴅᴇʀ ᴛʜᴇ <strong><a href="https://github.com/Im-NotCoder/Shivi-V2/blob/main/LICENSE">MIT LICENSE</a></strong> 📜</p>
+<p>• ᴛʜɪs <a href="https://github.com/kirtibots">sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ</a> ɪs ʀᴇʟᴇᴀsᴇᴅ ᴜɴᴅᴇʀ ᴛʜᴇ <strong><a href="https://github.com/kirtibots/blob/main/LICENSE">MIT LICENSE</a></strong> 📜</p>
 
 <p>• ᴜɴᴀᴜᴛʜᴏʀɪᴢᴇᴅ ғᴏʀᴋɪɴɢ, ɪᴍᴘᴏʀᴛɪɴɢ, ᴏʀ ᴜsɪɴɢ ᴛʜɪs ᴄᴏᴅᴇ ᴡɪᴛʜᴏᴜᴛ ᴘʀᴏᴘᴇʀ ᴄʀᴇᴅɪᴛ ᴡɪʟʟ ʀᴇsᴜʟᴛ ɪɴ ʟᴇɢᴀʟ ᴀᴄᴛɪᴏɴ ⚠️.</p>
 
@@ -106,17 +106,17 @@
 
 <p align="center">  
   <!-- Dev -->  
-  <a href="https://t.me/TheSigmaCoder">  
-    <img src="https://img.shields.io/badge/ᴅᴇᴠ-ᴀʟᴘʜᴀ-ff9800?style=for-the-badge&logo=telegram&logoColor=white"/> 
+  <a href="https://t.me/lll_BADNAAM_lll">  
+    <img src="https://img.shields.io/badge/ᴅᴇᴠ-ʙᴀᴅɴᴀᴍ-ff9800?style=for-the-badge&logo=telegram&logoColor=white"/> 
   </a>  
 
-  <!-- Purvi Bots -->    
-  <a href="https://t.me/Purvi_Bots">  
-    <img src="https://img.shields.io/badge/ᴘᴜʀᴠ𝙸-%20ʙᴏᴛs-2196f3?style=for-the-badge&logo=telegram&logoColor=white"/> 
+  <!-- kirti Bots -->    
+  <a href="https://t.me/Kirti_update">  
+    <img src="https://img.shields.io/badge/ᴋɪʀᴛɪ-%20ʙᴏᴛs-2196f3?style=for-the-badge&logo=telegram&logoColor=white"/> 
   </a>  
 
   <!-- Instagram -->    
-  <a href="https://instagram.com/careless__02">  
+  <a href="https://instagram.com/badnam_king">  
     <img src="https://img.shields.io/badge/𝙸ɴѕᴛᴀɢʀᴀᴍ-d62976?style=for-the-badge&logo=instagram&logoColor=white"/>  
   </a>  
 </p>  
