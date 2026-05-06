@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="https://files.catbox.moe/971v6c.jpg">
+  <img src="https://files.catbox.moe/ospexm.jpg">
 </p>
 
 <p align="center">
