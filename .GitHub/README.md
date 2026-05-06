@@ -88,7 +88,7 @@
 
 <h1 align="center">─「 ©️ ʟɪᴄᴇɴsᴇ ɴᴏᴛᴇ 」─</h1>
 
-<p>©️ 2025-26 ᴀʟʟ ʀɪɢʜᴛs ʀᴇsᴇʀᴠᴇᴅ ʙʏ <strong>ᴘᴜʀᴠɪ ʙᴏᴛs (<a href="https://github.com/kirtibots">Im-Notcoder</a>)</strong> 🚀</p>
+<p>©️ 2025-26 ᴀʟʟ ʀɪɢʜᴛs ʀᴇsᴇʀᴠᴇᴅ ʙʏ <strong>ᴋɪʀᴛɪ ʙᴏᴛs (<a href="https://github.com/kirtibots">kirtibots</a>)</strong> 🚀</p>
 
 <p>• ᴛʜɪs <a href="https://github.com/kirtibots">sᴏᴜʀᴄᴇ ᴄᴏᴅᴇ</a> ɪs ʀᴇʟᴇᴀsᴇᴅ ᴜɴᴅᴇʀ ᴛʜᴇ <strong><a href="https://github.com/kirtibots/blob/main/LICENSE">MIT LICENSE</a></strong> 📜</p>
 
