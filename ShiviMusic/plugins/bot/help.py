@@ -26,8 +26,8 @@ from ShiviMusic.utils.stuffs.helper import Helper
 
 
 START_IMG = [
-    "https://files.catbox.moe/et1kky.jpg",
-    "https://files.catbox.moe/r6xs75.jpg",
+    "https://litter.catbox.moe/fyehrr.mp4",
+    "https://litter.catbox.moe/ach0wk.mp4",
     "https://files.catbox.moe/qropc3.jpg",
     "https://files.catbox.moe/v9hqvi.jpg",
 ]
