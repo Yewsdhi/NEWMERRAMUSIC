@@ -28,8 +28,8 @@ from ShiviMusic.utils.stuffs.helper import Helper
 START_IMG = [
     "https://litter.catbox.moe/fyehrr.mp4",
     "https://litter.catbox.moe/ach0wk.mp4",
-    "https://files.catbox.moe/qropc3.jpg",
-    "https://files.catbox.moe/v9hqvi.jpg",
+    "https://litter.catbox.moe/zcfu34.mp4",
+    "https://litter.catbox.moe/hq6tel.mp4",
 ]
 
 @app.on_message(filters.command(["help"]) & filters.private & ~BANNED_USERS)
