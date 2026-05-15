@@ -29,17 +29,6 @@ START_IMG = [
     "https://files.catbox.moe/et1kky.jpg",
     "https://files.catbox.moe/r6xs75.jpg",
     "https://files.catbox.moe/qropc3.jpg",
-    "https://files.catbox.moe/nlbahf.jpg",
-    "https://files.catbox.moe/njrl6e.jpg",
-    "https://files.catbox.moe/7p0po1.jpg",
-    "https://files.catbox.moe/9sxqlx.jpg",
-    "https://files.catbox.moe/xrme38.jpg",
-    "https://files.catbox.moe/1nz3wk.jpg",
-    "https://files.catbox.moe/ev9586.jpg",
-    "https://files.catbox.moe/hjfr1n.jpg",
-    "https://files.catbox.moe/68c2m9.jpg",
-    "https://files.catbox.moe/1ol7pj.jpg",
-    "https://files.catbox.moe/v9hqvi.jpg",
     "https://files.catbox.moe/v9hqvi.jpg",
 ]
 
@@ -69,7 +58,7 @@ async def helper_private(
         language = await get_lang(update.chat.id)
         _ = get_string(language)
         keyboard = help_pannel(_)
-        await update.reply_photo(
+        await update.reply_video(
             photo=START_IMG_URL,
             has_spoiler=True,
             caption=_["help_1"].format(SUPPORT_CHAT),
