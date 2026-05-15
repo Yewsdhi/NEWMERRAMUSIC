@@ -16,20 +16,20 @@ import config
 class BUTTONS(object):
     ABUTTON = [
     [
-        InlineKeyboardButton("• sυᴘᴘσʀᴛ •", url="https://t.me/kirti_supprot_group", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("• υᴘᴅᴧᴛєs •", url="https://t.me/Kirti_update", style=ButtonStyle.SUCCESS)
+        InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ", url="https://t.me/kirti_supprot_group", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/Kirti_update", style=ButtonStyle.SUCCESS)
     ],
     [
-        InlineKeyboardButton("• ❍ᴡηєʀ •", user_id=config.OWNER_ID, style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper", style=ButtonStyle.DANGER)
+        InlineKeyboardButton("ᴏᴡɴᴇʀ", user_id=config.OWNER_ID, style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("ʙᴧᴄᴋ", callback_data="settingsback_helper", style=ButtonStyle.DANGER)
     ]
 ]
 
     INFO_BUTTON = [
     [
-        InlineKeyboardButton("• ʀєᴘσ •", callback_data="gib_source", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 🎟️", callback_data="bot_info_data", style=ButtonStyle.SUCCESS),
-        InlineKeyboardButton("• ʟᴧηɢᴜᴧɢє •", callback_data="LG", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("ʀᴇᴘᴏ", callback_data="gib_source", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ ", callback_data="bot_info_data", style=ButtonStyle.SUCCESS),
+        InlineKeyboardButton("ʟᴧηɢᴜᴧɢє", callback_data="LG", style=ButtonStyle.PRIMARY),
     ],
     [
         
