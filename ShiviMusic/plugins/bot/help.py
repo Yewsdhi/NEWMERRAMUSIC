@@ -59,7 +59,7 @@ async def helper_private(
         _ = get_string(language)
         keyboard = help_pannel(_)
         await update.reply_video(
-            photo=START_IMG_URL,
+            video=START_IMG_URL,
             has_spoiler=True,
             caption=_["help_1"].format(SUPPORT_CHAT),
             reply_markup=keyboard,
