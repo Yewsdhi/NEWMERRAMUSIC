@@ -10,7 +10,7 @@ from PIL import (
     ImageFont
 )
 
-from youtubesearchpython.__future__ import VideosSearch
+from py_yt import VideosSearch
 
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
