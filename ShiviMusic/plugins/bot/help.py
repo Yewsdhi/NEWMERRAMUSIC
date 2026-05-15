@@ -116,13 +116,13 @@ async def helper_cb(client, CallbackQuery):
 
 @app.on_callback_query(filters.regex("back_cb") & ~BANNED_USERS)
 async def back_cb(client, CallbackQuery):
-    photo = random.choice(START_IMG)
+    video = random.choice(START_IMG)
     bot = await client.get_me()
     bot_mention = bot.mention
 
     await CallbackQuery.edit_message_media(
-        media=InputMediaPhoto(
-            media=photo,
+        media=InputMediaVideo(
+            media=video,
             caption=Helper.HELP_ABOUT.format(bot_mention)
         ),
         reply_markup=InlineKeyboardMarkup(BUTTONS.INFO_BUTTON)
