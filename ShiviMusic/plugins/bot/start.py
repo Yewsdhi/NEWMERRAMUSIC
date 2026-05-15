@@ -39,21 +39,10 @@ from strings import get_string
 
 
 NEXI_VID = [
-    "https://files.catbox.moe/k2iv3l.jpg",
-    "https://files.catbox.moe/7sdv0c.jpg",
-    "https://files.catbox.moe/hkenxc.jpg",
-    "https://files.catbox.moe/xi7bx8.jpg",
-    "https://files.catbox.moe/t55581.jpg",
-    "https://files.catbox.moe/n076at.jpg",
-    "https://files.catbox.moe/at7314.jpg",
-    "https://files.catbox.moe/womrjw.jpg",
-    "https://files.catbox.moe/qq7h4m.jpg",
-    "https://files.catbox.moe/6tt01m.jpg",
-    "https://files.catbox.moe/scvdfr.jpg",
-    "https://files.catbox.moe/yqmy5z.jpg",
-    "https://files.catbox.moe/ufzldl.jpg",
-    "https://files.catbox.moe/4qz2i0.jpg",
-    "https://files.catbox.moe/vu4tx7.jpg",
+    "https://litter.catbox.moe/fyehrr.mp4",
+    "https://litter.catbox.moe/ach0wk.mp4",
+    "https://litter.catbox.moe/zcfu34.mp4",
+    "https://litter.catbox.moe/hq6tel.mp4",
 ]
 
 
@@ -70,7 +59,7 @@ async def start_pm(client, message: Message, _):
         
         if name[0:4] == "help":
             keyboard = help_pannel(_)
-            return await message.reply_photo(
+            return await message.reply_video(
                 random.choice(NEXI_VID),
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
@@ -112,7 +101,7 @@ async def start_pm(client, message: Message, _):
                 ]
             )
             await m.delete()
-            await app.send_photo(
+            await app.send_video(
                 chat_id=message.chat.id,
                 photo=thumbnail,
                 caption=searched_text,
@@ -125,7 +114,7 @@ async def start_pm(client, message: Message, _):
                 )
     else:
         out = private_panel(_)
-        await message.reply_photo(
+        await message.reply_video(
             random.choice(NEXI_VID),
             has_spoiler=True,
             caption=_["start_2"].format(message.from_user.mention, app.mention),
@@ -143,7 +132,7 @@ async def start_pm(client, message: Message, _):
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
-    await message.reply_photo(
+    await message.reply_video(
         random.choice(NEXI_VID),
         has_spoiler=True,
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
@@ -179,7 +168,7 @@ async def welcome(client, message: Message):
                     return await app.leave_chat(message.chat.id)
 
                 out = start_panel(_)
-                await message.reply_photo(
+                await message.reply_video(
                     random.choice(NEXI_VID),
                     has_spoiler=True,
                     caption=_["start_3"].format(
