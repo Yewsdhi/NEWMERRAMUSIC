@@ -1,7 +1,4 @@
-import os
-import aiofiles
-import aiohttp
-
+import os, aiofiles, aiohttp
 from PIL import (
     Image,
     ImageDraw,
@@ -9,9 +6,7 @@ from PIL import (
     ImageFilter,
     ImageFont
 )
-
 from py_yt import VideosSearch
-
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
 
@@ -19,76 +14,91 @@ CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 
-def trim_to_width(text, font, max_width):
+def trim_to_width(text: str, font, max_width: int) -> str:
     ellipsis = "..."
 
     if font.getlength(text) <= max_width:
         return text
 
     for i in range(len(text), 0, -1):
-        new_text = text[:i] + ellipsis
+        new = text[:i] + ellipsis
 
-        if font.getlength(new_text) <= max_width:
-            return new_text
+        if font.getlength(new) <= max_width:
+            return new
 
     return ellipsis
 
 
-async def get_thumb(videoid: str, player_username: str = None):
+async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     if player_username is None:
         player_username = app.username
 
     cache_path = os.path.join(
         CACHE_DIR,
-        f"{videoid}_premium.png"
+        f"{videoid}_neon.png"
     )
 
     if os.path.exists(cache_path):
         return cache_path
 
-    # ================= DEFAULT VALUES ================= #
-
-    title = "Unknown Title"
-    artist = "Unknown Artist"
-    duration = "00:00"
-    views = "0 Views"
-    thumbnail = YOUTUBE_IMG_URL
-
-    # ================= FETCH YOUTUBE DATA ================= #
-
+    # =========================
+    # FETCH YOUTUBE DATA
+    # =========================
     try:
         results = VideosSearch(
             f"https://www.youtube.com/watch?v={videoid}",
             limit=1
         )
 
-        data = (await results.next())["result"][0]
+        search_result = await results.next()
 
-        title = data.get("title", title)
+        data = search_result.get("result", [])[0]
 
-        artist = (
-            data.get("channel", {})
-            .get("name", artist)
+        title = data.get(
+            "title",
+            "Unknown Title"
         )
 
-        duration = data.get("duration", duration)
-
-        views = (
-            data.get("viewCount", {})
-            .get("short", views)
+        artist = data.get(
+            "channel",
+            {}
+        ).get(
+            "name",
+            "Unknown Artist"
         )
 
-        thumbnail = (
-            data.get("thumbnails", [{}])[0]
-            .get("url", thumbnail)
+        duration = data.get(
+            "duration",
+            "00:00"
         )
 
-    except Exception as e:
-        print(f"YT SEARCH ERROR : {e}")
+        views = data.get(
+            "viewCount",
+            {}
+        ).get(
+            "short",
+            "0 views"
+        )
 
-    # ================= DOWNLOAD THUMBNAIL ================= #
+        thumbnail = data.get(
+            "thumbnails",
+            [{}]
+        )[0].get(
+            "url",
+            YOUTUBE_IMG_URL
+        )
 
+    except Exception:
+        title = "Unknown Title"
+        artist = "Unknown Artist"
+        duration = "03:00"
+        views = "1M views"
+        thumbnail = YOUTUBE_IMG_URL
+
+    # =========================
+    # DOWNLOAD THUMBNAIL
+    # =========================
     thumb_path = os.path.join(
         CACHE_DIR,
         f"{videoid}.jpg"
@@ -96,111 +106,132 @@ async def get_thumb(videoid: str, player_username: str = None):
 
     try:
         async with aiohttp.ClientSession() as session:
-            async with session.get(thumbnail) as response:
+            async with session.get(thumbnail) as resp:
 
-                if response.status != 200:
-                    return None
+                if resp.status == 200:
+                    async with aiofiles.open(
+                        thumb_path,
+                        "wb"
+                    ) as f:
+                        await f.write(await resp.read())
+                else:
+                    return YOUTUBE_IMG_URL
 
-                async with aiofiles.open(
-                    thumb_path,
-                    "wb"
-                ) as f:
-                    await f.write(await response.read())
+    except:
+        return YOUTUBE_IMG_URL
 
-    except Exception as e:
-        print(f"THUMB DOWNLOAD ERROR : {e}")
-        return None
-
-    # ================= OPEN IMAGE ================= #
-
-    try:
-        img = Image.open(thumb_path).convert("RGBA")
-
-    except Exception as e:
-        print(f"IMAGE OPEN ERROR : {e}")
-        return None
-
-    # ================= CANVAS ================= #
-
+    # =========================
+    # MAIN SIZE
+    # =========================
     W, H = 1280, 720
 
-    bg = img.resize((W, H))
+    try:
+        original = Image.open(
+            thumb_path
+        ).convert("RGBA")
+
+    except:
+        return YOUTUBE_IMG_URL
+
+    # =========================
+    # BACKGROUND
+    # =========================
+    bg = original.resize((W, H))
 
     bg = bg.filter(
-        ImageFilter.GaussianBlur(radius=45)
+        ImageFilter.GaussianBlur(35)
     )
 
-    bg = ImageEnhance.Brightness(bg).enhance(0.32)
+    enhancer = ImageEnhance.Brightness(bg)
+
+    bg = enhancer.enhance(0.30)
+
+    dark_layer = Image.new(
+        "RGBA",
+        (W, H),
+        (0, 0, 0, 120)
+    )
+
+    bg = Image.alpha_composite(
+        bg,
+        dark_layer
+    )
 
     draw = ImageDraw.Draw(bg)
 
-    # ================= FONTS ================= #
-
+    # =========================
+    # FONTS
+    # =========================
     try:
+        bold_font = "ShiviMusic/assets/font2.ttf"
+        regular_font = "ShiviMusic/assets/font.ttf"
+
         title_font = ImageFont.truetype(
-            "ShiviMusic/assets/font2.ttf",
-            58
+            bold_font,
+            60
         )
 
         artist_font = ImageFont.truetype(
-            "ShiviMusic/assets/font.ttf",
+            regular_font,
             38
         )
 
-        small_font = ImageFont.truetype(
-            "ShiviMusic/assets/font.ttf",
+        info_font = ImageFont.truetype(
+            regular_font,
             30
         )
 
-    except:
-        title_font = artist_font = small_font = (
-            ImageFont.load_default()
+        small_font = ImageFont.truetype(
+            regular_font,
+            24
         )
 
-    # ===================================================== #
-    #                PREMIUM MODERN ALBUM FRAME             #
-    # ===================================================== #
+    except:
+        title_font = artist_font = info_font = (
+            small_font
+        ) = ImageFont.load_default()
 
-    frame_w = 450
-    frame_h = 450
+    # =========================
+    # ALBUM COVER
+    # =========================
+    cover_size = 420
 
-    frame_x = 100
-    frame_y = (H - frame_h) // 2
+    cover_x = 90
+    cover_y = (H - cover_size) // 2
 
-    album = img.resize(
-        (frame_w, frame_h),
+    album = original.resize(
+        (cover_size, cover_size),
         Image.LANCZOS
     )
 
-    # ================= ROUNDED MASK ================= #
-
+    # Rounded Mask
     mask = Image.new(
         "L",
-        (frame_w, frame_h),
+        (cover_size, cover_size),
         0
     )
 
-    mask_draw = ImageDraw.Draw(mask)
-
-    mask_draw.rounded_rectangle(
-        (0, 0, frame_w, frame_h),
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0, 0, cover_size, cover_size),
         radius=45,
         fill=255
     )
 
-    # ================= SHADOW ================= #
-
+    # Shadow
     shadow = Image.new(
         "RGBA",
-        (frame_w + 100, frame_h + 100),
+        (cover_size + 80, cover_size + 80),
         (0, 0, 0, 0)
     )
 
-    shadow_draw = ImageDraw.Draw(shadow)
-
-    shadow_draw.rounded_rectangle(
-        (50, 50, frame_w + 50, frame_h + 50),
-        radius=55,
+    ImageDraw.Draw(shadow).rounded_rectangle(
+        (
+            40,
+            40,
+            cover_size + 40,
+            cover_size + 40
+        ),
+        radius=50,
         fill=(0, 0, 0, 180)
     )
 
@@ -210,85 +241,94 @@ async def get_thumb(videoid: str, player_username: str = None):
 
     bg.paste(
         shadow,
-        (frame_x - 50, frame_y - 50),
+        (cover_x - 40, cover_y - 40),
         shadow
     )
 
-    # ================= NEON BORDER ================= #
-
-    border = Image.new(
-        "RGBA",
-        (frame_w + 40, frame_h + 40),
-        (0, 0, 0, 0)
-    )
-
-    border_draw = ImageDraw.Draw(border)
-
-    # Outer Green Glow
-
-    border_draw.rounded_rectangle(
-        (8, 8, frame_w + 32, frame_h + 32),
-        radius=55,
-        outline=(120, 255, 0, 180),
-        width=14
-    )
-
-    # Yellow Main Border
-
-    border_draw.rounded_rectangle(
-        (16, 16, frame_w + 24, frame_h + 24),
-        radius=48,
-        outline=(255, 220, 0, 255),
-        width=6
-    )
-
-    border = border.filter(
-        ImageFilter.GaussianBlur(4)
-    )
-
-    bg.paste(
-        border,
-        (frame_x - 20, frame_y - 20),
-        border
-    )
-
-    # ================= MAIN IMAGE ================= #
-
+    # Paste Album
     bg.paste(
         album,
-        (frame_x, frame_y),
+        (cover_x, cover_y),
         mask
     )
 
-    # ================= GLOSS EFFECT ================= #
+    # =========================
+    # NEON BORDER
+    # =========================
+    neon_colors = [
+        (0, 255, 255, 180),   # Cyan
+        (255, 0, 255, 160),   # Pink
+        (0, 200, 255, 150),
+    ]
 
-    gloss = Image.new(
-        "RGBA",
-        (frame_w, frame_h),
-        (255, 255, 255, 0)
-    )
+    for i in range(28, 0, -4):
 
-    gloss_draw = ImageDraw.Draw(gloss)
+        glow_overlay = Image.new(
+            "RGBA",
+            (W, H),
+            (0, 0, 0, 0)
+        )
 
-    gloss_draw.rounded_rectangle(
-        (0, 0, frame_w, frame_h // 2),
+        glow_draw = ImageDraw.Draw(
+            glow_overlay
+        )
+
+        glow_draw.rounded_rectangle(
+            (
+                cover_x - i,
+                cover_y - i,
+                cover_x + cover_size + i,
+                cover_y + cover_size + i
+            ),
+            radius=55,
+            outline=neon_colors[
+                i % len(neon_colors)
+            ],
+            width=6
+        )
+
+        glow_overlay = glow_overlay.filter(
+            ImageFilter.GaussianBlur(12)
+        )
+
+        bg = Image.alpha_composite(
+            bg,
+            glow_overlay
+        )
+
+    # Main Border
+    draw.rounded_rectangle(
+        (
+            cover_x,
+            cover_y,
+            cover_x + cover_size,
+            cover_y + cover_size
+        ),
         radius=45,
-        fill=(255, 255, 255, 35)
+        outline=(0, 255, 255),
+        width=8
     )
 
-    gloss = gloss.filter(
-        ImageFilter.GaussianBlur(18)
+    # Inner Border
+    draw.rounded_rectangle(
+        (
+            cover_x + 8,
+            cover_y + 8,
+            cover_x + cover_size - 8,
+            cover_y + cover_size - 8
+        ),
+        radius=38,
+        outline=(255, 0, 255),
+        width=3
     )
 
-    bg.paste(
-        gloss,
-        (frame_x, frame_y),
-        gloss
-    )
-
-    # ================= GLASS PANEL ================= #
-
-    text_x = 620
+    # =========================
+    # GLASS PANEL
+    # =========================
+    panel_x = 580
+    panel_y = cover_y
+    panel_w = 620
+    panel_h = cover_size
 
     overlay = Image.new(
         "RGBA",
@@ -296,70 +336,105 @@ async def get_thumb(videoid: str, player_username: str = None):
         (0, 0, 0, 0)
     )
 
-    overlay_draw = ImageDraw.Draw(overlay)
+    o_draw = ImageDraw.Draw(overlay)
 
-    overlay_draw.rounded_rectangle(
+    o_draw.rounded_rectangle(
         (
-            text_x - 40,
-            frame_y,
-            W - 60,
-            frame_y + frame_h
+            panel_x,
+            panel_y,
+            panel_x + panel_w,
+            panel_y + panel_h
         ),
         radius=35,
-        fill=(255, 255, 255, 22)
+        fill=(255, 255, 255, 25)
     )
 
-    bg.alpha_composite(overlay)
+    bg = Image.alpha_composite(
+        bg,
+        overlay
+    )
 
-    # ================= TEXT ================= #
+    # Panel Border
+    draw.rounded_rectangle(
+        (
+            panel_x,
+            panel_y,
+            panel_x + panel_w,
+            panel_y + panel_h
+        ),
+        radius=35,
+        outline=(255, 255, 255, 40),
+        width=2
+    )
 
-    clean_title = trim_to_width(
+    # =========================
+    # TEXT
+    # =========================
+    title = trim_to_width(
         title,
         title_font,
-        560
+        540
     )
 
+    artist = trim_to_width(
+        artist,
+        artist_font,
+        500
+    )
+
+    # Neon Glow Text Effect
+    for offset in range(8, 0, -2):
+        draw.text(
+            (620-offset, cover_y + 45-offset),
+            title,
+            font=title_font,
+            fill=(0, 255, 255, 40)
+        )
+
     draw.text(
-        (text_x, frame_y + 40),
-        clean_title,
+        (620, cover_y + 45),
+        title,
         font=title_font,
         fill=(255, 255, 255)
     )
 
-    clean_artist = trim_to_width(
-        f"By {artist}",
-        artist_font,
-        520
-    )
-
     draw.text(
-        (text_x, frame_y + 130),
-        clean_artist,
+        (620, cover_y + 145),
+        f"Artist : {artist}",
         font=artist_font,
-        fill=(210, 210, 210)
+        fill=(220, 220, 220)
     )
 
     draw.text(
-        (text_x, frame_y + 200),
+        (620, cover_y + 210),
         f"Views : {views}",
-        font=small_font,
-        fill=(180, 180, 180)
+        font=info_font,
+        fill=(190, 190, 190)
     )
 
-    # ================= PLAYER BAR ================= #
+    draw.text(
+        (620, cover_y + 255),
+        f"Duration : {duration}",
+        font=info_font,
+        fill=(190, 190, 190)
+    )
 
-    bar_x = text_x
-    bar_y = frame_y + 320
+    # =========================
+    # MUSIC BAR
+    # =========================
+    bar_x = 620
+    bar_y = cover_y + 340
 
-    bar_width = 500
-    bar_height = 10
+    bar_w = 500
+    bar_h = 10
 
+    # Background Bar
     draw.rounded_rectangle(
         (
             bar_x,
             bar_y,
-            bar_x + bar_width,
-            bar_y + bar_height
+            bar_x + bar_w,
+            bar_y + bar_h
         ),
         radius=10,
         fill=(255, 255, 255, 60)
@@ -367,62 +442,103 @@ async def get_thumb(videoid: str, player_username: str = None):
 
     progress = 0.45
 
+    # Neon Progress
     draw.rounded_rectangle(
         (
             bar_x,
             bar_y,
-            bar_x + (bar_width * progress),
-            bar_y + bar_height
+            bar_x + int(bar_w * progress),
+            bar_y + bar_h
         ),
         radius=10,
-        fill=(120, 255, 0)
+        fill=(0, 255, 255)
     )
 
-    circle_x = bar_x + (bar_width * progress)
+    # Knob Glow
+    knob_x = bar_x + int(bar_w * progress)
+
+    for r in range(20, 5, -5):
+        draw.ellipse(
+            (
+                knob_x - r,
+                bar_y - r + 5,
+                knob_x + r,
+                bar_y + r + 5
+            ),
+            fill=(0, 255, 255, 20)
+        )
 
     draw.ellipse(
         (
-            circle_x - 12,
-            bar_y - 7,
-            circle_x + 12,
-            bar_y + 17
+            knob_x - 10,
+            bar_y - 5,
+            knob_x + 10,
+            bar_y + 15
         ),
         fill=(255, 255, 255)
     )
 
+    # Time Text
     draw.text(
-        (bar_x, bar_y + 30),
+        (bar_x, bar_y + 25),
         "00:25",
         font=small_font,
         fill=(255, 255, 255)
     )
 
     draw.text(
-        (bar_x + bar_width - 90, bar_y + 30),
+        (bar_x + bar_w - 70, bar_y + 25),
         duration,
         font=small_font,
         fill=(255, 255, 255)
     )
 
-    # ================= PLAYER USERNAME ================= #
+    # =========================
+    # TOP TEXT
+    # =========================
+    top_text = "NOW PLAYING"
 
-    draw.text(
-        (text_x, frame_y + 410),
-        f"@{player_username}",
-        font=small_font,
-        fill=(120, 255, 0)
+    top_w = draw.textlength(
+        top_text,
+        font=artist_font
     )
 
-    # ================= SAVE FINAL ================= #
+    draw.text(
+        ((W - top_w) / 2, 35),
+        top_text,
+        font=artist_font,
+        fill=(0, 255, 255)
+    )
 
-    bg = bg.convert("RGB")
+    # =========================
+    # FOOTER
+    # =========================
+    footer_text = f"Powered By @{player_username}"
 
-    bg.save(
+    footer_w = draw.textlength(
+        footer_text,
+        font=small_font
+    )
+
+    draw.text(
+        (
+            W - footer_w - 40,
+            H - 50
+        ),
+        footer_text,
+        font=small_font,
+        fill=(255, 0, 255)
+    )
+
+    # =========================
+    # SAVE FINAL
+    # =========================
+    final = bg.convert("RGB")
+
+    final.save(
         cache_path,
         quality=95
     )
-
-    # ================= CLEANUP ================= #
 
     try:
         os.remove(thumb_path)
