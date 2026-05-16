@@ -1,6 +1,6 @@
 import os
-import aiofiles
 import aiohttp
+import aiofiles
 
 from PIL import (
     Image,
@@ -18,7 +18,7 @@ CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 
-def trim_to_width(text: str, font, max_width: int) -> str:
+def trim_to_width(text: str, font, max_width: int):
     ellipsis = "..."
 
     if font.getlength(text) <= max_width:
@@ -33,20 +33,20 @@ def trim_to_width(text: str, font, max_width: int) -> str:
     return ellipsis
 
 
-async def get_thumb(videoid: str, player_username: str = None) -> str:
+async def get_thumb(videoid: str, player_username: str = None):
 
     if player_username is None:
         player_username = app.username
 
     cache_path = os.path.join(
         CACHE_DIR,
-        f"{videoid}_pink.png"
+        f"{videoid}_pink_player.png"
     )
 
     if os.path.exists(cache_path):
         return cache_path
 
-    # ================= FETCH VIDEO DATA ================= #
+    # ================= VIDEO INFO ================= #
 
     try:
         results = VideosSearch(
@@ -116,7 +116,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     except:
         return YOUTUBE_IMG_URL
 
-    # ================= CANVAS ================= #
+    # ================= MAIN SIZE ================= #
 
     WIDTH = 1280
     HEIGHT = 720
@@ -134,14 +134,14 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     dark = Image.new(
         "RGBA",
         (WIDTH, HEIGHT),
-        (0, 0, 0, 140)
+        (0, 0, 0, 155)
     )
 
     bg = Image.alpha_composite(bg, dark)
 
     enhancer = ImageEnhance.Brightness(bg)
 
-    bg = enhancer.enhance(0.65)
+    bg = enhancer.enhance(0.70)
 
     draw = ImageDraw.Draw(bg)
 
@@ -150,12 +150,12 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     try:
         title_font = ImageFont.truetype(
             "ShiviMusic/assets/font2.ttf",
-            62
+            60
         )
 
         artist_font = ImageFont.truetype(
             "ShiviMusic/assets/font.ttf",
-            38
+            36
         )
 
         small_font = ImageFont.truetype(
@@ -174,7 +174,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         small_font = ImageFont.load_default()
         logo_font = ImageFont.load_default()
 
-    # ================= ALBUM ART ================= #
+    # ================= ALBUM IMAGE ================= #
 
     album_size = 430
 
@@ -198,7 +198,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         fill=255
     )
 
-    # ================= PINK GLOW ================= #
+    # ================= PINK NEON GLOW ================= #
 
     glow = Image.new(
         "RGBA",
@@ -324,6 +324,15 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     bg = Image.alpha_composite(bg, overlay)
 
+    # ================= NOW PLAYING ================= #
+
+    draw.text(
+        (panel_x + 40, panel_y + 15),
+        "NOW PLAYING",
+        font=small_font,
+        fill=(255, 120, 220, 255)
+    )
+
     # ================= SONG TITLE ================= #
 
     clean_title = trim_to_width(
@@ -332,6 +341,15 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         520
     )
 
+    # SHADOW
+    draw.text(
+        (panel_x + 44, panel_y + 49),
+        clean_title,
+        font=title_font,
+        fill=(0, 0, 0, 180)
+    )
+
+    # MAIN TITLE
     draw.text(
         (panel_x + 40, panel_y + 45),
         clean_title,
@@ -385,7 +403,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     progress = 0.42
 
-    # PROGRESS BAR
+    # MAIN BAR
     draw.rounded_rectangle(
         (
             bar_x,
@@ -397,7 +415,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         fill=(255, 50, 180, 255)
     )
 
-    # SLIDER CIRCLE
+    # SLIDER
     slider_x = bar_x + int(bar_width * progress)
 
     draw.ellipse(
@@ -446,7 +464,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         quality=95
     )
 
-    # ================= REMOVE RAW ================= #
+    # ================= REMOVE TEMP ================= #
 
     try:
         os.remove(thumb_path)
