@@ -174,7 +174,7 @@ queue_7 : "\nᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ 
 queue_8 : "<b>{0} ᴘʟᴀʏᴇʀ</b>\n\n🎄 <b>sᴛʀᴇᴀᴍɪɴɢ :</b> {1}\n\n🔗 <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> {2}\n🥀 <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ :</b> {3}\n{4}"
 
 
-stream_1 : "<b><blockquote>✮ ɴᴏᴡ sᴛʀᴇᴀᴍɪɴɢ ᴏɴ ᴋɪʀᴛɪ ✮</blockquote>\n\n<blockquote>     {2} ━━━🔘───────── 10:00\n           ⇄  ◃◃   ▮▮   ▹▹  ↻</blockquote>\n\n<blockquote>✧ ᴛɪᴛʟᴇ » <a href='{0}'>{1}</a>\n✧ ᴅᴜʀᴀᴛɪᴏɴ » {2} Mɪɴᴜᴛᴇs\n✧ ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ » {3}\n✧ sᴇʀᴠᴇʀ sᴛᴀᴛᴜs » ᴘʀᴇᴍɪᴜᴍ ✨</blockquote>\n\n<blockquote>ᴍᴀɪɴᴛᴀɪɴᴇᴅ ʙʏ ➜ [˹ᴋɪʀᴛɪ ʙᴏᴛѕ˼](https://t.me/kirti_update</b></blockquote>"
+stream_1 : "<b><blockquote>✮ ɴᴏᴡ sᴛʀᴇᴧᴍɪɴɢ ᴏɴ ᴋɪʀᴛɪ ✮</blockquote>\n\n<blockquote>{2} ━━━⬤────── 10:00\n           ⇄  ◃◃   ▮▮   ▹▹  ↻</blockquote>\n\n<blockquote>✧ ᴛɪᴛʟᴇ » <a href='{0}'>{1}</a>\n✧ ᴅᴜʀᴀᴛɪᴏɴ » {2} ᴍɪɴᴜᴛᴇs\n✧ ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ » {3}\n✧ sᴇʀᴠᴇʀ sᴛᴀᴛᴜs » ᴘʀᴇᴍɪᴜᴍ ✨</blockquote>\n\n<blockquote>ᴍᴀᴅᴇ ʙʏ ➜ <a href=t.me/Kirti_update>˹ᴋɪʀᴛɪ ʙᴏᴛѕ˼</a></b></blockquote>"
 stream_2 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>❍ sᴛʀᴇᴧᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>✭ ʙʏ »</b> {0}</blockquote>"
 
 
