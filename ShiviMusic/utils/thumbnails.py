@@ -1,9 +1,22 @@
+# -----------------------------------------------
+# 🔸 ShashankMusic Project
+# 🔹 Developed & Maintained by: Shashank Shukla
+# 📅 Copyright © 2025 – All Rights Reserved
+# ❤️ White + Pink Premium Thumbnail System
+# -----------------------------------------------
+
 import os
-import re
-import random
 import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageEnhance,
+    ImageFilter,
+    ImageFont
+)
+
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
 from ShiviMusic import app
@@ -11,178 +24,438 @@ from ShiviMusic import app
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-PANEL_W, PANEL_H = 763, 545
-PANEL_X = (1280 - PANEL_W) // 2
-PANEL_Y = 88
-TRANSPARENCY = 170
-INNER_OFFSET = 36
 
-THUMB_W, THUMB_H = 542, 273
-THUMB_X = PANEL_X + (PANEL_W - THUMB_W) // 2
-THUMB_Y = PANEL_Y + INNER_OFFSET
+def trim_to_width(text: str, font, max_width: int) -> str:
+    ellipsis = "..."
 
-TITLE_X = 377
-META_X = 377
-TITLE_Y = THUMB_Y + THUMB_H + 10
-META_Y = TITLE_Y + 45
+    if font.getlength(text) <= max_width:
+        return text
 
-BAR_X, BAR_Y = 388, META_Y + 45
-BAR_RED_LEN = 280
-BAR_TOTAL_LEN = 480
+    for i in range(len(text), 0, -1):
+        new_text = text[:i] + ellipsis
 
-ICONS_W, ICONS_H = 415, 45
-ICONS_X = PANEL_X + (PANEL_W - ICONS_W) // 2
-ICONS_Y = BAR_Y + 48
+        if font.getlength(new_text) <= max_width:
+            return new_text
 
-MAX_TITLE_WIDTH = 580
-
-SHUKLA_COLOR = [
-    (188, 250, 152),   
-    (110, 180, 245),   
-    (242, 179, 240),   
-    (249, 255, 158),   
-    (164, 163, 240),
-    (135, 250, 244),
-    (255, 255, 255),
-]
-
-def trim_to_width(text: str, font: ImageFont.FreeTypeFont, max_w: int) -> str:
-    ellipsis = "…"
-    try:
-        if font.getlength(text) <= max_w:
-            return text
-        for i in range(len(text) - 1, 0, -1):
-            if font.getlength(text[:i] + ellipsis) <= max_w:
-                return text[:i] + ellipsis
-    except AttributeError:
-        return text[:max_w // 10] + "…" if len(text) > max_w // 10 else text
     return ellipsis
+
 
 async def get_thumb(videoid: str, player_username: str = None) -> str:
     if player_username is None:
         player_username = app.username
 
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_v4.png")
+    cache_path = os.path.join(
+        CACHE_DIR,
+        f"{videoid}_pink.png"
+    )
+
     if os.path.exists(cache_path):
         return cache_path
 
+    # ---------------------------------- #
+    # FETCH YOUTUBE DATA
+    # ---------------------------------- #
+
     try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        search_result = await results.next()
-        data = search_result.get("result", [])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Unsupported Title")).title()
-        thumbnail = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown Views")
+        results = VideosSearch(
+            f"https://www.youtube.com/watch?v={videoid}",
+            limit=1
+        )
+
+        search = await results.next()
+        data = search.get("result", [])[0]
+
+        title = data.get("title", "Unknown Title")
+
+        artist = data.get(
+            "channel",
+            {}
+        ).get(
+            "name",
+            "Unknown Artist"
+        )
+
+        duration = data.get(
+            "duration",
+            "00:00"
+        )
+
+        views = data.get(
+            "viewCount",
+            {}
+        ).get(
+            "short",
+            "0 views"
+        )
+
+        thumbnail = data.get(
+            "thumbnails",
+            [{}]
+        )[0].get(
+            "url",
+            YOUTUBE_IMG_URL
+        )
+
     except Exception:
-        title, thumbnail, duration, views = "Unsupported Title", YOUTUBE_IMG_URL, None, "Unknown Views"
+        title = "Unknown Title"
+        artist = "Unknown Artist"
+        duration = "00:00"
+        views = "0 views"
+        thumbnail = YOUTUBE_IMG_URL
 
-    is_live = not duration or str(duration).strip().lower() in {"", "live", "live now"}
-    duration_text = "Live" if is_live else duration or "Unknown Mins"
+    # ---------------------------------- #
+    # DOWNLOAD THUMBNAIL
+    # ---------------------------------- #
 
-    thumb_path = os.path.join(CACHE_DIR, f"thumb{videoid}.png")
+    thumb_path = os.path.join(
+        CACHE_DIR,
+        f"raw_{videoid}.jpg"
+    )
+
     try:
         async with aiohttp.ClientSession() as session:
             async with session.get(thumbnail) as resp:
+
                 if resp.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
+                    async with aiofiles.open(
+                        thumb_path,
+                        "wb"
+                    ) as f:
                         await f.write(await resp.read())
+
     except Exception:
         return YOUTUBE_IMG_URL
 
-    base = Image.open(thumb_path).resize((1280, 720)).convert("RGBA")
-    bg = ImageEnhance.Brightness(base.filter(ImageFilter.BoxBlur(10))).enhance(0.6)
+    # ---------------------------------- #
+    # IMAGE SETUP
+    # ---------------------------------- #
 
-    panel_area = bg.crop((PANEL_X, PANEL_Y, PANEL_X + PANEL_W, PANEL_Y + PANEL_H))
-    random_color = random.choice(SHUKLA_COLOR)
-    rgba_color = (*random_color, TRANSPARENCY)
-    overlay = Image.new("RGBA", (PANEL_W, PANEL_H), rgba_color)
-    frosted = Image.alpha_composite(panel_area, overlay)
-    mask = Image.new("L", (PANEL_W, PANEL_H), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, PANEL_W, PANEL_H), 50, fill=255)
-    bg.paste(frosted, (PANEL_X, PANEL_Y), mask)
+    W, H = 1280, 720
+
+    img = Image.open(thumb_path).convert("RGBA")
+
+    bg = img.resize((W, H))
+
+    bg = bg.filter(
+        ImageFilter.GaussianBlur(radius=35)
+    )
+
+    bg = ImageEnhance.Brightness(bg).enhance(0.9)
+
+    # White overlay
+    white_layer = Image.new(
+        "RGBA",
+        (W, H),
+        (255, 255, 255, 255)
+    )
+
+    bg = Image.blend(
+        bg,
+        white_layer,
+        0.55
+    )
+
+    bg = bg.filter(
+        ImageFilter.GaussianBlur(2)
+    )
 
     draw = ImageDraw.Draw(bg)
 
+    # ---------------------------------- #
+    # FONTS
+    # ---------------------------------- #
+
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/f.ttf", 32)
-        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 18)
-        shukla_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 26)
-    except OSError:
-        title_font = regular_font = shukla_font = ImageFont.load_default()
+        bold_font = "ShiviMusic/assets/font2.ttf"
+        medium_font = "ShiviMusic/assets/font.ttf"
 
-    BORDER_SIZE = 6
-    thumb_with_border = Image.new("RGBA", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), (255, 255, 255, 0))
+        title_font = ImageFont.truetype(
+            bold_font,
+            62
+        )
 
-    border_mask = Image.new("L", (THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 0)
-    ImageDraw.Draw(border_mask).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=255
+        artist_font = ImageFont.truetype(
+            medium_font,
+            38
+        )
+
+        small_font = ImageFont.truetype(
+            medium_font,
+            30
+        )
+
+        credit_font = ImageFont.truetype(
+            medium_font,
+            24
+        )
+
+    except Exception:
+        title_font = ImageFont.load_default()
+        artist_font = ImageFont.load_default()
+        small_font = ImageFont.load_default()
+        credit_font = ImageFont.load_default()
+
+    # ---------------------------------- #
+    # ALBUM FRAME
+    # ---------------------------------- #
+
+    frame_w = 460
+    frame_h = 460
+
+    frame_x = 90
+    frame_y = (H - frame_h) // 2
+
+    album = img.resize(
+        (frame_w, frame_h),
+        Image.LANCZOS
     )
-    ImageDraw.Draw(thumb_with_border).rounded_rectangle(
-        (0, 0, THUMB_W + 2 * BORDER_SIZE, THUMB_H + 2 * BORDER_SIZE), 25, fill=(255, 255, 255, 255)
+
+    mask = Image.new(
+        "L",
+        (frame_w, frame_h),
+        0
     )
 
-    thumb = base.resize((THUMB_W, THUMB_H)).convert("RGBA")
-    thumb_mask = Image.new("L", (THUMB_W, THUMB_H), 0)
-    ImageDraw.Draw(thumb_mask).rounded_rectangle((0, 0, THUMB_W, THUMB_H), 20, fill=255)
-    thumb_with_border.paste(thumb, (BORDER_SIZE, BORDER_SIZE), thumb_mask)
+    ImageDraw.Draw(mask).rounded_rectangle(
+        (0, 0, frame_w, frame_h),
+        radius=40,
+        fill=255
+    )
 
-    bg.paste(thumb_with_border, (THUMB_X - BORDER_SIZE, THUMB_Y - BORDER_SIZE), border_mask)
+    # ---------------------------------- #
+    # PINK GLOW
+    # ---------------------------------- #
 
-    draw.text((TITLE_X, TITLE_Y), trim_to_width(title, title_font, MAX_TITLE_WIDTH), fill="black", font=title_font)
+    glow = Image.new(
+        "RGBA",
+        (frame_w + 120, frame_h + 120),
+        (0, 0, 0, 0)
+    )
 
-    left_text = f"YouTube | {views}"
-    right_text = f"Player | @{player_username}"
-    left_w = regular_font.getlength(left_text)
-    right_w = regular_font.getlength(right_text)
-    gap = 30
-    total_width = left_w + gap + right_w
-    start_x = PANEL_X + (PANEL_W - total_width) // 2
+    glow_draw = ImageDraw.Draw(glow)
 
-    draw.text((start_x, META_Y), left_text, fill="red", font=regular_font)
-    draw.text((start_x + left_w + gap, META_Y), right_text, fill="red", font=regular_font)
+    glow_draw.rounded_rectangle(
+        (40, 40, frame_w + 80, frame_h + 80),
+        radius=55,
+        outline=(255, 20, 147, 255),
+        width=12
+    )
 
-    draw.line([(BAR_X, BAR_Y), (BAR_X + BAR_RED_LEN, BAR_Y)], fill="red", width=6)
-    draw.line([(BAR_X + BAR_RED_LEN, BAR_Y), (BAR_X + BAR_TOTAL_LEN, BAR_Y)], fill="gray", width=5)
-    draw.ellipse([(BAR_X + BAR_RED_LEN - 7, BAR_Y - 7), (BAR_X + BAR_RED_LEN + 7, BAR_Y + 7)], fill="red")
-    draw.text((BAR_X, BAR_Y + 15), "00:00", fill="black", font=regular_font)
-    draw.text((BAR_X + BAR_TOTAL_LEN - (90 if is_live else 60), BAR_Y + 15),
-              duration_text, fill="red" if is_live else "black", font=regular_font)
+    glow = glow.filter(
+        ImageFilter.GaussianBlur(22)
+    )
 
-    icons_path = "ShiviMusic/assets/play_icons.png"
-    if os.path.isfile(icons_path):
-        ic = Image.open(icons_path).resize((ICONS_W, ICONS_H)).convert("RGBA")
-        r, g, b, a = ic.split()
-        black_ic = Image.merge("RGBA", (r.point(lambda *_: 0), g.point(lambda *_: 0), b.point(lambda *_: 0), a))
-        bg.paste(black_ic, (ICONS_X, ICONS_Y), black_ic)
+    bg.paste(
+        glow,
+        (frame_x - 60, frame_y - 60),
+        glow
+    )
 
-    padding = 25
+    bg.paste(
+        album,
+        (frame_x, frame_y),
+        mask
+    )
 
-    
-    shashank_text = "IG :- Badnam_bots"
-    shashank_x = padding
-    shashank_y = padding
-    draw.text((shashank_x, shashank_y), shashank_text, fill=(255, 255, 0), font=shukla_font)
+    # White border
+    draw.rounded_rectangle(
+        (
+            frame_x,
+            frame_y,
+            frame_x + frame_w,
+            frame_y + frame_h
+        ),
+        radius=40,
+        outline=(255, 255, 255),
+        width=5
+    )
 
-    shukla_text = "DEV :- Kirti_bots"
-    shukla_w = shukla_font.getlength(shukla_text)
-    shukla_x = 1280 - shukla_w - padding
-    shukla_y = padding
-    draw.text((shukla_x, shukla_y), shukla_text, fill=(255, 255, 0), font=shukla_font)
+    # ---------------------------------- #
+    # GLASS PANEL
+    # ---------------------------------- #
 
+    panel_x = 610
+
+    glass = Image.new(
+        "RGBA",
+        (W, H),
+        (0, 0, 0, 0)
+    )
+
+    glass_draw = ImageDraw.Draw(glass)
+
+    glass_draw.rounded_rectangle(
+        (
+            panel_x - 40,
+            frame_y,
+            W - 70,
+            frame_y + frame_h
+        ),
+        radius=35,
+        fill=(255, 255, 255, 80)
+    )
+
+    bg = Image.alpha_composite(bg, glass)
+
+    # ---------------------------------- #
+    # TITLE
+    # ---------------------------------- #
+
+    clean_title = trim_to_width(
+        title,
+        title_font,
+        560
+    )
+
+    # Pink glow text
+    for i in range(8, 0, -2):
+        draw.text(
+            (panel_x, frame_y + 35),
+            clean_title,
+            font=title_font,
+            fill=(255, 105, 180, 60)
+        )
+
+    # Main title
+    draw.text(
+        (panel_x, frame_y + 35),
+        clean_title,
+        font=title_font,
+        fill=(255, 20, 147)
+    )
+
+    # ---------------------------------- #
+    # ARTIST
+    # ---------------------------------- #
+
+    clean_artist = trim_to_width(
+        f"By {artist}",
+        artist_font,
+        520
+    )
+
+    draw.text(
+        (panel_x, frame_y + 125),
+        clean_artist,
+        font=artist_font,
+        fill=(255, 105, 180)
+    )
+
+    # ---------------------------------- #
+    # VIEWS
+    # ---------------------------------- #
+
+    draw.text(
+        (panel_x, frame_y + 190),
+        f"Views : {views}",
+        font=small_font,
+        fill=(255, 105, 180)
+    )
+
+    # ---------------------------------- #
+    # PLAYER BAR
+    # ---------------------------------- #
+
+    bar_x = panel_x
+    bar_y = frame_y + 320
+
+    bar_w = 500
+    bar_h = 10
+
+    draw.rounded_rectangle(
+        (
+            bar_x,
+            bar_y,
+            bar_x + bar_w,
+            bar_y + bar_h
+        ),
+        radius=20,
+        fill=(255, 255, 255, 120)
+    )
+
+    progress = 0.45
+
+    draw.rounded_rectangle(
+        (
+            bar_x,
+            bar_y,
+            bar_x + int(bar_w * progress),
+            bar_y + bar_h
+        ),
+        radius=20,
+        fill=(255, 20, 147)
+    )
+
+    # Progress circle
+    cx = bar_x + int(bar_w * progress)
+
+    draw.ellipse(
+        (
+            cx - 12,
+            bar_y - 7,
+            cx + 12,
+            bar_y + 17
+        ),
+        fill=(255, 20, 147)
+    )
+
+    # ---------------------------------- #
+    # TIME TEXT
+    # ---------------------------------- #
+
+    draw.text(
+        (bar_x, bar_y + 28),
+        "00:25",
+        font=small_font,
+        fill=(255, 20, 147)
+    )
+
+    draw.text(
+        (bar_x + bar_w - 90, bar_y + 28),
+        duration,
+        font=small_font,
+        fill=(255, 20, 147)
+    )
+
+    # ---------------------------------- #
+    # FOOTER
+    # ---------------------------------- #
+
+    footer_text = f"Powered By @{player_username}"
+
+    tw = credit_font.getbbox(
+        footer_text
+    )[2]
+
+    draw.text(
+        (
+            W - tw - 40,
+            H - 50
+        ),
+        footer_text,
+        font=credit_font,
+        fill=(255, 105, 180)
+    )
+
+    # ---------------------------------- #
+    # SAVE IMAGE
+    # ---------------------------------- #
+
+    bg = bg.convert("RGB")
+
+    bg.save(
+        cache_path,
+        quality=95
+    )
+
+    # ---------------------------------- #
+    # CLEANUP
+    # ---------------------------------- #
 
     try:
         os.remove(thumb_path)
-    except OSError:
+
+    except Exception:
         pass
 
-    bg.save(cache_path)
     return cache_path
-
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Revange 😎
-
-# 🧑‍💻 Developer : t.me/dmcatelegram
-# 🔗 Source link : https://github.com/hexamusic/REVANGEMUSIC
-# 📢 Telegram channel : t.me/dmcatelegram
-# =======================================================
