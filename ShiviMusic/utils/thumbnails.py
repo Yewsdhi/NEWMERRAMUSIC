@@ -2,7 +2,7 @@
 # 🔸 ShashankMusic Project
 # 🔹 Developed & Maintained by: Shashank Shukla
 # 📅 Copyright © 2025 – All Rights Reserved
-# ❤️ White + Pink Premium Thumbnail System
+# 💖 White + Pink Premium Thumbnail System
 # -----------------------------------------------
 
 import os
@@ -122,6 +122,8 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
                         "wb"
                     ) as f:
                         await f.write(await resp.read())
+                else:
+                    return YOUTUBE_IMG_URL
 
     except Exception:
         return YOUTUBE_IMG_URL
@@ -184,16 +186,10 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             30
         )
 
-        credit_font = ImageFont.truetype(
-            medium_font,
-            24
-        )
-
     except Exception:
         title_font = ImageFont.load_default()
         artist_font = ImageFont.load_default()
         small_font = ImageFont.load_default()
-        credit_font = ImageFont.load_default()
 
     # ---------------------------------- #
     # ALBUM FRAME
@@ -228,26 +224,26 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     glow = Image.new(
         "RGBA",
-        (frame_w + 120, frame_h + 120),
+        (frame_w + 140, frame_h + 140),
         (0, 0, 0, 0)
     )
 
     glow_draw = ImageDraw.Draw(glow)
 
     glow_draw.rounded_rectangle(
-        (40, 40, frame_w + 80, frame_h + 80),
+        (50, 50, frame_w + 90, frame_h + 90),
         radius=55,
         outline=(255, 20, 147, 255),
-        width=12
+        width=14
     )
 
     glow = glow.filter(
-        ImageFilter.GaussianBlur(22)
+        ImageFilter.GaussianBlur(25)
     )
 
     bg.paste(
         glow,
-        (frame_x - 60, frame_y - 60),
+        (frame_x - 70, frame_y - 70),
         glow
     )
 
@@ -267,7 +263,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         ),
         radius=40,
         outline=(255, 255, 255),
-        width=5
+        width=6
     )
 
     # ---------------------------------- #
@@ -292,10 +288,12 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             frame_y + frame_h
         ),
         radius=35,
-        fill=(255, 255, 255, 80)
+        fill=(255, 255, 255, 85)
     )
 
     bg = Image.alpha_composite(bg, glass)
+
+    draw = ImageDraw.Draw(bg)
 
     # ---------------------------------- #
     # TITLE
@@ -308,15 +306,17 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     )
 
     # Pink glow text
-    for i in range(8, 0, -2):
+    for offset in range(8, 0, -2):
         draw.text(
-            (panel_x, frame_y + 35),
+            (
+                panel_x + offset,
+                frame_y + 35 + offset
+            ),
             clean_title,
             font=title_font,
-            fill=(255, 105, 180, 60)
+            fill=(255, 105, 180, 40)
         )
 
-    # Main title
     draw.text(
         (panel_x, frame_y + 35),
         clean_title,
@@ -360,7 +360,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     bar_y = frame_y + 320
 
     bar_w = 500
-    bar_h = 10
+    bar_h = 12
 
     draw.rounded_rectangle(
         (
@@ -391,10 +391,10 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     draw.ellipse(
         (
-            cx - 12,
-            bar_y - 7,
-            cx + 12,
-            bar_y + 17
+            cx - 13,
+            bar_y - 8,
+            cx + 13,
+            bar_y + 18
         ),
         fill=(255, 20, 147)
     )
@@ -415,26 +415,6 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         duration,
         font=small_font,
         fill=(255, 20, 147)
-    )
-
-    # ---------------------------------- #
-    # FOOTER
-    # ---------------------------------- #
-
-    footer_text = f"Powered By @{player_username}"
-
-    tw = credit_font.getbbox(
-        footer_text
-    )[2]
-
-    draw.text(
-        (
-            W - tw - 40,
-            H - 50
-        ),
-        footer_text,
-        font=credit_font,
-        fill=(255, 105, 180)
     )
 
     # ---------------------------------- #
