@@ -171,19 +171,20 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         bold_font = "ShiviMusic/assets/font2.ttf"
         medium_font = "ShiviMusic/assets/font.ttf"
 
+        # Smaller Fonts
         title_font = ImageFont.truetype(
             bold_font,
-            50
+            42
         )
 
         artist_font = ImageFont.truetype(
-            medium_font,
-            36
+            bold_font,
+            30
         )
 
         small_font = ImageFont.truetype(
             medium_font,
-            25
+            22
         )
 
     except Exception:
@@ -224,26 +225,26 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     glow = Image.new(
         "RGBA",
-        (frame_w + 140, frame_h + 140),
+        (frame_w + 160, frame_h + 160),
         (0, 0, 0, 0)
     )
 
     glow_draw = ImageDraw.Draw(glow)
 
     glow_draw.rounded_rectangle(
-        (50, 50, frame_w + 90, frame_h + 90),
-        radius=55,
+        (60, 60, frame_w + 100, frame_h + 100),
+        radius=60,
         outline=(255, 20, 147, 255),
-        width=14
+        width=18
     )
 
     glow = glow.filter(
-        ImageFilter.GaussianBlur(25)
+        ImageFilter.GaussianBlur(30)
     )
 
     bg.paste(
         glow,
-        (frame_x - 70, frame_y - 70),
+        (frame_x - 80, frame_y - 80),
         glow
     )
 
@@ -253,7 +254,10 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         mask
     )
 
-    # White border
+    # ---------------------------------- #
+    # PINK BORDER
+    # ---------------------------------- #
+
     draw.rounded_rectangle(
         (
             frame_x,
@@ -262,8 +266,8 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             frame_y + frame_h
         ),
         radius=40,
-        outline=(255, 255, 255),
-        width=6
+        outline=(255, 20, 147),
+        width=8
     )
 
     # ---------------------------------- #
@@ -288,7 +292,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             frame_y + frame_h
         ),
         radius=35,
-        fill=(255, 255, 255, 85)
+        fill=(255, 255, 255, 90)
     )
 
     bg = Image.alpha_composite(bg, glass)
@@ -305,8 +309,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         560
     )
 
-    # Pink glow text
-    for offset in range(8, 0, -2):
+    for offset in range(10, 0, -2):
         draw.text(
             (
                 panel_x + offset,
@@ -314,7 +317,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             ),
             clean_title,
             font=title_font,
-            fill=(225, 100, 170, 30)
+            fill=(255, 20, 147, 40)
         )
 
     draw.text(
@@ -335,7 +338,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     )
 
     draw.text(
-        (panel_x, frame_y + 125),
+        (panel_x, frame_y + 115),
         clean_artist,
         font=artist_font,
         fill=(255, 105, 180)
@@ -346,7 +349,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # ---------------------------------- #
 
     draw.text(
-        (panel_x, frame_y + 190),
+        (panel_x, frame_y + 170),
         f"Views : {views}",
         font=small_font,
         fill=(255, 105, 180)
@@ -357,7 +360,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # ---------------------------------- #
 
     bar_x = panel_x
-    bar_y = frame_y + 320
+    bar_y = frame_y + 300
 
     bar_w = 500
     bar_h = 12
@@ -413,6 +416,60 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw.text(
         (bar_x + bar_w - 90, bar_y + 28),
         duration,
+        font=small_font,
+        fill=(255, 20, 147)
+    )
+
+    # ---------------------------------- #
+    # PREMIUM PLAY BUTTONS
+    # ---------------------------------- #
+
+    controls_y = frame_y + 380
+
+    buttons = ["⏮", "⏸", "▶", "⏭"]
+
+    spacing = 90
+
+    for i, btn in enumerate(buttons):
+
+        bx = panel_x + (i * spacing)
+
+        # Glow
+        draw.ellipse(
+            (
+                bx - 8,
+                controls_y - 8,
+                bx + 58,
+                controls_y + 58
+            ),
+            fill=(255, 20, 147, 60)
+        )
+
+        # Main button
+        draw.ellipse(
+            (
+                bx,
+                controls_y,
+                bx + 50,
+                controls_y + 50
+            ),
+            fill=(255, 255, 255)
+        )
+
+        draw.text(
+            (bx + 12, controls_y + 8),
+            btn,
+            font=artist_font,
+            fill=(255, 20, 147)
+        )
+
+    # ---------------------------------- #
+    # STATUS TEXT
+    # ---------------------------------- #
+
+    draw.text(
+        (panel_x, frame_y + 455),
+        "Now Playing on kirtimusic",
         font=small_font,
         fill=(255, 20, 147)
     )
