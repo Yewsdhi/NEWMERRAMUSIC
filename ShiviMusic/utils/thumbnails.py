@@ -171,7 +171,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         bold_font = "ShiviMusic/assets/font2.ttf"
         medium_font = "ShiviMusic/assets/font.ttf"
 
-        # Smaller Fonts
+        #  Fonts
         title_font = ImageFont.truetype(
             bold_font,
             60
@@ -255,7 +255,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     )
 
     # ---------------------------------- #
-    # PINK BORDER
+    # WHITE BORDER
     # ---------------------------------- #
 
     draw.rounded_rectangle(
@@ -266,7 +266,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
             frame_y + frame_h
         ),
         radius=40,
-        outline=(255, 20, 147),
+        outline=(255, 255, 255),
         width=8
     )
 
@@ -469,7 +469,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     draw.text(
         (panel_x, frame_y + 455),
-        "kirtimusic",
+        "Now Playing on ShashankMusic",
         font=small_font,
         fill=(255, 20, 147)
     )
