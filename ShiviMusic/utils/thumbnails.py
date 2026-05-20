@@ -174,17 +174,17 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         # Smaller Fonts
         title_font = ImageFont.truetype(
             bold_font,
-            42
+            60
         )
 
         artist_font = ImageFont.truetype(
             bold_font,
-            30
+            40
         )
 
         small_font = ImageFont.truetype(
             medium_font,
-            22
+            32
         )
 
     except Exception:
@@ -469,7 +469,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     draw.text(
         (panel_x, frame_y + 455),
-        "Now Playing on kirtimusic",
+        "kirtimusic",
         font=small_font,
         fill=(255, 20, 147)
     )
