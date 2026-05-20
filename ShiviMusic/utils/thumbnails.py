@@ -171,20 +171,20 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         bold_font = "ShiviMusic/assets/font2.ttf"
         medium_font = "ShiviMusic/assets/font.ttf"
 
-        #  Fonts
+        # Smaller Fonts
         title_font = ImageFont.truetype(
             bold_font,
-            60
+            36
         )
 
         artist_font = ImageFont.truetype(
             bold_font,
-            40
+            28
         )
 
         small_font = ImageFont.truetype(
             medium_font,
-            32
+            22
         )
 
     except Exception:
@@ -306,10 +306,10 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     clean_title = trim_to_width(
         title,
         title_font,
-        560
+        540
     )
 
-    for offset in range(10, 0, -2):
+    for offset in range(8, 0, -2):
         draw.text(
             (
                 panel_x + offset,
@@ -334,11 +334,11 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     clean_artist = trim_to_width(
         f"By {artist}",
         artist_font,
-        520
+        500
     )
 
     draw.text(
-        (panel_x, frame_y + 115),
+        (panel_x, frame_y + 105),
         clean_artist,
         font=artist_font,
         fill=(255, 105, 180)
@@ -349,7 +349,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # ---------------------------------- #
 
     draw.text(
-        (panel_x, frame_y + 170),
+        (panel_x, frame_y + 160),
         f"Views : {views}",
         font=small_font,
         fill=(255, 105, 180)
@@ -360,7 +360,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # ---------------------------------- #
 
     bar_x = panel_x
-    bar_y = frame_y + 300
+    bar_y = frame_y + 285
 
     bar_w = 500
     bar_h = 12
@@ -424,7 +424,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # PREMIUM PLAY BUTTONS
     # ---------------------------------- #
 
-    controls_y = frame_y + 380
+    controls_y = frame_y + 360
 
     buttons = ["⏮", "⏸", "▶", "⏭"]
 
@@ -468,7 +468,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # ---------------------------------- #
 
     draw.text(
-        (panel_x, frame_y + 455),
+        (panel_x, frame_y + 435),
         "Now Playing on ShashankMusic",
         font=small_font,
         fill=(255, 20, 147)
