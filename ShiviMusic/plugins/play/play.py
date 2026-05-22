@@ -9,7 +9,7 @@ from pytgcalls.exceptions import NoActiveGroupCall
 
 import config
 from ShiviMusic import Apple, Resso, SoundCloud, Spotify, Telegram, YouTube, app
-from ShiviMusic.core.call import shivi
+from ShiviMusic.core.call import Shivi
 from ShiviMusic.utils import seconds_to_min, time_to_seconds
 from ShiviMusic.utils.channelplay import get_channeplayCB
 from ShiviMusic.utils.decorators.language import languageCB
