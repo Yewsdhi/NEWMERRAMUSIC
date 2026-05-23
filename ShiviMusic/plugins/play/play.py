@@ -404,10 +404,10 @@ async def play_commnd(
         sanitized_query = sanitize_query(query)
         if sanitized_query is None:
             return await mystic.edit_text(
-                "⚠️ <b>Security Alert!</b>\n\n"
-                "<b>This request contains a potentially harmful pattern.</b>\n"
-                "Please use normal search terms.\n\n"
-                "Protected From @SexyProfessor"
+                "💀 <ʙ>Sᴇᴄᴜʀɪᴛʏ Aʟᴇʀᴛ!\ɴ\ɴ"
+                "<ʙ>Iɴᴠᴀʟɪᴅ ᴏʀ ᴘᴏᴛᴇɴᴛɪᴀʟʟʏ ʜᴀʀᴍғᴜʟ URL ᴅᴇᴛᴇᴄᴛᴇᴅ.\ɴ"
+                "Oɴʟʏ ᴠᴀʟɪᴅ ᴍᴜsɪᴄ ᴘʟᴀᴛғᴏʀᴍ URLs ᴀʀᴇ ᴀʟʟᴏᴡᴇᴅ.\ɴ\ɴ"
+                "Pʀᴏᴛᴇᴄᴛᴇᴅ Fʀᴏᴍ ɪsʜ ʙᴏᴛ ᴋᴀ ᴏᴡɴᴇʀ ᴍᴀᴀ ᴄʜᴏᴅᴇɢᴀ  ᴀɢᴀʀ ʙᴏᴛ ᴋᴇ sᴀᴛʜ ᴋᴜᴄʜ ɢᴀʟᴛ ᴋᴀʀᴇɢᴀ ᴛᴏ  @Pʏxᴢᴏ_xᴅ"
             )
         query = sanitized_query
 
