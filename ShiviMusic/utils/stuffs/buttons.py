@@ -16,8 +16,8 @@ import config
 class BUTTONS(object):
     ABUTTON = [
     [
-        InlineKeyboardButton("⌯ sυᴘᴘσʀᴛ ⌯", url="https://t.me/kirti_supprot_group", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("⌯ υᴘᴅᴧᴛєs ⌯", url="https://t.me/Kirti_update", style=ButtonStyle.SUCCESS)
+        InlineKeyboardButton("⌯ sυᴘᴘσʀᴛ ⌯", url="https://t.me/annu_support", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("⌯ υᴘᴅᴧᴛєs ⌯", url="https://t.me/annu_updates", style=ButtonStyle.SUCCESS)
     ],
     [
         InlineKeyboardButton("⌯ ❍ᴡηєʀ ⌯", user_id=config.OWNER_ID, style=ButtonStyle.PRIMARY),
@@ -33,7 +33,7 @@ class BUTTONS(object):
     ],
     [
         
-        InlineKeyboardButton("⌯ sᴜᴘᴘᴏʀᴛ ᴄʜᴀᴛ ⌯", url="https://t.me/kirti_chat_support", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("⌯ ᴄʜᴀᴛ ⌯", url="https://t.me/annu_support", style=ButtonStyle.PRIMARY),
         InlineKeyboardButton("⌯ ʙᴧᴄᴋ ⌯", callback_data="settingsback_helper", style=ButtonStyle.DANGER),
     ]
     ]
