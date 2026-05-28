@@ -145,7 +145,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         fill=(0, 0, 0)
     )
 
-    brand = "DEV :- BADNAM OP"
+    brand = "DEV :-  Kirshna xd"
     w = tag_font.getlength(brand)
     draw.text((1280 - w - 50, 680), brand, fill=(0, 0, 0), font=tag_font)
 
