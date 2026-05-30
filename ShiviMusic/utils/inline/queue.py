@@ -85,12 +85,12 @@ def aq_markup(_, chat_id):
         [
             InlineKeyboardButton(
                 text="ᴊᴏɪɴ ɴᴏᴡ",
-                url=f"https://t.me/annu_support",
+                url=f"https://t.me/annu_updates",
                 style=ButtonStyle.PRIMARY,
             ),
             InlineKeyboardButton(
                 text="ɢʀᴏᴜᴘ ᴄʜᴀᴛ",
-                url="https://t.me/annu_updates",
+                url="https://t.me/annu_support",
                 style=ButtonStyle.SUCCESS,
             ),
         ],
