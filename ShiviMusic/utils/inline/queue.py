@@ -1,16 +1,8 @@
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Kirti 😎
-
-# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
-# 🔗 Source link : https://github.com/Badnam019
-# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
-# =======================================================
-
 from typing import Union
+from config import OWNER_ID
 from ShiviMusic import app
 from ShiviMusic.utils.formatters import time_to_seconds
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from pyrogram.enums import ButtonStyle
 
 
 def queue_markup(
@@ -26,12 +18,10 @@ def queue_markup(
             InlineKeyboardButton(
                 text=_["QU_B_1"],
                 callback_data=f"GetQueued {CPLAY}|{videoid}",
-                style=ButtonStyle.PRIMARY,
             ),
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
                 callback_data="close",
-                style=ButtonStyle.DANGER,
             ),
         ]
     ]
@@ -40,19 +30,16 @@ def queue_markup(
             InlineKeyboardButton(
                 text=_["QU_B_2"].format(played, dur),
                 callback_data="GetTimer",
-                style=ButtonStyle.SUCCESS,
             )
         ],
         [
             InlineKeyboardButton(
                 text=_["QU_B_1"],
                 callback_data=f"GetQueued {CPLAY}|{videoid}",
-                style=ButtonStyle.PRIMARY,
             ),
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
                 callback_data="close",
-                style=ButtonStyle.DANGER,
             ),
         ],
     ]
@@ -67,12 +54,10 @@ def queue_back_markup(_, CPLAY):
                 InlineKeyboardButton(
                     text=_["BACK_BUTTON"],
                     callback_data=f"queue_back_timer {CPLAY}",
-                    style=ButtonStyle.PRIMARY,
                 ),
                 InlineKeyboardButton(
                     text=_["CLOSE_BUTTON"],
                     callback_data="close",
-                    style=ButtonStyle.DANGER,
                 ),
             ]
         ]
@@ -83,31 +68,18 @@ def queue_back_markup(_, CPLAY):
 def aq_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(
-                text="ᴊᴏɪɴ ɴᴏᴡ",
-                url=f"https://t.me/annu_updates",
-                style=ButtonStyle.PRIMARY,
-            ),
-            InlineKeyboardButton(
-                text="ɢʀᴏᴜᴘ ᴄʜᴀᴛ",
-                url="https://t.me/annu_support",
-                style=ButtonStyle.SUCCESS,
-            ),
+            InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true")
         ],
         [
-            InlineKeyboardButton(
-                text="ᴄʟᴏsᴇ",
-                callback_data="close",
-                style=ButtonStyle.DANGER,
-            )
+            InlineKeyboardButton(text="ᴍᴜsɪᴄ-ʙᴏᴛ", url="https://t.me/Kirtiprobot"),
+            InlineKeyboardButton(text="ᴀʟʟ-ʙᴏᴛs", url="https://t.me/annu_updates"),
+        ],
+        [
+            InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", user_id=OWNER_ID),
+            InlineKeyboardButton(text="ᴄʟᴏsᴇ", callback_data="close"),
         ],
     ]
+
     return buttons
 
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Kirti 😎
 
-# 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
-# 🔗 Source link : https://github.com/Badnam019
-# 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
-# =======================================================
