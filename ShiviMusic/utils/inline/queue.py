@@ -1,9 +1,23 @@
+# -----------------------------------------------
+# 🔸 AarumiMusic Project
+# 🔹 Developed & Maintained by: Aarumi Bots (https://github.com/itsAarumi)
+# 📅 Copyright © 2025 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by ItsAarumi
+# -----------------------------------------------
+
+
+import config
 from typing import Union
 from config import OWNER_ID
-from ShiviMusic import app
-from ShiviMusic.utils.formatters import time_to_seconds
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
+from ShiviMusic import app
 
 def queue_markup(
     _,
@@ -68,18 +82,21 @@ def queue_back_markup(_, CPLAY):
 def aq_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙", url=f"https://t.me/{app.username}?startgroup=true")
+            InlineKeyboardButton(text=_["S_B_3"], url=f"https://t.me/{app.username}?startgroup=true",)
         ],
         [
-            InlineKeyboardButton(text="ᴍᴜsɪᴄ-ʙᴏᴛ", url="https://t.me/Kirtiprobot"),
-            InlineKeyboardButton(text="ᴀʟʟ-ʙᴏᴛs", url="https://t.me/annu_updates"),
+            InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
+            InlineKeyboardButton("ʙᴏᴛ-ɪɴғᴏ 💌", callback_data="api_status"),
+            InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="ᴘʀᴏᴍᴏ", user_id=OWNER_ID),
-            InlineKeyboardButton(text="ᴄʟᴏsᴇ", callback_data="close"),
+            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
+            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(text="ᴄʟᴏsᴇ", callback_data="close"
+            )
         ],
     ]
-
     return buttons
-
-
