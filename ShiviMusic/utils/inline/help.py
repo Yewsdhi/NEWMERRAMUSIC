@@ -3,7 +3,7 @@
 # 
 # This source code is under MIT License 📜
 # ❌ Unauthorized forking, importing, or using this code
-#    without giving proper credit will result in legal action ⚠️
+#    without giving proper credit will result in legal action ⚠️
 # 
 # 📩 DM for permission : @TheSigmaCoder
 # ===========================================================
@@ -16,7 +16,7 @@ from ShiviMusic import app
 
 
 def help_pannel(_, START: Union[bool, int] = None):
-    first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")]
+    first = [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close",
     second = [
         InlineKeyboardButton(
             text=_["BACK_BUTTON"],
@@ -70,18 +70,20 @@ def help_pannel(_, START: Union[bool, int] = None):
                     callback_data="help_callback hb9",
                 ),
             ],
-
             [
                 InlineKeyboardButton(
                     text="• ᴡᴇʟᴄᴏᴍᴇ •",
                     callback_data="wel_cb",
                 ),
                 InlineKeyboardButton(
+                    text="• ʟᴏᴄᴋs •",
+                    callback_data="lock_cb",
+                ),
+                InlineKeyboardButton(
                     text="• ɴɪɢʜᴛᴍᴏᴅᴇ •",
                     callback_data="night_cb",
                 ),
             ],
-
             mark,
         ]
     )
@@ -95,6 +97,7 @@ def help_back_markup(_):
                 InlineKeyboardButton(
                     text=_["BACK_BUTTON"],
                     callback_data=f"settings_back_helper",
+                    
                 ),
             ]
         ]
@@ -108,6 +111,7 @@ def private_help_panel(_):
             InlineKeyboardButton(
                 text=_["S_B_4"],
                 url=f"https://t.me/{app.username}?start=help",
+                style=ButtonStyle.PRIMARY,
             ),
         ],
     ]
