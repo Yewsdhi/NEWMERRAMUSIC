@@ -79,15 +79,15 @@ def help_pannel(_, START: Union[bool, int] = None):
             [
                 InlineKeyboardButton(
                     text="• ᴡᴇʟᴄᴏᴍᴇ •",
-                    callback_data="wel_cb",
+                    callback_data="help_callback hb10",
                 ),
                 InlineKeyboardButton(
                     text="• ʟᴏᴄᴋs •",
-                    callback_data="lock_cb",
+                    callback_data="help_callback hb11",
                 ),
                 InlineKeyboardButton(
                     text="• ɴɪɢʜᴛᴍᴏᴅᴇ •",
-                    callback_data="night_cb",
+                    callback_data="help_callback hb12",
                 ),
             ],
             mark,
