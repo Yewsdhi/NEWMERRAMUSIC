@@ -10,31 +10,30 @@
 
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram import Client, filters, enums 
-from pyrogram.enums import ButtonStyle
 import config
 
 class BUTTONS(object):
     ABUTTON = [
     [
-        InlineKeyboardButton("⌯ sυᴘᴘσʀᴛ ⌯", url="https://t.me/annu_support", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("⌯ υᴘᴅᴧᴛєs ⌯", url="https://t.me/annu_updates", style=ButtonStyle.SUCCESS)
+        InlineKeyboardButton("sυᴘᴘσʀᴛ", url="https://t.me/annu_updates"),
+        InlineKeyboardButton("υᴘᴅᴧᴛєs", url="https://t.me/annu_updates")
     ],
     [
-        InlineKeyboardButton("⌯ ❍ᴡηєʀ ⌯", user_id=config.OWNER_ID, style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("⌯ ʙᴧᴄᴋ ⌯", callback_data="settingsback_helper", style=ButtonStyle.DANGER)
+        InlineKeyboardButton("❍ᴡηєʀ", user_id=config.OWNER_ID),
+        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper")
     ]
 ]
 
     INFO_BUTTON = [
     [
-        InlineKeyboardButton("⌯ ʀєᴘσ ⌯", callback_data="gib_source", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 🎟️", callback_data="bot_info_data", style=ButtonStyle.SUCCESS),
-        InlineKeyboardButton("⌯ ʟᴧηɢᴜᴧɢє ⌯", callback_data="LG", style=ButtonStyle.PRIMARY),
+        InlineKeyboardButton("ʀєᴘσ", callback_data="gib_source"),
+        InlineKeyboardButton("ʏᴛ-ᴀᴘɪ 💸", callback_data="bot_info_data"),
+        InlineKeyboardButton("ʟᴧηɢᴜᴧɢє", callback_data="LG"),
     ],
     [
         
-        InlineKeyboardButton("⌯ ᴄʜᴀᴛ ⌯", url="https://t.me/annu_support", style=ButtonStyle.PRIMARY),
-        InlineKeyboardButton("⌯ ʙᴧᴄᴋ ⌯", callback_data="settingsback_helper", style=ButtonStyle.DANGER),
+        InlineKeyboardButton("ᴘʀɪᴠᴧᴄʏ", url="https://telegra.ph/Privacy-Policy--Shivi-Bots-by-BADNAM-BABY-08-06"),
+        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settingsback_helper"),
     ]
     ]
     
@@ -42,7 +41,7 @@ class BUTTONS(object):
 
     INFO_NEW = [
     [
-        InlineKeyboardButton("⌯ ʙᴧᴄᴋ ⌯", callback_data="settings_back_helper", style=ButtonStyle.DANGER)
+        InlineKeyboardButton("• ʙᴧᴄᴋ •", callback_data="settings_back_helper")
     ],
     ]
     
