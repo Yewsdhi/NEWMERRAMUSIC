@@ -33,9 +33,9 @@ from ShiviMusic.utils.database import (
     is_banned_user,
     is_on_off,
 )
-from AarumiMusic.utils.decorators.language import LanguageStart
-from AarumiMusic.utils.formatters import get_readable_time
-from AarumiMusic.utils.inline import help_pannel, private_panel, start_panel
+from ShiviMusic.utils.decorators.language import LanguageStart
+from ShiviMusic.utils.formatters import get_readable_time
+from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
