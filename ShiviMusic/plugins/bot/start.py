@@ -1,27 +1,29 @@
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 🚀
-# 
-# This source code is under MIT License 📜
-# ❌ Unauthorized forking, importing, or using this code
-#    without giving proper credit will result in legal action ⚠️
-# 
-# 📩 DM for permission : @MrRockytg
-# ===========================================================
+# -----------------------------------------------
+# 🔸 AarumiMusic Project
+# 🔹 Developed & Maintained by: Aarumi Bots (https://github.com/itsAarumi)
+# 📅 Copyright © 2025 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by ItsAarumi
+# -----------------------------------------------
 
 import time
 import random
-import asyncio
 from pyrogram import filters
 from pyrogram.enums import ChatType
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from youtubesearchpython.__future__ import VideosSearch
 
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import config
 from ShiviMusic import app
 from ShiviMusic.misc import _boot_
 from ShiviMusic.plugins.sudo.sudoers import sudoers_list
-from ShiviMusic.utils.database import get_served_chats, get_served_users, get_sudoers
+from ShiviMusic.utils.database import get_served_chats, get_served_users
 from ShiviMusic.utils import bot_sys_stats
 from ShiviMusic.utils.database import (
     add_served_chat,
@@ -31,18 +33,26 @@ from ShiviMusic.utils.database import (
     is_banned_user,
     is_on_off,
 )
-from ShiviMusic.utils.decorators.language import LanguageStart
-from ShiviMusic.utils.formatters import get_readable_time
-from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
+from AarumiMusic.utils.decorators.language import LanguageStart
+from AarumiMusic.utils.formatters import get_readable_time
+from AarumiMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
 
-NEXI_VID = [
-    "https://litter.catbox.moe/fyehrr.mp4",
-    "https://litter.catbox.moe/ach0wk.mp4",
-    "https://litter.catbox.moe/zcfu34.mp4",
-    "https://litter.catbox.moe/hq6tel.mp4",
+shivi_PIC = [
+    "https://files.catbox.moe/fh7vw7.jpg",
+    "https://files.catbox.moe/lckxh6.jpg",
+    "https://files.catbox.moe/smteo6.jpg",
+    "https://files.catbox.moe/7enu2i.jpg",
+    "https://files.catbox.moe/n6hkvd.jpg",
+    "https://files.catbox.moe/ej1p7t.jpg",
+    "https://files.catbox.moe/fh7vw7.jpg",
+    "https://files.catbox.moe/lckxh6.jpg",
+    "https://files.catbox.moe/smteo6.jpg",
+    "https://files.catbox.moe/7enu2i.jpg",
+    "https://files.catbox.moe/n6hkvd.jpg",
+    "https://files.catbox.moe/ej1p7t.jpg"
 ]
 
 
@@ -50,31 +60,24 @@ NEXI_VID = [
 @LanguageStart
 async def start_pm(client, message: Message, _):
     await add_served_user(message.from_user.id)
-
     if len(message.text.split()) > 1:
         name = message.text.split(None, 1)[1]
-
-        if name[0:3] == "del":
-            await del_plist_msg(client=client, message=message, _=_)
-        
         if name[0:4] == "help":
             keyboard = help_pannel(_)
-            return await message.reply_video(
-                random.choice(NEXI_VID),
+            return await message.reply_photo(
+                random.choice(shivi_PIC),
+                has_spoiler=True,
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
             )
-
         if name[0:3] == "sud":
             await sudoers_list(client=client, message=message, _=_)
             if await is_on_off(2):
                 return await app.send_message(
-                      has_spoiler=True,
                     chat_id=config.LOGGER_ID,
                     text=f"✦ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>sᴜᴅᴏʟɪsᴛ</b>.\n\n<b>✦ ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>\n<b>✦ ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username}",
                 )
             return
-
         if name[0:3] == "inf":
             m = await message.reply_text("🔎")
             query = (str(name)).replace("info_", "", 1)
@@ -101,21 +104,22 @@ async def start_pm(client, message: Message, _):
                 ]
             )
             await m.delete()
-            await app.send_video(
+            await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
+                has_spoiler=True,
                 caption=searched_text,
                 reply_markup=key,
             )
             if await is_on_off(2):
                 return await app.send_message(
                     chat_id=config.LOGGER_ID,
-                    text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
+                    text=f"✦ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ ᴛᴏ ᴄʜᴇᴄᴋ <b>ᴛʀᴀᴄᴋ ɪɴғᴏʀᴍᴀᴛɪᴏɴ</b>.\n\n✦ <b>ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>\n✦ <b>ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username}",
                 )
     else:
         out = private_panel(_)
-        await message.reply_video(
-            random.choice(NEXI_VID),
+        await message.reply_photo(
+            random.choice(shivi_PIC),
             has_spoiler=True,
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
@@ -123,8 +127,8 @@ async def start_pm(client, message: Message, _):
         if await is_on_off(2):
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
-                text=f"{message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ.\n\n<b>ᴜsᴇʀ ɪᴅ :</b> <code>{message.from_user.id}</code>\n<b>ᴜsᴇʀɴᴀᴍᴇ :</b> @{message.from_user.username}",
-            )          
+                text=f"✦ {message.from_user.mention} ᴊᴜsᴛ sᴛᴀʀᴛᴇᴅ ᴛʜᴇ ʙᴏᴛ.\n\n✦ <b>ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>\n✦ <b>ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username}",
+            )
 
 
 @app.on_message(filters.command(["start"]) & filters.group & ~BANNED_USERS)
@@ -132,8 +136,8 @@ async def start_pm(client, message: Message, _):
 async def start_gp(client, message: Message, _):
     out = start_panel(_)
     uptime = int(time.time() - _boot_)
-    await message.reply_video(
-        random.choice(NEXI_VID),
+    await message.reply_photo(
+        random.choice(shivi_PIC),
         has_spoiler=True,
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
@@ -168,10 +172,8 @@ async def welcome(client, message: Message):
                     return await app.leave_chat(message.chat.id)
 
                 out = start_panel(_)
-                await message.reply_video(
-                    random.choice(NEXI_VID),
-                    has_spoiler=True,
-                    caption=_["start_3"].format(
+                await message.reply_text(
+                    text=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
                         message.chat.title,
@@ -183,11 +185,3 @@ async def welcome(client, message: Message):
                 await message.stop_propagation()
         except Exception as ex:
             print(ex)
-
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Team Rocky (Im-Notcoder) 😎
-# 
-# 🧑‍💻 Developer : t.me/MrRockytg
-# 🔗 Source link : t.me/Rockyxsupport
-# 📢 Telegram channel : t.me/Rockyxupdate
-# ===========================================================
