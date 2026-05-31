@@ -2,15 +2,15 @@ import random
 from typing import Union
 from pyrogram import filters, types
 from pyrogram.types import InlineKeyboardMarkup, Message
-from BadnamMusic import app
-from BadnamMusic.utils import help_pannel
-from BadnamMusic.utils.database import get_lang
-from BadnamMusic.utils.decorators.language import LanguageStart, languageCB
-from BadnamMusic.utils.inline.help import help_back_markup, private_help_panel
+from ShiviMusic import app
+from ShiviMusic.utils import help_pannel
+from ShiviMusic.utils.database import get_lang
+from ShiviMusic.utils.decorators.language import LanguageStart, languageCB
+from ShiviMusic.utils.inline.help import help_back_markup, private_help_panel
 from config import BANNED_USERS, SUPPORT_CHAT
 from strings import get_string, helpers
 
-Badnam_PIC = [
+Shivi_PIC = [
     "https://files.catbox.moe/t6485t.jpg",
     "https://files.catbox.moe/4osoc3.jpg",
     "https://files.catbox.moe/5e18lv.jpg",
