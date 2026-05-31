@@ -9,9 +9,9 @@ heroku3
 apscheduler
 motor 
 pillow==9.5.0
-py-tgcalls
+py-tgcalls==2.2.11
 pykeyboard
-git+https://github.com/KurimuzonAkuma/kurigram.git
+pyrofork
 python-dotenv
 pyyaml==6.0.1
 requests
