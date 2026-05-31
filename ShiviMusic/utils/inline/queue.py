@@ -1,6 +1,6 @@
 # -----------------------------------------------
-# 🔸 AarumiMusic Project
-# 🔹 Developed & Maintained by: Aarumi Bots (https://github.com/itsAarumi)
+# 🔸 VampireMusic Project
+# 🔹 Developed & Maintained by: Vampire Bots (https://github.com/TEAM-VAMPIRE-OP)
 # 📅 Copyright © 2025 – All Rights Reserved
 #
 # 📖 License:
@@ -9,7 +9,7 @@
 # Commercial use, redistribution, or removal of this notice is strictly prohibited
 # without prior written permission from the author.
 #
-# ❤️ Made with dedication and love by ItsAarumi
+# ❤️ Made with dedication and love by TEAM-VAMPIRE-OP
 # -----------------------------------------------
 
 
@@ -82,16 +82,13 @@ def queue_back_markup(_, CPLAY):
 def aq_markup(_, chat_id):
     buttons = [
         [
-            InlineKeyboardButton(text=_["S_B_3"], url=f"https://t.me/{app.username}?startgroup=true",)
+            InlineKeyboardButton("ʏᴛ-ᴀᴘɪ sᴛᴀᴛᴜs 💌", callback_data="bot_info_data"),
         ],
         [
             InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton("ʙᴏᴛ-ɪɴғᴏ 💌", callback_data="api_status"),
             InlineKeyboardButton(text="II", callback_data=f"ADMIN Pause|{chat_id}"),
-        ],
-        [
-            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
             InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
         ],
         [
