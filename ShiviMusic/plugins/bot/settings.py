@@ -51,11 +51,16 @@ from config import BANNED_USERS, OWNER_ID
 
 
 NEXI_VID = [
-    "https://litter.catbox.moe/fyehrr.mp4",
-    "https://litter.catbox.moe/ach0wk.mp4",
-    "https://litter.catbox.moe/zcfu34.mp4",
-    "https://litter.catbox.moe/hq6tel.mp4",
+    "https://d.uguu.se/AHWUtCcF.jpg",
+    "https://h.uguu.se/oCKonQPF.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://d.uguu.se/CPlUJSEp.jpg",
+    "https://h.uguu.se/LSyRfkrb.jpg",
+    "https://h.uguu.se/ALtehGVn.jpg",
+    "https://d.uguu.se/TOCZFbxQ.jpg"
 ]
+
 
 
 @app.on_message(
