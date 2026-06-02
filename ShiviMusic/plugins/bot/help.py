@@ -11,14 +11,16 @@ from config import BANNED_USERS, SUPPORT_CHAT
 from strings import get_string, helpers
 
 Shivi_PIC = [
-    "https://files.catbox.moe/t6485t.jpg",
-    "https://files.catbox.moe/4osoc3.jpg",
-    "https://files.catbox.moe/5e18lv.jpg",
-    "https://files.catbox.moe/bupvsx.jpg",
-    "https://files.catbox.moe/w7f2wa.jpg",
-    "https://files.catbox.moe/2b2dam.jpg",
-    "https://files.catbox.moe/qity19.jpg",
+    "https://d.uguu.se/AHWUtCcF.jpg",
+    "https://h.uguu.se/oCKonQPF.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://d.uguu.se/CPlUJSEp.jpg",
+    "https://h.uguu.se/LSyRfkrb.jpg",
+    "https://h.uguu.se/ALtehGVn.jpg",
+    "https://d.uguu.se/TOCZFbxQ.jpg"
 ]
+
 
 @app.on_message(filters.command(["help"]) & filters.private & ~BANNED_USERS)
 @app.on_callback_query(filters.regex("settings_back_helper") & ~BANNED_USERS)
