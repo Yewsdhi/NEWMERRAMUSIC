@@ -41,19 +41,16 @@ from strings import get_string
 
 
 shivi_PIC = [
-    "https://files.catbox.moe/fh7vw7.jpg",
-    "https://files.catbox.moe/lckxh6.jpg",
-    "https://files.catbox.moe/smteo6.jpg",
-    "https://files.catbox.moe/7enu2i.jpg",
-    "https://files.catbox.moe/n6hkvd.jpg",
-    "https://files.catbox.moe/ej1p7t.jpg",
-    "https://files.catbox.moe/fh7vw7.jpg",
-    "https://files.catbox.moe/lckxh6.jpg",
-    "https://files.catbox.moe/smteo6.jpg",
-    "https://files.catbox.moe/7enu2i.jpg",
-    "https://files.catbox.moe/n6hkvd.jpg",
-    "https://files.catbox.moe/ej1p7t.jpg"
+    "https://d.uguu.se/AHWUtCcF.jpg",
+    "https://h.uguu.se/oCKonQPF.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://o.uguu.se/ZKmYOtBA.jpg",
+    "https://d.uguu.se/CPlUJSEp.jpg",
+    "https://h.uguu.se/LSyRfkrb.jpg",
+    "https://h.uguu.se/ALtehGVn.jpg",
+    "https://d.uguu.se/TOCZFbxQ.jpg"
 ]
+
 
 
 @app.on_message(filters.command(["start"]) & filters.private & ~BANNED_USERS)
