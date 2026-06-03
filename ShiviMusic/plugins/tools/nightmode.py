@@ -6,18 +6,18 @@
 # 📖 License:
 # This source code is open for educational and non-commercial use ONLY.
 # You are required to retain this credit in all copies or substantial portions of this file.
-# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# Commercial use, redistribution, or removal of this notice is stric
 # without prior written permission from the author.
-#
+
 # ❤️ Made with dedication and love by CharviBots
 # -----------------------------------------------
 import random 
-from pyrogram import filters, Client, enums
+from pyrogram import filters,Client,enums
 from ShiviMusic import app
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import ChatPermissions
-from ShiviMusic.core.nightmodedb import nightdb, nightmode_on, nightmode_off, get_nightchats 
+from ShiviMusic.utils.nightmodedb import nightdb,nightmode_on,nightmode_off,get_nightchats 
 
 
 CLOSE_CHAT = ChatPermissions(
