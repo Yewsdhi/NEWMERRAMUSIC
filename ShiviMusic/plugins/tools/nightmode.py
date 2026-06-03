@@ -1,18 +1,23 @@
-# =======================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
-
-# This source code is under MIT License 📜 Unauthorized forking, importing, or using this code without giving proper credit will result in legal action ⚠️
- 
-# 📩 DM for permission : @TheSigmaCoder
-# =======================================================
-
+# -----------------------------------------------
+# 🔸 CharviMusic Project
+# 🔹 Developed & Maintained by: Charvi Bots (https://github.com/CharviBots)
+# 📅 Copyright © 2022 – All Rights Reserved
+#
+# 📖 License:
+# This source code is open for educational and non-commercial use ONLY.
+# You are required to retain this credit in all copies or substantial portions of this file.
+# Commercial use, redistribution, or removal of this notice is strictly prohibited
+# without prior written permission from the author.
+#
+# ❤️ Made with dedication and love by CharviBots
+# -----------------------------------------------
 import random 
-from pyrogram import filters,Client,enums
+from pyrogram import filters, Client, enums
 from ShiviMusic import app
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from pyrogram.types import ChatPermissions
-from ShiviMusic.utils.nightmodedb import nightdb,nightmode_on,nightmode_off,get_nightchats 
+from ShiviMusic.core.nightmodedb import nightdb, nightmode_on, nightmode_off, get_nightchats 
 
 
 CLOSE_CHAT = ChatPermissions(
@@ -34,88 +39,127 @@ OPEN_CHAT = ChatPermissions(
     can_pin_messages=True,
     can_invite_users=True
 )
-    
-buttons = InlineKeyboardMarkup([[InlineKeyboardButton("๏ ᴇɴᴀʙʟᴇ ๏", callback_data="add_night"),InlineKeyboardButton("๏ ᴅɪsᴀʙʟᴇ ๏", callback_data="rm_night")]])         
+
+#  1. Nightmode Setup 
+buttons = InlineKeyboardMarkup(
+    [[
+        InlineKeyboardButton("๏ ᴇɴᴀʙʟᴇ ๏", callback_data="add_night"),
+        InlineKeyboardButton("๏ ᴅɪsᴀʙʟᴇ ๏", callback_data="rm_night")
+    ]]
+)
+
+#  2. Inline Support & Update 
+NIGHT_MSG_BUTTONS = InlineKeyboardMarkup(
+    [[
+        InlineKeyboardButton("sᴜᴘᴘᴏʀᴛ", url="https://t.me/annu_support"), 
+        InlineKeyboardButton("ᴜᴘᴅᴀᴛᴇs", url="https://t.me/annu_updates") 
+    ]]
+)
+
 
 @app.on_message(filters.command("nightmode") & filters.group)
 async def _nightmode(_, message):
-    return await message.reply_photo(photo="https://files.catbox.moe/w10gfu.jpg", caption="**ᴄʟɪᴄᴋ ᴏɴ ᴛʜᴇ ʙᴇʟᴏᴡ ʙᴜᴛᴛᴏɴ ᴛᴏ ᴇɴᴀʙʟᴇ ᴏʀ ᴅɪsᴀʙʟᴇ ɴɪɢʜᴛᴍᴏᴅᴇ ɪɴ ᴛʜɪs ᴄʜᴀᴛ.**",reply_markup=buttons)
-              
-     
+    return await message.reply_photo(
+        photo="https://n.uguu.se/PbzKsnAJ.jpg", 
+        caption="**⚙️ ɴɪɢʜᴛᴍᴏᴅᴇ sᴇᴛᴛɪɴɢs**\n\n**ᴄʟɪᴄᴋ ᴛʜᴇ ʙᴜᴛᴛᴏɴs ʙᴇʟᴏᴡ ᴛᴏ ᴄᴏɴᴛʀᴏʟ ɴɪɢʜᴛᴍᴏᴅᴇ sᴇᴛᴛɪɴɢs ғᴏʀ ᴛʜɪs ᴄʜᴀᴛ.**",
+        parse_mode=enums.ParseMode.MARKDOWN,
+        reply_markup=buttons
+    )
+
+
 @app.on_callback_query(filters.regex("^(add_night|rm_night)$"))
-async def nightcb(_, query : CallbackQuery):
+async def nightcb(_, query: CallbackQuery):
     data = query.data 
     chat_id = query.message.chat.id
     user_id = query.from_user.id
-    check_night = await nightdb.find_one({"chat_id" : chat_id})
+
+    check_night = await nightdb.find_one({"chat_id": chat_id})
+
     administrators = []
     async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-        administrators.append(m.user.id)     
-    if user_id in administrators:   
-        if data == "add_night":
-            if check_night:        
-                await query.message.edit_caption("**๏ ɴɪɢʜᴛᴍᴏᴅᴇ ɪs ᴀʟʀᴇᴀᴅʏ ᴇɴᴀʙʟᴇᴅ ɪɴ ᴛʜɪs ᴄʜᴀᴛ.**")
-            elif not check_night :
-                await nightmode_on(chat_id)
-                await query.message.edit_caption("**๏ ᴀᴅᴅᴇᴅ ᴄʜᴀᴛ ᴛᴏ ᴍʏ ᴅᴀᴛᴀʙᴀsᴇ . ᴛʜɪs ɢʀᴏᴜᴘ ᴡɪʟʟ ʙᴇ ᴄʟᴏsᴇᴅ ᴏɴ 𝟷𝟸ᴀᴍ [IST] ᴀɴᴅ ᴡɪʟʟ ᴏᴘᴇɴᴇᴅ ᴏɴ 𝟶𝟼ᴀᴍ [IST] .**") 
-        if data == "rm_night":
-            if check_night:  
-                await nightmode_off(chat_id)      
-                await query.message.edit_caption("**๏ ɴɪɢʜᴛᴍᴏᴅᴇ ʀᴇᴍᴏᴠᴇᴅ ғʀᴏᴍ ᴍʏ ᴅᴀᴛᴀʙᴀsᴇ !**")
-            elif not check_night:
-                await query.message.edit_caption("**๏  ɴɪɢʜᴛᴍᴏᴅᴇ ɪs ᴀʟʀᴇᴀᴅʏ ᴅɪsᴀʙʟᴇᴅ  ɪɴ ᴛʜɪs ᴄʜᴀᴛ.**") 
-            
-      
-async def start_nightmode() :
-    chats = []
+        administrators.append(m.user.id)
+
+    if user_id not in administrators:
+        return await query.answer("❌ ᴏɴʟʏ ᴀᴅᴍɪɴs ᴄᴀɴ ᴜsᴇ ᴛʜɪs ᴄᴏᴍᴍᴀɴᴅ!", show_alert=True)
+
+    if data == "add_night":
+        if check_night:
+            await query.message.edit_caption(
+                caption="**🌕 ɴɪɢʜᴛᴍᴏᴅᴇ ɪs ᴀʟʀᴇᴀᴅʏ ᴇɴᴀʙʟᴇᴅ ɪɴ ᴛʜɪs ᴄʜᴀᴛ.**",
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
+        else:
+            await nightmode_on(chat_id)
+            await query.message.edit_caption(
+                caption=(
+                    "**✅ ɴɪɢʜᴛᴍᴏᴅᴇ ᴀᴄᴛɪᴠᴀᴛᴇᴅ!**\n\n"
+                    "**ᴛʜɪs ɢʀᴏᴜᴘ ᴡɪʟʟ ᴀᴜᴛᴏᴍᴀᴛɪᴄᴀʟʟʏ ʟᴏᴄᴋ ᴀᴛ 12:00 ᴀᴍ & ᴜɴʟᴏᴄᴋ ᴀᴛ 06:00 ᴀᴍ [ɪsᴛ] ᴛᴏ ᴍᴀɪɴᴛᴀɪɴ ᴘᴇᴀᴄᴇ.**"
+                ),
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
+
+    elif data == "rm_night":
+        if check_night:
+            await nightmode_off(chat_id)
+            await query.message.edit_caption(
+                caption="**❌ ɴɪɢʜᴛᴍᴏᴅᴇ ᴅᴇᴀᴄᴛɪᴠᴀᴛᴇᴅ!**",
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
+        else:
+            await query.message.edit_caption(
+                caption="**🌑 ɴɪɢʜᴛᴍᴏᴅᴇ ɪs ᴀʟʀᴇᴀᴅʏ ᴛᴜʀɴᴇᴅ ᴏғғ.**",
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
+
+
+async def start_nightmode():
     schats = await get_nightchats()
     for chat in schats:
-        chats.append(int(chat["chat_id"]))
-    if len(chats) == 0:
-        return
-    for add_chat in chats:
+        chat_id = int(chat["chat_id"])
         try:
             await app.send_photo(
-                add_chat,
-                photo="https://o.uguu.se/gXucOUuQ.jpg",
-                caption= f"**✨ ᴍᴀʏ ᴛʜᴇ ᴀɴɢᴇʟs ғʀᴏᴍ ʜᴇᴀᴠᴇɴ ʙʀɪɴɢ ᴛʜᴇ sᴡᴇᴇᴛᴇsᴛ ᴏғ ᴀʟʟ ᴅʀᴇᴀᴍs ғᴏʀ ʏᴏᴜ. ᴍᴀʏ ʏᴏᴜ ʜᴀᴠᴇ ʟᴏɴɢ ᴀɴᴅ ʙʟɪssғᴜʟ sʟᴇᴇᴘ ғᴜʟʟ ᴏғ ʜᴀᴘᴘʏ ᴅʀᴇᴀᴍs.**\n\n**» ɢʀᴏᴜᴘ ɪs ᴄʟᴏsɪɴɢ ɢᴏᴏᴅ ɴɪɢʜᴛ ᴇᴠᴇʀʏᴏɴᴇ  !**")
-            
-            await app.set_chat_permissions(add_chat,CLOSE_CHAT)
-
+                chat_id,
+                photo="https://d.uguu.se/agsYnJwN.jpg", 
+                caption=(
+                    "**🌌 ɢᴏᴏᴅ ɴɪɢʜᴛ ᴇᴠᴇʀʏᴏɴᴇ!**\n"
+                    "**━─────────────────━**\n\n"
+                    "**✨ ᴛɪᴍᴇ ᴛᴏ ᴛᴜʀɴ ᴏғғ ʏᴏᴜʀ sᴄʀᴇᴇɴs ᴀɴᴅ ᴄᴀᴛᴄʜ sᴏᴍᴇ ᴘᴇᴀᴄᴇғᴜʟ ᴅʀᴇᴀᴍs. ᴍᴀʏ ʏᴏᴜʀ sʟᴇᴇᴘ ʙᴇ sᴡᴇᴇᴛ ᴀɴᴅ ʀᴇsᴛғᴜʟ.**\n\n"
+                    "**🔒 ɢʀᴏᴜᴘ ɪs ɴᴏᴡ ᴄʟᴏsᴇᴅ.**\n"
+                    "**• ɴᴏ ᴍᴇssᴀɢᴇs ᴄᴀɴ ʙᴇ sᴇɴᴛ ᴜɴᴛɪʟ ᴍᴏʀɴɪɴɢ. sᴇᴇ ʏᴏᴜ ᴀʟʟ ᴛᴏᴍᴏʀʀᴏᴡ!**"
+                ),
+                parse_mode=enums.ParseMode.MARKDOWN,
+                reply_markup=NIGHT_MSG_BUTTONS
+            )
+            await app.set_chat_permissions(chat_id, CLOSE_CHAT)
         except Exception as e:
-            print(f"[bold red] Unable To close Group {add_chat} - {e}")
+            print(f"Unable to close group {chat_id}: {e}")
+
+
+async def close_nightmode():
+    schats = await get_nightchats()
+    for chat in schats:
+        chat_id = int(chat["chat_id"])
+        try:
+            await app.send_photo(
+                chat_id,
+                photo="https://d.uguu.se/CPlUJSEp.jpg", 
+                caption=(
+                    "**🌅 ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ ᴇᴠᴇʀʏᴏɴᴇ..!**\n"
+                    "**━─────────────────━**\n\n"
+                    "**✨ ᴀ ʙᴇᴀᴜᴛɪғᴜʟ ɴᴇᴡ ᴅᴀʏ ʜᴀs ᴀʀʀɪᴠᴇᴅ. ᴍᴀʏ ᴛʜɪs ᴅᴀʏ ʙʀɪɴɢ ᴇɴᴅʟᴇss ᴏᴘᴘᴏʀᴛᴜɴɪᴛɪᴇs, ᴊᴏʏ, ᴀɴᴅ sᴜᴄᴄᴇss ᴛᴏ ʏᴏᴜʀ ʟɪғᴇ.**\n\n"
+                    "**🔓 ɢʀᴏᴜᴘ ɪs ɴᴏᴡ ᴏᴘᴇɴ.**\n"
+                    "**• ғᴇᴇʟ ғʀᴇᴇ ᴛᴏ ᴄʜᴀᴛ, sʜᴀʀᴇ, ᴀɴᴅ sᴛᴀʏ ᴘᴏsɪᴛɪᴠᴇ!**"
+                ),
+                parse_mode=enums.ParseMode.MARKDOWN,
+                reply_markup=NIGHT_MSG_BUTTONS
+            )
+            await app.set_chat_permissions(chat_id, OPEN_CHAT)
+        except Exception as e:
+            print(f"Unable to open group {chat_id}: {e}")
+
 
 scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 scheduler.add_job(start_nightmode, trigger="cron", hour=23, minute=59)
-scheduler.start()
-
-async def close_nightmode():
-    chats = []
-    schats = await get_nightchats()
-    for chat in schats:
-        chats.append(int(chat["chat_id"]))
-    if len(chats) == 0:
-        return
-    for rm_chat in chats:
-        try:
-            await app.send_photo(
-                rm_chat,
-                photo="https://h.uguu.se/GQzctaEk.jpg",
-                caption= f"**✨ ɢʀᴏᴜᴘ ɪs ᴏᴘᴇɴɪɴɢ ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ ᴇᴠᴇʀʏᴏɴᴇ !**\n\n**» ᴍᴀʏ ᴛʜɪs ᴅᴀʏ ᴄᴏᴍᴇ ᴡɪᴛʜ ᴀʟʟ ᴛʜᴇ ʟᴏᴠᴇ ʏᴏᴜʀ ʜᴇᴀʀᴛ ᴄᴀɴ ʜᴏʟᴅ ᴀɴᴅ ʙʀɪɴɢ ʏᴏᴜ ᴇᴠᴇʀʏ sᴜᴄᴄᴇss ʏᴏᴜ ᴅᴇsɪʀᴇ. Mᴀʏ ᴇᴀᴄʜ ᴏғ ʏᴏᴜʀ ғᴏᴏᴛsᴛᴇᴘs ʙʀɪɴɢ Jᴏʏ ᴛᴏ ᴛʜᴇ ᴇᴀʀᴛʜ ᴀɴᴅ ʏᴏᴜʀsᴇʟғ. ɪ ᴡɪsʜ ʏᴏᴜ ᴀ ᴍᴀɢɪᴄᴀʟ ᴅᴀʏ ᴀɴᴅ ᴀ ᴡᴏɴᴅᴇʀғᴜʟ ʟɪғᴇ ᴀʜᴇᴀᴅ.**")
-            
-            await app.set_chat_permissions(rm_chat,OPEN_CHAT)
-
-        except Exception as e:
-            print(f"[bold red] Unable To open Group {rm_chat} - {e}")
-
-scheduler = AsyncIOScheduler(timezone="Asia/Kolkata")
 scheduler.add_job(close_nightmode, trigger="cron", hour=6, minute=1)
 scheduler.start()
-
-# ======================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 😎
-
-# 🧑‍💻 Developer : t.me/TheSigmaCoder
-# 🔗 Source link : GitHub.com/Im-Notcoder/Sonali-MusicV2
-# 📢 Telegram channel : t.me/Purvi_Bots
-# =======================================================
+                       
