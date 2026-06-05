@@ -252,7 +252,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=PINK)
 
     # ── brand watermark ───────────────────────────────────────────────────────
-    brand = "Dev:- @GenCodes"
+    brand = "Dev:- @kirtibots"
     bw_len = font_brand.getlength(brand)
     draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=YELLOW)
 
