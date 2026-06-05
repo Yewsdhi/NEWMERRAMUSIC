@@ -6,7 +6,7 @@ import aiohttp
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
-from AarumiMusic import app
+from ShiviMusic import app
 
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -114,8 +114,8 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw = ImageDraw.Draw(canvas)
 
     # ── fonts ─────────────────────────────────────────────────────────────────
-    FONT_PATH = "AarumiMusic/assets/font.ttf"
-    FONT2_PATH = "AarumiMusic/assets/font2.ttf"
+    FONT_PATH = "ShiviMusic/assets/font.ttf"
+    FONT2_PATH = "ShiviMusic/assets/font2.ttf"
     try:
         font_title   = ImageFont.truetype(FONT_PATH, 46)
         font_label   = ImageFont.truetype(FONT_PATH, 32)
@@ -252,7 +252,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=WHITE)
 
     # ── brand watermark ───────────────────────────────────────────────────────
-    brand = "Dev:- @GenCodes"
+    brand = "Dev:- @kirtibots"
     bw_len = font_brand.getlength(brand)
     draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=WHITE)
 
