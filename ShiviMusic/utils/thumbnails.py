@@ -81,7 +81,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # CANVAS  1280 × 720  dark background
     # ════════════════════════════════════════════════════════════════════════════
     W, H = 1280, 720
-    PINK = (255, 80, 180)          # hot-pink accent
+    PINK = (255, 80, 180)          # hot-yellow accent
     PINK_DARK = (220, 60, 150)
     WHITE = (255, 255, 255)
     GRAY = (180, 180, 180)
@@ -192,7 +192,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     title_text = trim_to_width(title, font_title, max_title_w)
     draw.text((INFO_X, title_y), title_text, font=font_title, fill=WHITE)
 
-    # pink underline (thin separator line)
+    # yellow underline (thin separator line)
     title_h = font_title.getbbox(title_text)[3] - font_title.getbbox(title_text)[1]
     line_y = title_y + title_h + 10
     draw.line((INFO_X, line_y, INFO_X + max_title_w, line_y), fill=PINK, width=2)
@@ -231,12 +231,12 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         radius=bar_radius,
         fill=(100, 100, 100, 180),
     )
-    # filled (pink)
+    # filled (blue)
     if dot_x > bar_x1 + bar_h:
         draw.rounded_rectangle(
             (bar_x1, bar_y, dot_x, bar_y + bar_h),
             radius=bar_radius,
-            fill=PINK,
+            fill=YELLOW,
         )
     # scrubber dot (white circle)
     dot_r = 10
@@ -247,14 +247,14 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     # ── timestamps ────────────────────────────────────────────────────────────
     time_y = bar_y + bar_h + 14
-    draw.text((bar_x1, time_y), "00:00", font=font_time, fill=WHITE)
+    draw.text((bar_x1, time_y), "00:00", font=font_time, fill=YELLOW)
     end_w = font_time.getlength(duration_text)
-    draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=WHITE)
+    draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=PINK)
 
     # ── brand watermark ───────────────────────────────────────────────────────
     brand = "Dev:- @GenCodes"
     bw_len = font_brand.getlength(brand)
-    draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=WHITE)
+    draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=YELLOW)
 
     # ── save ──────────────────────────────────────────────────────────────────
     try:
