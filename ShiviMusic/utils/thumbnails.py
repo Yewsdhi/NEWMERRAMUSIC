@@ -6,7 +6,7 @@ import aiohttp
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
-from ShiviMusic import app
+from AarumiMusic import app
 
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -81,7 +81,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     # CANVAS  1280 × 720  dark background
     # ════════════════════════════════════════════════════════════════════════════
     W, H = 1280, 720
-    PINK = (255, 80, 180)          # hot-yellow accent
+    PINK = (255, 80, 180)          # hot-pink accent
     PINK_DARK = (220, 60, 150)
     WHITE = (255, 255, 255)
     GRAY = (180, 180, 180)
@@ -114,8 +114,8 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     draw = ImageDraw.Draw(canvas)
 
     # ── fonts ─────────────────────────────────────────────────────────────────
-    FONT_PATH = "ShiviMusic/assets/font.ttf"
-    FONT2_PATH = "ShiviMusic/assets/font2.ttf"
+    FONT_PATH = "AarumiMusic/assets/font.ttf"
+    FONT2_PATH = "AarumiMusic/assets/font2.ttf"
     try:
         font_title   = ImageFont.truetype(FONT_PATH, 46)
         font_label   = ImageFont.truetype(FONT_PATH, 32)
@@ -192,7 +192,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     title_text = trim_to_width(title, font_title, max_title_w)
     draw.text((INFO_X, title_y), title_text, font=font_title, fill=WHITE)
 
-    # yellow underline (thin separator line)
+    # pink underline (thin separator line)
     title_h = font_title.getbbox(title_text)[3] - font_title.getbbox(title_text)[1]
     line_y = title_y + title_h + 10
     draw.line((INFO_X, line_y, INFO_X + max_title_w, line_y), fill=PINK, width=2)
@@ -231,12 +231,12 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
         radius=bar_radius,
         fill=(100, 100, 100, 180),
     )
-    # filled (blue)
+    # filled (pink)
     if dot_x > bar_x1 + bar_h:
         draw.rounded_rectangle(
             (bar_x1, bar_y, dot_x, bar_y + bar_h),
             radius=bar_radius,
-            fill=YELLOW,
+            fill=PINK,
         )
     # scrubber dot (white circle)
     dot_r = 10
@@ -247,14 +247,14 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
 
     # ── timestamps ────────────────────────────────────────────────────────────
     time_y = bar_y + bar_h + 14
-    draw.text((bar_x1, time_y), "00:00", font=font_time, fill=YELLOW)
+    draw.text((bar_x1, time_y), "00:00", font=font_time, fill=WHITE)
     end_w = font_time.getlength(duration_text)
-    draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=PINK)
+    draw.text((bar_x2 - end_w, time_y), duration_text, font=font_time, fill=WHITE)
 
     # ── brand watermark ───────────────────────────────────────────────────────
-    brand = "Dev:- @kirtibots"
+    brand = "Dev:- @GenCodes"
     bw_len = font_brand.getlength(brand)
-    draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=YELLOW)
+    draw.text((W - bw_len - 40, H - 46), brand, font=font_brand, fill=WHITE)
 
     # ── save ──────────────────────────────────────────────────────────────────
     try:
