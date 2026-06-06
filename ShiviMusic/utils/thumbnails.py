@@ -6,7 +6,7 @@ import aiohttp
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
-from KanhaMusic import app
+from ShiviMusic import app
 
 CACHE_DIR = "cache"
 os.makedirs(CACHE_DIR, exist_ok=True)
@@ -23,7 +23,7 @@ def _font(path_hint: str, size: int) -> ImageFont.FreeTypeFont:
                 pass
     return ImageFont.load_default()
 
-ASSET = "KanhaMusic/assets"
+ASSET = "ShiviMusic/assets"
 FONT_BOLD = os.path.join(ASSET, "font.ttf")
 FONT_REG  = os.path.join(ASSET, "font2.ttf")
 FONT_MED  = os.path.join(ASSET, "font.ttf")
@@ -186,7 +186,7 @@ async def get_thumb(videoid: str, player_username: str = None) -> str:
     RX = 618
 
     # ── NOW PLAYING Pill Badge ───────────────────────────────────────────────
-    bt     = "NOW PLAYING"
+    bt     = "SONG PLAY KRO "
     btw    = int(f_badge.getlength(bt))
     bpad_x = (224 - btw) // 2
     draw.rounded_rectangle((624, 127, 848, 173), radius=23, fill=THEME_COLOR)
