@@ -1,18 +1,15 @@
-import asyncio
-import logging
 import os
-from io import BytesIO
-
+import re
+import random
+import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
-
-from anony import config
-from anony.helpers._dataclass import Track
-
-LOGGER = logging.getLogger(__name__)
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from py_yt import VideosSearch
+from config import YOUTUBE_IMG_URL
+from ShiviMusic import app
 
 # File paths aur fixed dimensions
-CONTROLS_IMAGE_PATH = "anony/helpers/trashed-1781345124-controls.png"
+CONTROLS_IMAGE_PATH = "ShiviMusic/trashed-1781345124-controls.png"
 YOUTUBE_IMG_URL = "https://i.ytimg.com/vi/default.jpg"
 CANVAS_SIZE = (1280, 720)
 ALBUM_ART_SIZE = (512, 512)
@@ -20,7 +17,7 @@ ALBUM_ART_SIZE = (512, 512)
 def _load_fonts():
     try:
         return {
-            "title": ImageFont.truetype("anony/helpers/font.ttf", 44),       
+            "title": ImageFont.truetype("ShiviMusic/font.ttf", 44),       
             "subtitle": ImageFont.truetype("anony/helpers/cfont.ttf", 26),    
         }
     except Exception as e:
