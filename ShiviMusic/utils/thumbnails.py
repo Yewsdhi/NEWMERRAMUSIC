@@ -1,12 +1,29 @@
 import os
 import re
 import random
+import asyncio
+import logging
+from io import BytesIO
+
 import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageEnhance,
+    ImageFilter,
+    ImageFont,
+    ImageOps,
+)
+
 from py_yt import VideosSearch
 from config import YOUTUBE_IMG_URL
+import config
+
 from ShiviMusic import app
+
+LOGGER = logging.getLogger(__name__)
 
 # File paths aur fixed dimensions
 CONTROLS_IMAGE_PATH = "ShiviMusic/trashed-1781345124-controls.png"
@@ -18,7 +35,7 @@ def _load_fonts():
     try:
         return {
             "title": ImageFont.truetype("ShiviMusic/font.ttf", 44),       
-            "subtitle": ImageFont.truetype("anony/helpers/cfont.ttf", 26),    
+            "subtitle": ImageFont.truetype("ShiviMusic/cfont.ttf", 26),    
         }
     except Exception as e:
         LOGGER.error("Font loading error: %s, using default fonts", e)
