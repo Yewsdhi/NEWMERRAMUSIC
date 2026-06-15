@@ -1,6 +1,3 @@
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
-# 
 # This source code is under MIT License 📜
 # ❌ Unauthorized forking, importing, or using this code
 #    without giving proper credit will result in legal action ⚠️
@@ -51,16 +48,22 @@ from config import BANNED_USERS, OWNER_ID
 
 
 NEXI_VID = [
-    "https://d.uguu.se/AHWUtCcF.jpg",
-    "https://h.uguu.se/oCKonQPF.jpg",
-    "https://o.uguu.se/ZKmYOtBA.jpg",
-    "https://o.uguu.se/ZKmYOtBA.jpg",
-    "https://d.uguu.se/CPlUJSEp.jpg",
-    "https://h.uguu.se/LSyRfkrb.jpg",
-    "https://h.uguu.se/ALtehGVn.jpg",
-    "https://d.uguu.se/TOCZFbxQ.jpg"
+    "https://files.catbox.moe/x5lytj.jpg",
+    "https://files.catbox.moe/psya34.jpg",
+    "https://files.catbox.moe/leaexg.jpg",
+    "https://files.catbox.moe/b0e4vk.jpg",
+    "https://files.catbox.moe/1b1wap.jpg",
+    "https://files.catbox.moe/ommjjk.jpg",
+    "https://files.catbox.moe/onurxm.jpg",
+    "https://files.catbox.moe/97v75k.jpg",
+    "https://files.catbox.moe/t833zy.jpg",
+    "https://files.catbox.moe/472piq.jpg",
+    "https://files.catbox.moe/qwjeyk.jpg",
+    "https://files.catbox.moe/t0hopv.jpg",
+    "https://files.catbox.moe/u5ux0j.jpg",
+    "https://files.catbox.moe/h1yk4w.jpg",
+    "https://files.catbox.moe/gl5rg8.jpg",
 ]
-
 
 
 @app.on_message(
@@ -145,22 +148,15 @@ async def show_bot_info(c: app, q: CallbackQuery):
     x = await c.send_message(q.message.chat.id, "ᴄʜᴇᴀᴋɪɴɢ ᴘʟᴇᴀsᴇ ᴡᴀɪᴛ...")
     delta_ping = time() - start
     await x.delete()
-    txt = f"""╔═━━━─── • ───━━━═╗
-   ⚡ ʏᴏᴜᴛᴜʙᴇ sᴛᴀᴛᴜs ⚡
-╚═━━━─── • ───━━━═╝
+    txt = f"""ʏᴏᴜᴛᴜʙᴇ ᴀᴘɪ sᴛᴀᴛᴜs...💌
 
-❖ ᴅᴀᴛᴀʙᴀsᴇ    ⟿ ᴏɴʟɪɴᴇ
-❖ ʏᴛ ᴀᴘɪ      ⟿ ʀᴇsᴘᴏɴsɪᴠᴇ
-❖ sᴇʀᴠᴇʀ      ⟿ sᴛᴀʙʟᴇ
-❖ ʟᴀᴛᴇɴᴄʏ     ⟿ {delta_ping * 1000:.3f} ᴍs
-❖ sᴛᴀᴛᴜs      ⟿ ᴘᴇʀꜰᴇᴄᴛ
+• ᴅᴀᴛᴀʙᴀsᴇ : ᴏɴʟɪɴᴇ
+• ʏᴏᴜᴛᴜʙᴇ ᴀᴘɪ : ʀᴇsᴘᴏɴsɪᴠᴇ
+• ʙᴏᴛ sᴇʀᴠᴇʀ : ʀᴜɴɴɪɴɢ sᴍᴏᴏᴛʜʟʏ
+• ʀᴇsᴘᴏɴsᴇ ᴛɪᴍᴇ : ᴏᴘᴛɪᴍᴀʟ
+• ᴀᴘɪ ᴘɪɴɢ : {delta_ping * 1000:.3f} ms   
 
-╭───────────────╮
-│ ✓ ᴀʟʟ sʏsᴛᴇᴍs ɴᴏᴍɪɴᴀʟ │
-╰───────────────╯
-
-➥ ᴇᴠᴇʀʏᴛʜɪɴɢ ɪs
-   ʀᴜɴɴɪɴɢ ᴘᴇʀꜰᴇᴄᴛʟʏ...!
+• ᴇᴠᴇʀʏᴛʜɪɴɢ ʟᴏᴏᴋs ɢᴏᴏᴅ !!
 """
     await q.answer(txt, show_alert=True)
     return
