@@ -284,7 +284,7 @@ async def get_thumb(videoid: str, user_name: str = "Unknown") -> str:
         vc        = re.sub(r'\s*views?\s*', '', v_raw, flags=re.IGNORECASE).strip()
         views, channel = f"{vc} views", data.get("channel", {}).get("name", "Unknown")
     except Exception:
-        return "https://files.catbox.moe/m4fx24.jpg"
+        return "https://n.uguu.se/YbHSYHpH.jpg"
 
     # 4) Download thumbnail image
     try:
@@ -532,7 +532,7 @@ async def get_thumb(videoid: str, user_name: str = "Unknown") -> str:
         fill=NAME_COLOR,
         anchor="lm"
     )
-    draw.text((1255, 45), "Dev :- BADNAM",                                          font=f_wm,  fill=TEXT_WHITE, anchor="rd")
+    draw.text((1255, 45), "GitHub:- kirtibots",                                          font=f_wm,  fill=TEXT_WHITE, anchor="rd")
 
     base.save(output, "PNG", optimize=True)
 
