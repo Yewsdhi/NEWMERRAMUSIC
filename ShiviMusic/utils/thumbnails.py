@@ -1,6 +1,6 @@
 # -----------------------------------------------
-# 🔸 AxiomMusic Project - Animated Enhanced Thumbnail
-# 🔹 Developed & Maintained by: Axiom Bots
+# 🔸 kirtiMusic Project - Animated Enhanced Thumbnail
+# 🔹 Developed & Maintained by: kirti Bots
 # -----------------------------------------------
 
 import os
@@ -298,10 +298,10 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
 
         # Fonts
         try:
-            title_font = ImageFont.truetype("AxiomMuzic/assets/assets/f.ttf", 52)
-            axiom_font = ImageFont.truetype("AxiomMuzic/assets/assets/f.ttf", 30)
-            meta_font = ImageFont.truetype("AxiomMuzic/assets/assets/cfont.ttf", 32)
-            time_font = ImageFont.truetype("AxiomMuzic/assets/assets/cfont.ttf", 28)
+            title_font = ImageFont.truetype("ShiviMusic/assets/assets/f.ttf", 52)
+            axiom_font = ImageFont.truetype("ShiviMusic/assets/assets/f.ttf", 30)
+            meta_font = ImageFont.truetype("ShiviMusic/assets/assets/cfont.ttf", 32)
+            time_font = ImageFont.truetype("ShiviMusic/assets/assets/cfont.ttf", 28)
         except:
             title_font = ImageFont.load_default()
             meta_font = title_font
@@ -321,11 +321,11 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
                   fill=(190, 190, 190), font=axiom_font)
 
         # Player - LIGHT GRAY
-        draw.text((TITLE_X, PLAYER_Y), f"Player | @AxiomVcBot",
+        draw.text((TITLE_X, PLAYER_Y), f"Player | @kirtiprobot",
                   fill=(190, 190, 190), font=axiom_font)
 
         # Dev - LIGHT GRAY
-        draw.text((TITLE_X, DEV_Y), "Dev: Maanav",
+        draw.text((TITLE_X, DEV_Y), "Dev: BADNAM",
                   fill=(190, 190, 190), font=axiom_font)
 
         # Progress bar background
