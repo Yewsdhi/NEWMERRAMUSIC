@@ -314,19 +314,19 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
 
         # Channel - LIGHT GRAY
         draw.text((TITLE_X, META_Y), f"Channel | {channel}",
-                  fill=(190, 190, 190), font=axiom_font)
+                  fill=(190, 190, 190), font=Shivi_font)
 
         # Views - LIGHT GRAY
         draw.text((TITLE_X, VIEWS_Y), f"Views | {views}",
-                  fill=(190, 190, 190), font=axiom_font)
+                  fill=(190, 190, 190), font=Shivi_font)
 
         # Player - LIGHT GRAY
-        draw.text((TITLE_X, PLAYER_Y), f"Player | ",
-                  fill=(190, 190, 190), font=axiom_font)
+        draw.text((TITLE_X, PLAYER_Y), f"Player | @Kirtiprobot",
+                  fill=(190, 190, 190), font=Shivi_font)
 
         # Dev - LIGHT GRAY
         draw.text((TITLE_X, DEV_Y), "Dev: BADNAM",
-                  fill=(190, 190, 190), font=axiom_font)
+                  fill=(190, 190, 190), font=Shivi_font)
 
         # Progress bar background
         bar_end = BAR_X + BAR_WIDTH
