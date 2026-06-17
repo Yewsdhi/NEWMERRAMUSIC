@@ -321,7 +321,7 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
                   fill=(190, 190, 190), font=axiom_font)
 
         # Player - LIGHT GRAY
-        draw.text((TITLE_X, PLAYER_Y), f"Player | @kirtiprobot",
+        draw.text((TITLE_X, PLAYER_Y), f"Player | ",
                   fill=(190, 190, 190), font=axiom_font)
 
         # Dev - LIGHT GRAY
