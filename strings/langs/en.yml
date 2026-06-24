@@ -175,8 +175,9 @@ queue_7 : "\nᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ 
 queue_8 : "<b>{0} ᴘʟᴀʏᴇʀ</b>\n\n🎄 <b>sᴛʀᴇᴀᴍɪɴɢ :</b> {1}\n\n🔗 <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> {2}\n🥀 <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ :</b> {3}\n{4}"
 
 
-stream_1 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>✯ ᴛɪᴛᴛʟᴇ »</b> <a href={0}>{1}</a>\n<b>✬ ᴅᴜʀᴧᴛɪᴏɴ »</b> {2} ᴍɪɴᴜᴛᴇs\n<b>✭ ʙʏ »</b> {3}</blockquote>\n<blockquote><b>⚜️ ᴍᴀɪɴᴛᴀɪɴᴇᴅ ʙʏ ➛  [˹ᴀɴɴᴜ_ʙᴏᴛs˼](https://t.me/annu_updates)</b></blockquote>"
-stream_2 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>❍ sᴛʀᴇᴧᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>✭ ʙʏ »</b> {0}</blockquote>"
+stream_1 : "<blockquote><b>✨ sσηɪᴄ sєssɪση ɪηɪᴛɪᴧᴛєᴅ | єɴᴊσʏ ᴛʜє ϻᴜsɪᴄ |</b></blockquote>\n<blockquote expandable><b>🎵 ᴧᴜsᴛɪᴄ |</b> <a href={0}>{1}</a>\n<b>⏳ єηᴅᴜʀᴧηᴄє |</b> {2} ϻɪηs\n<b>👤 ɪηɪᴛɪᴧᴛσꝛ |</b> {3}‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ ‎ </blockquote>"
+stream_2 : "<blockquote><b>✨ sσηɪᴄ sєssɪση ɪηɪᴛɪᴧᴛєᴅ | єɴᴊσʏ ᴛʜє ϻᴜsɪᴄ |</b></blockquote>\n<blockquote expandable><b>🎧 sᴛꝛєᴧϻ ᴛʏᴘє :</b> ʟɪᴠє sᴛꝛєᴧϻ [ 𝖴𝗋𝗅 ]\n<b>👤 ɪηɪᴛɪᴧᴛσꝛ |</b> {0}</blockquote>"
+
 
 CLOSE_BUTTON  : "ᴄʟσsє ⌫"
 BACK_BUTTON : "ʙᴧᴄᴋ ⟲"
@@ -184,15 +185,15 @@ BACK_BUTTON : "ʙᴧᴄᴋ ⟲"
 NEXT_PAGE: "▷"
 BACK_PAGE: "◁"
 
-S_B_1 : "✙ ʌᴅᴅ ϻє ✙"
-S_B_2 : "sᴜᴘᴘᴏꝛᴛ"
-S_B_3 : "✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙"
-S_B_4 : "ʜᴇʟᴘ ᴧиᴅ ᴄᴏᴍᴍᴧɴᴅs"
-S_B_5 : "ᴏᴡɴᴇꝛ"
-S_B_6 : "ᴜᴘᴅᴀᴛᴇ"
-S_B_7 : "sᴏᴜꝛᴄᴇ"
-S_B_8 : "ʏᴏᴜ-ᴛᴜʙᴇ"
-S_B_9 : "sᴜᴘᴘᴏꝛᴛ"
+S_B_1 : " 𝐀ᴅᴅ 𝐌єєʜ ☊₊ "
+S_B_2 : "𝛅υᴘᴘσꝛᴛ ☏︎"
+S_B_3 : " ☊₊ 𝐈‌ηᴛєɢꝛᴧᴛє 𝐈‌η 𝐘‌συꝛ 𝐂‌ʜᴧᴛ ₊☊ "
+S_B_4 : " ♫︎ 𝐇єʟᴘ 𝐀ηᴅ 𝐂σϻϻᴧηᴅ ♫︎ "
+S_B_5 : "⌯ σᴡηᴇʀ ⌯"
+S_B_6 : "⎘ 𝐔ᴘᴅᴧᴛєs ⎘ "
+S_B_7 : "𝛅σᴜꝛᴄє"
+S_B_8 : " 👀 ʏσυᴛυʙє "
+S_B_9 : " 🛠️ 𝛅συꝛᴄє ᴄσᴅє "
 
 H_B_1 : "• ᴧᴅϻɪη •"
 H_B_2 : "• ᴧυᴛʜ •"
