@@ -320,7 +320,7 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
         draw.text((TITLE_X, VIEWS_Y), f"Views | {views}",
                   fill=(190, 190, 190), font=axiom_font)
 
-        draw.text((TITLE_X, PLAYER_Y), f"Player | @PikachuCloneRobot",
+        draw.text((TITLE_X, PLAYER_Y), f"Player | @Kirtiprobot",
                   fill=(190, 190, 190), font=axiom_font)
 
         draw.text((TITLE_X, DEV_Y), "",
@@ -334,7 +334,7 @@ async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = T
             clean_name = re.sub(r'<[^>]+>', '', str(user_name)).strip()
         
         if not clean_name:
-            clean_name = "Kanha"
+            clean_name = "BADNAM"
         
         prefix_text = "Requested By | "
         draw.text((TITLE_X, DEV_Y), prefix_text, 
