@@ -175,7 +175,7 @@ queue_7 : "\nᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ 
 queue_8 : "<b>{0} ᴘʟᴀʏᴇʀ</b>\n\n🎄 <b>sᴛʀᴇᴀᴍɪɴɢ :</b> {1}\n\n🔗 <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> {2}\n🥀 <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ :</b> {3}\n{4}"
 
 
-stream_1 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>✯ ᴛɪᴛᴛʟᴇ »</b> <a href={0}>{1}</a>\n<b>✬ ᴅᴜʀᴧᴛɪᴏɴ »</b> {2} ᴍɪɴᴜᴛᴇs\n<b>✭ ʙʏ »</b> {3}</blockquote>\n<blockquote><b>❖  ᴍᴧᴅᴇ  ʙʏ ➛  [ᴀᴠɪᴋ #ʙоᴛѕ](https://t.me/annu_updates)</b></blockquote>"
+stream_1 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>✯ ᴛɪᴛᴛʟᴇ »</b> <a href={0}>{1}</a>\n<b>✬ ᴅᴜʀᴧᴛɪᴏɴ »</b> {2} ᴍɪɴᴜᴛᴇs\n<b>✭ ʙʏ »</b> {3}</blockquote>\n<blockquote><b>❖  ᴍᴧᴅᴇ  ʙʏ ➛  [ᴋɪʀᴛɪ #ʙоᴛѕ](https://t.me/annu_updates)</b></blockquote>"
 stream_2 : "<b><blockquote>✮ sᴛᴧʀᴛᴇᴅ sᴛʀᴇᴧᴍɪɴɢ ɴᴏᴡ ✮</blockquote></b>\n<blockquote><b>❍ sᴛʀᴇᴧᴍ ᴛʏᴘᴇ :</b> ʟɪᴠᴇ sᴛʀᴇᴀᴍ [ᴜʀʟ]\n<b>✭ ʙʏ »</b> {0}</blockquote>"
 
 
