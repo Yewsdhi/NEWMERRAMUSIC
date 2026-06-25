@@ -15,14 +15,14 @@ import re
 import urllib.parse
 
 import aiohttp
-from py_yt import Playlist, Recommendations, VideosSearch
+from py_yt import VideosSearch
 
-from KartikMusic import logger
-from KartikMusic.helpers import Track, utils
+from ShiviMusic import logger
+from ShiviMusic.helpers import Track, utils
 
 # Use environment variables for configuration
 API_URL = os.getenv("API_URL", "https://web.riteshyt.in").rstrip("/")
-API_KEY = os.getenv("API_KEY", "ritesh_free_3349aed8ab6e1bcd3e51999c")
+API_KEY = os.getenv("API_KEY", "ritesh_free_685dfab16ef20daa781e65a1")
 
 
 async def download_assistant(query: str, dl_type: str) -> str:
