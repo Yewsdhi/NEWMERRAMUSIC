@@ -14,9 +14,9 @@ from pyrogram.types import Message
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
-from AarumiMusic import LOGGER
-from AarumiMusic.utils.database import is_on_off
-from AarumiMusic.utils.formatters import time_to_seconds
+from ShiviMusic import LOGGER
+from ShiviMusic.utils.database import is_on_off
+from ShiviMusic.utils.formatters import time_to_seconds
 from config import YT_API_KEY, YTPROXY_URL as YTPROXY
 from py_yt import VideosSearch
 logger = LOGGER(__name__)
