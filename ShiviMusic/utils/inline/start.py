@@ -1,7 +1,6 @@
 from pyrogram.types import InlineKeyboardButton
 
 import config
-from pyrogram.enums import ButtonStyle
 from ShiviMusic import app
 
 # ── Premium emoji IDs (Emoji_fan37_by_TgEmodziBot pack) ──
