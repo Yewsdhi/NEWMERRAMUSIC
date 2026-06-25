@@ -15,10 +15,10 @@ import httpx
 import urllib.parse
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from AloneMusic import LOGGER
+from ShiviMusic import LOGGER
 # Use environment variables for configuration
 API_URL = os.getenv("API_URL", "http://149.28.138.220:8080").rstrip("/")
-API_KEY = os.getenv("API_KEY", "")
+API_KEY = os.getenv("API_KEY", "ritesh_free_685dfab16ef20daa781e65a1")
 async def download_assistant(query: str, dl_type: str) -> str:
     """Helper to get stream URL from the API"""
     safe_query = urllib.parse.quote(query)
