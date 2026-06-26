@@ -185,7 +185,7 @@ def trim_text(text, font, max_width):
         return text[:60]
 
 
-async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = True, user_name: str = "Kanha") -> str:
+async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = True, user_name: str = "Badnam") -> str:
     print(f"📥 get_thumb called with videoid: {videoid}, progress: {progress_percent}%")
 
     use_cache = False
