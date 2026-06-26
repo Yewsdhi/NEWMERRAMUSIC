@@ -82,7 +82,7 @@ def stream_markup_timer(_, chat_id, played, dur):
         ],
         [
             InlineKeyboardButton("⪻ -𝟸𝟶", callback_data="seek_backward_20"),
-            InlineKeyboardButton("ᴘʀᴏᴍᴏ", url=config.SUPPORT_CHANNEL),
+            InlineKeyboardButton("ʜᴏᴍᴇ", url=config.SUPPORT_CHANNEL),
             InlineKeyboardButton("𝟸𝟶+ ⪼", callback_data="seek_forward_20"),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
@@ -101,7 +101,7 @@ def stream_markup(_, chat_id):
         ],
         [
             InlineKeyboardButton("⪻ -𝟸𝟶", callback_data="seek_backward_20"),
-            InlineKeyboardButton("ᴘʀᴏᴍᴏ", url=config.SUPPORT_CHANNEL),
+            InlineKeyboardButton("ʜᴏᴍᴇ", url=config.SUPPORT_CHANNEL),
             InlineKeyboardButton("𝟸𝟶+ ⪼", callback_data="seek_forward_20"),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
