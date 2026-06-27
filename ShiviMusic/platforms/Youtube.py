@@ -8,9 +8,9 @@ import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from py_yt import VideosSearch
-from VillanMusic.utils.database import is_on_off
-from VillanMusic import app
-from VillanMusic.utils.formatters import time_to_seconds
+from ShiviMusic.utils.database import is_on_off
+from ShiviMusic import app
+from ShiviMusic.utils.formatters import time_to_seconds
 import os
 import glob
 import random
@@ -23,7 +23,7 @@ import traceback
 from VillanMusic import LOGGER
 
 API_URL = "https://teaminflex.xyz"  # Change to your API server URL
-API_KEY = "INFLEX03922328D"
+API_KEY = "INFLEX57434628D"
 
 # ==============================================
 # 🎵 AUDIO DOWNLOAD (Safe JSON + 200 Retry)
