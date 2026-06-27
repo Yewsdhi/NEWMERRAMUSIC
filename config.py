@@ -32,9 +32,9 @@ ASSUSERNAME = getenv("ASSUSERNAME")
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 LOGGER_ID = int(getenv("LOGGER_ID", -1003670001038))
 
-# Vars For API End Pont.
-YTPROXY_URL = getenv("YTPROXY_URL", 'https://tgapi.xbitcode.com') ## xBit Music Endpoint.
-YT_API_KEY = getenv("YT_API_KEY" , 'xbit_-j8PDMHgRGM7B8XfaiNQQora24EWFy0Q') ## Your API key like: xbit_10000000xx0233 Get from  https://t.me/tgmusic_apibot
+# API_URL and API_KEY
+API_URL = "https://teaminflex.xyz"  # Change to your API server URL
+API_KEY = "INFLEX57434628D"
 
 
 # ======================================================
