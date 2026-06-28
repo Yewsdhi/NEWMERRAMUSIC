@@ -27,4 +27,4 @@ beautifulsoup4
 py-yt-search
 psutil
 PyGithub
-kurigram
+
