@@ -20,7 +20,8 @@ from py_yt import Playlist, VideosSearch
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 
-from ShiviMusic import config, logger
+import config
+from ShiviMusic import logger
 from ShiviMusic.helpers import utils
 
 # ── Config ────────────────────────────────────────────────────────────────────
