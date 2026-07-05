@@ -23,7 +23,31 @@ from pyrogram.types import Message
 import config
 from ShiviMusic import LOGGER
 logger = LOGGER("ShiviMusic.platforms.Youtube")
-from ShiviMusic.helpers import utils
+
+from dataclasses import dataclass
+
+@dataclass
+class Track:
+    id: str
+    title: str
+    url: str
+    duration: str
+    duration_sec: int
+    thumbnail: str
+    video: bool
+    time: int
+    user: str = None
+    channel_name: str = None
+    message_id: int = None
+
+from ShiviMusic.utils.formatters import time_to_seconds
+
+class UtilsDummy:
+    @staticmethod
+    def to_seconds(time_val):
+        return time_to_seconds(time_val)
+
+utils = UtilsDummy()
 
 # ── Config ────────────────────────────────────────────────────────────────────
 RAILWAY_YT_API_URL  = getattr(config, "RAILWAY_YT_API_URL",  None)
@@ -286,7 +310,6 @@ class YouTube:
         video: bool = False,
     ):
         """Search YouTube and return a Track dataclass or None."""
-        from ishu.helpers._dataclass import Track
 
         try:
             results = VideosSearch(query.strip(), limit=1)
@@ -423,7 +446,6 @@ class YouTube:
         video: bool = False,
     ) -> list:
         """Fetch playlist tracks, return list of Track dataclasses."""
-        from ishu.helpers._dataclass import Track
 
         link = _normalize_youtube_link(link)
         try:
