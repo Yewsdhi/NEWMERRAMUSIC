@@ -35,7 +35,7 @@ LOGGER_ID = int(getenv("LOGGER_ID", -1003670001038))
 # Railway self-hosted YouTube API
 
 self.RAILWAY_YT_API_URL = getenv("RAILWAY_YT_API_URL", "https://youtube-api-saas-backend.onrender.com"                              
-self.RAILWAY_YT_API_KEY = getenv("RAILWAY_YT_API_KEY", "lily_DtIqoatiu0UmmR4faSAhtiBjFWTxGuyn")
+self.RAILWAY_YT_API_KEY = getenv("RAILWAY_YT_API_KEY", "lily_DtIqoatiu0UmmR4faSAhtiBjFWTxGuyn"
 
 
 # ======================================================
