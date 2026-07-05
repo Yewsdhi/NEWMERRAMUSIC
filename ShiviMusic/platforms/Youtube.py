@@ -21,7 +21,8 @@ from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 
 import config
-from ShiviMusic import logger
+from ShiviMusic import LOGGER
+logger = LOGGER("ShiviMusic.platforms.Youtube")
 from ShiviMusic.helpers import utils
 
 # ── Config ────────────────────────────────────────────────────────────────────
