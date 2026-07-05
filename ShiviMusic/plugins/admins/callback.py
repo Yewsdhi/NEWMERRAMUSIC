@@ -13,7 +13,7 @@ from pyrogram.types import CallbackQuery
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from ShiviMusic import YouTube, app
+from ShiviMusic import YouTube, app, config
 from ShiviMusic.core.call import Shivi
 from ShiviMusic.misc import SUDOERS, db
 from ShiviMusic.utils.database import (

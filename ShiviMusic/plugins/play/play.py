@@ -363,7 +363,7 @@ async def play_commnd(
             return await mystic.delete()
         else:
             try:
-                await Sona.stream_call(url)
+                await Shivi.stream_call(url)
             except NoActiveGroupCall:
                 await mystic.edit_text(_["black_9"])
                 return await app.send_message(

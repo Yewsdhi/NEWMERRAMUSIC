@@ -11,6 +11,8 @@
 from ShiviMusic.misc import SUDOERS
 from ShiviMusic.utils.database import get_lang, is_maintenance
 from strings import get_string
+from ShiviMusic import app
+from config import SUPPORT_CHAT
 
 
 def language(mystic):

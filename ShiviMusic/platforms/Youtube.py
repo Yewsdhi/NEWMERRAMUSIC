@@ -16,7 +16,7 @@ from typing import Union
 
 import aiohttp
 import yt_dlp
-from py_yt import VideosSearch
+from py_yt import Playlist, VideosSearch
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 
