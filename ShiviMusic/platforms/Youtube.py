@@ -405,16 +405,18 @@ class YouTube:
             return 1, stdout.decode().split("\n")[0]
         return 0, stderr.decode()
 
-    # ── Download (main method called by play.py / calls.py) ──────────────────
     async def download(
         self,
         video_id: str,
+        mystic=None,
         video: bool = False,
-        title: str | None = None,
-    ) -> str | None:
+        videoid: bool = False,
+        *args,
+        **kwargs
+    ) -> tuple[str | None, bool]:
         """
         Download audio/video by video_id using only Railway YT API.
-        Returns file path or None.
+        Returns (file path, direct_flag) or (None, False).
         """
         self.dl_stats["total_requests"] += 1
         link = _normalize_youtube_link(video_id, self.base)
@@ -429,13 +431,14 @@ class YouTube:
                     video_id,
                     "video" if video else "audio",
                 )
+                return result, True
             else:
                 self.dl_stats["failed"] += 1
-            return result
+                return None, False
         except Exception as e:
             self.dl_stats["failed"] += 1
             logger.warning("YouTube.download error for '%s': %s", video_id, e)
-            return None
+            return None, False
 
     # ── Playlist ──────────────────────────────────────────────────────────────
     async def playlist(
