@@ -476,3 +476,5 @@ class YouTube:
                 time         = int(_time.time()),
             ))
         return tracks
+
+YouTubeAPI = YouTube
