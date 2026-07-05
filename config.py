@@ -40,7 +40,7 @@ RAILWAY_YT_API_URL = getenv(
 
 RAILWAY_YT_API_KEY = getenv(
     "RAILWAY_YT_API_KEY",
-    "lily_DtIqoatiu0UmmR4faSAhtiBjFWTxGuyn"
+    "lily_ET32aq9zFK71L8HfVuyBEYjaZ0fuiNC"
 )
 
 
