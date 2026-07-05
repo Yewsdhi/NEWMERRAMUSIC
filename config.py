@@ -32,9 +32,8 @@ ASSUSERNAME = getenv("ASSUSERNAME")
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 LOGGER_ID = int(getenv("LOGGER_ID", -1003670001038))
 
-# API_URL and API_KEY
-API_URL = "https://teaminflex.xyz"  # Change to your API server URL
-API_KEY = "INFLEX57434628D"
+RAILWAY_YT_API_URL=https://youtube-api-saas-backend.onrender.com
+RAILWAY_YT_API_KEY=lily_DtIqoatiu0UmmR4faSAhtiBjFWTxGuyn
 
 
 # ======================================================
