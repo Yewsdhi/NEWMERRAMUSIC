@@ -5,10 +5,10 @@ from typing import Union
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch
+from py_yt import Playlist, VideosSearch
 import aiohttp
 
-API_URL = os.environ.get("SHRUTI_API_URL", "https://api.shrutibots.site")
+API_URL = os.environ.get("SHRUTI_API_URL", "https://api01.shrutibots.site")
 
 API_KEY = os.environ.get("SHRUTI_API_KEY", "ShrutiBots3OYSuzKa7u0PyQi3ifqT") ## Get This API KEY FROM TELEGRAM BOT USERNAME: @SHRUTIAPIBOT 
 
