@@ -15,7 +15,7 @@ import config
 from ShiviMusic import YouTube, app
 from ShiviMusic.core.call import Shivi
 from ShiviMusic.misc import db
-from ShiviMusic.utils.database import get_loop
+from ShiviMusic.utils.database import get_loop, is_autoplay_on
 from ShiviMusic.utils.decorators import AdminRightsCheck
 from ShiviMusic.utils.inline import close_markup, stream_markup
 from ShiviMusic.utils.stream.autoclear import auto_clean
@@ -50,6 +50,16 @@ async def skip(cli, message: Message, _, chat_id):
                             if popped:
                                 await auto_clean(popped)
                             if not check:
+                                started = False
+                                if popped and await is_autoplay_on(chat_id):
+                                    started = await Shivi.autoplay_start(
+                                        chat_id,
+                                        popped.get("chat_id", chat_id),
+                                        popped.get("title"),
+                                        popped.get("vidid"),
+                                    )
+                                if started:
+                                    return
                                 try:
                                     await message.reply_text(
                                         text=_["admin_6"].format(
@@ -60,8 +70,8 @@ async def skip(cli, message: Message, _, chat_id):
                                     )
                                     await Shivi.stop_stream(chat_id)
                                 except:
-                                    return
-                                break
+                                    pass
+                                return
                     else:
                         return await message.reply_text(_["admin_11"].format(count))
                 else:
@@ -78,6 +88,16 @@ async def skip(cli, message: Message, _, chat_id):
             if popped:
                 await auto_clean(popped)
             if not check:
+                started = False
+                if await is_autoplay_on(chat_id):
+                    started = await Shivi.autoplay_start(
+                        chat_id,
+                        popped.get("chat_id", chat_id),
+                        popped.get("title"),
+                        popped.get("vidid"),
+                    )
+                if started:
+                    return
                 await message.reply_text(
                     text=_["admin_6"].format(
                         message.from_user.mention, message.chat.title
