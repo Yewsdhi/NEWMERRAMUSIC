@@ -1,146 +1,110 @@
-from pyrogram import Client, filters
-from pyrogram.types import Message
+# ===========================================================
+# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
+#
+# This source code is under MIT License 📜
+# ❌ Unauthorized forking, importing, or using this code
+#    without giving proper credit will result in legal action ⚠️
+#
+# 📩 DM for permission : @TheSigmaCoder
+# ===========================================================
+
+import random
+
 from py_yt import VideosSearch
 
 # =========================================================
-# AUTOPLAY STORAGE (temporary in-memory)
+# PER-CHAT PLAY HISTORY (in-memory, session based)
+# Used only to make sure autoplay never repeats a song it
+# already played for that chat.
 # =========================================================
-AUTO_PLAY_CHATS = set()
-LAST_PLAYED = {}
+_HISTORY_LIMIT = 50
+_played_history: dict[int, list[str]] = {}
 
-def is_autoplay_enabled(chat_id: int) -> bool:
-    return chat_id in AUTO_PLAY_CHATS
 
-def enable_autoplay(chat_id: int):
-    AUTO_PLAY_CHATS.add(chat_id)
+def remember_played(chat_id: int, vidid: str):
+    if not vidid:
+        return
+    hist = _played_history.setdefault(chat_id, [])
+    if vidid in hist:
+        hist.remove(vidid)
+    hist.append(vidid)
+    if len(hist) > _HISTORY_LIMIT:
+        del hist[: len(hist) - _HISTORY_LIMIT]
 
-def disable_autoplay(chat_id: int):
-    AUTO_PLAY_CHATS.discard(chat_id)
 
-def save_last_played(chat_id: int, title: str):
-    if title:
-        LAST_PLAYED[chat_id] = title
+def _history(chat_id: int) -> list:
+    return _played_history.get(chat_id, [])
 
-def get_last_played(chat_id: int):
-    return LAST_PLAYED.get(chat_id)
 
-# =========================================================
-# COMMANDS
-# /autoplay
-# /autoplay on
-# /autoplay off
-# /autoplayon
-# /autoplayoff
-# =========================================================
-@Client.on_message(filters.command(["autoplay", "autoplayon", "autoplayoff"]) & filters.group)
-async def autoplay_cmd(client: Client, message: Message):
-    chat_id = message.chat.id
-    cmd = message.command[0].lower()
+def clear_history(chat_id: int):
+    _played_history.pop(chat_id, None)
 
-    if cmd == "autoplayon":
-        enable_autoplay(chat_id)
-        return await message.reply_text("✅ **AutoPlay Enabled**")
 
-    if cmd == "autoplayoff":
-        disable_autoplay(chat_id)
-        return await message.reply_text("❌ **AutoPlay Disabled**")
-
-    # /autoplay
-    if len(message.command) == 1:
-        status = "ON" if is_autoplay_enabled(chat_id) else "OFF"
-        return await message.reply_text(
-            f"🎵 **AutoPlay Status:** `{status}`\n\n"
-            f"**Use:**\n"
-            f"`/autoplay on`\n"
-            f"`/autoplay off`"
+def _extract_candidates(results, chat_id: int, skip_history: bool):
+    candidates = []
+    played = [] if skip_history else _history(chat_id)
+    for video in results:
+        vidid = video.get("id")
+        title = video.get("title")
+        link = video.get("link")
+        duration = video.get("duration")
+        if not (vidid and title and link and duration):
+            continue
+        if vidid in played:
+            continue
+        thumbs = video.get("thumbnails") or []
+        thumb = thumbs[0].get("url", "").split("?")[0] if thumbs else None
+        candidates.append(
+            {
+                "vidid": vidid,
+                "title": title,
+                "link": link,
+                "duration_min": duration,
+                "thumb": thumb,
+            }
         )
+    return candidates
 
-    # /autoplay on/off
-    mode = message.command[1].lower()
 
-    if mode == "on":
-        enable_autoplay(chat_id)
-        return await message.reply_text("✅ **AutoPlay Enabled**")
-
-    if mode == "off":
-        disable_autoplay(chat_id)
-        return await message.reply_text("❌ **AutoPlay Disabled**")
-
-    return await message.reply_text(
-        "❌ **Usage:**\n\n"
-        "`/autoplay on`\n"
-        "`/autoplay off`"
-    )
-
-# =========================================================
-# YOUTUBE RELATED SEARCH
-# =========================================================
-async def get_related_song(query: str):
-    try:
-        search = VideosSearch(query, limit=5)
-        results = search.result().get("result", [])
-
-        if not results:
-            return None
-
-        for video in results:
-            title = video.get("title")
-            url = video.get("link")
-            duration = video.get("duration", "Unknown")
-
-            if title and url:
-                return {
-                    "title": title,
-                    "url": url,
-                    "duration": duration
-                }
-
+async def fetch_autoplay_track(chat_id: int, seed_title: str):
+    """
+    Searches YouTube using the last played song's title and returns a
+    random track that this chat hasn't already heard in this session.
+    Returns None if nothing usable could be found.
+    """
+    if not seed_title:
         return None
+
+    query = f"{seed_title}"
+    try:
+        search = VideosSearch(query, limit=20)
+        data = await search.next()
+        results = data.get("result", []) if isinstance(data, dict) else []
     except Exception as e:
         print(f"[AUTOPLAY SEARCH ERROR] {e}")
         return None
 
-# =========================================================
-# MAIN AUTOPLAY HANDLER
-# NOTE:
-# play_func must accept: (chat_id, url, title)
-# Example:
-# async def play_func(chat_id, url, title):
-#     await stream_song(chat_id, url, title)
-# =========================================================
-async def run_autoplay(client, chat_id: int, play_func):
-    try:
-        if not is_autoplay_enabled(chat_id):
-            return False
+    if not results:
+        return None
 
-        last_song = get_last_played(chat_id)
-        if not last_song:
-            print(f"[AUTOPLAY] No last song found for {chat_id}")
-            return False
+    candidates = _extract_candidates(results, chat_id, skip_history=False)
 
-        recommended = await get_related_song(last_song + " official audio")
-        if not recommended:
-            print(f"[AUTOPLAY] No recommendation found for {last_song}")
-            return False
+    if not candidates:
+        # Everything from this search was already played recently.
+        # Reset the history for this chat and try again from the same
+        # result set so autoplay never just stalls out.
+        clear_history(chat_id)
+        candidates = _extract_candidates(results, chat_id, skip_history=True)
 
-        title = recommended["title"]
-        url = recommended["url"]
+    if not candidates:
+        return None
 
-        save_last_played(chat_id, title)
+    return random.choice(candidates)
 
-        await play_func(chat_id, url, title)
-
-        try:
-            await client.send_message(
-                chat_id,
-                f"🎵 **AutoPlay Started**\n\n"
-                f"▶️ **Now Playing:** **{title}**"
-            )
-        except Exception as e:
-            print(f"[AUTOPLAY MESSAGE ERROR] {e}")
-
-        return True
-
-    except Exception as e:
-        print(f"[AUTOPLAY RUN ERROR] {e}")
-        return False
+# ===========================================================
+# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 😎
+#
+# 🧑‍💻 Developer : t.me/TheSigmaCoder
+# 🔗 Source link : GitHub.com/Im-Notcoder/Shivi-V2
+# 📢 Telegram channel : t.me/Purvi_Bots
+# ===========================================================
