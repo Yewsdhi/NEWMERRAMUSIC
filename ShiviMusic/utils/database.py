@@ -32,6 +32,7 @@ skipdb = mongodb.skipmode
 sudoersdb = mongodb.sudoers
 usersdb = mongodb.tgusersdb
 playlistdb = mongodb.playlist
+autoplaydb = mongodb.autoplaymode
 
 
 # Shifting to memory [mongo sucks often]
@@ -43,6 +44,7 @@ count = {}
 channelconnect = {}
 langm = {}
 loop = {}
+autoplaycache = {}
 maintenance = []
 nonadmin = {}
 pause = {}
@@ -282,6 +284,28 @@ async def get_loop(chat_id: int) -> int:
 
 async def set_loop(chat_id: int, mode: int):
     loop[chat_id] = mode
+
+
+async def is_autoplay_on(chat_id: int) -> bool:
+    cached = autoplaycache.get(chat_id)
+    if cached is not None:
+        return cached
+    data = await autoplaydb.find_one({"chat_id": chat_id})
+    status = bool(data)
+    autoplaycache[chat_id] = status
+    return status
+
+
+async def autoplay_on(chat_id: int):
+    autoplaycache[chat_id] = True
+    await autoplaydb.update_one(
+        {"chat_id": chat_id}, {"$set": {"chat_id": chat_id}}, upsert=True
+    )
+
+
+async def autoplay_off(chat_id: int):
+    autoplaycache[chat_id] = False
+    await autoplaydb.delete_one({"chat_id": chat_id})
 
 
 async def get_cmode(chat_id: int) -> int:
