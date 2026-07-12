@@ -74,7 +74,7 @@ INFO_TEXT = """
 <b>● ᴘʀᴇᴍɪᴜᴍ ➠</b> {premium}
 <b>● ꜱᴄᴀᴍ ➠</b> {scam}
 
-<b>● ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➠ <a href="https://t.me/kriti_bot_update">˹ᴋɪʀᴛɪ ʙᴏᴛѕ˼</a></b>
+<b>● ᴘᴏᴡᴇʀᴇᴅ ʙʏ ➠ <a href="https://t.me/annu_updates">˹ᴋɪʀᴛɪ ʙᴏᴛѕ˼</a></b>
 """
 
 
