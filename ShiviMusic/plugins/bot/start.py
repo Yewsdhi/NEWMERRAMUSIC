@@ -144,13 +144,13 @@ async def start_pm(client, message: Message, _):
                 )
 
     else:
-        REVANGE = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
+       NEXIO = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
         await asyncio.sleep(0.4)
-        await REVANGE.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
+        await NEXIO.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
         await asyncio.sleep(0.4)
-        await REVANGE.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
+        await NEXIO.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
         await asyncio.sleep(0.4)
-        await REVANGE.delete()
+        await NEXIO.delete()
 
         out = private_panel(_)
         await message.reply_photo(
