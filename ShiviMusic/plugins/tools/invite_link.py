@@ -14,7 +14,7 @@ from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton
 
 from ShiviMusic import app
 from ShiviMusic.misc import SUDOERS
-from ShiviMusic.utils.shivi_BAN import admin_filter
+from ShiviMusic.utils.Shivi_BAN import admin_filter
 
 
 ADD_BUTTON = InlineKeyboardMarkup(
