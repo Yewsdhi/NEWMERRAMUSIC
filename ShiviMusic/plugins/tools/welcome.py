@@ -198,7 +198,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
-                        "✨ ᴧ ᴅ ᴅ  ᴍ є  ᴛ σ  ʏ σ υ ʀ  ɢ ʀ σ υ ᴘ ✦",
+                        "ᴧ ᴅ ᴅ ᴍ є ᴛ σ  ʏ σ υ ʀ ɢ ʀ σ υ ᴘ",
                         url=f"https://t.me/{app.username}?startgroup=true"
                     )
                 ]
