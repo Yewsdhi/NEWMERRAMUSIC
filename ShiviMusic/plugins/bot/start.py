@@ -14,12 +14,12 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
 from youtubesearchpython.__future__ import VideosSearch
 
 import config
-from REVANGEMUSIC import app
-from REVANGEMUSIC.misc import _boot_
-from REVANGEMUSIC.plugins.sudo.sudoers import sudoers_list
-from REVANGEMUSIC.utils.database import get_served_chats, get_served_users, get_sudoers
-from REVANGEMUSIC.utils import bot_sys_stats
-from REVANGEMUSIC.utils.database import (
+from ShiviMusic import app
+from ShiviMusic.misc import _boot_
+from ShiviMusic.plugins.sudo.sudoers import sudoers_list
+from ShiviMusic.utils.database import get_served_chats, get_served_users, get_sudoers
+from ShiviMusic.utils import bot_sys_stats
+from ShiviMusic.utils.database import (
     add_served_chat,
     add_served_user,
     blacklisted_chats,
@@ -27,9 +27,9 @@ from REVANGEMUSIC.utils.database import (
     is_banned_user,
     is_on_off,
 )
-from REVANGEMUSIC.utils.decorators.language import LanguageStart
-from REVANGEMUSIC.utils.formatters import get_readable_time
-from REVANGEMUSIC.utils.inline import help_pannel, private_panel, start_panel
+from ShiviMusic.utils.decorators.language import LanguageStart
+from ShiviMusic.utils.formatters import get_readable_time
+from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
@@ -52,7 +52,7 @@ NEXIO = [
 ]
 
 
-REVANGE_STKR = [
+SHIVI_STKR = [
     "CAACAgUAAxkBAAIBO2i1Spi48ZdWCNehv-GklSI9aRYWAAJ9GAACXB-pVds_sm8brMEqHgQ",
     "CAACAgUAAxkBAAIBOmi1Sogwaoh01l5-e-lJkK1VNY6MAAIlGAACKI6wVVNEvN-6z3Z7HgQ",
     "CAACAgUAAxkBAAIBPGi1Spv1tlx90xM1Q7TRNyL0fhcJAAKDGgACZSupVbmJpWW9LmXJHgQ",
@@ -89,7 +89,6 @@ async def start_pm(client, message: Message, _):
             keyboard = help_pannel(_)
             return await message.reply_photo(
                 random.choice(NEXIO),
-                has_spoiler=True,
                 message_effect_id=random.choice(EFFECT_IDS),
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
@@ -134,7 +133,6 @@ async def start_pm(client, message: Message, _):
             return await app.send_photo(
                 chat_id=message.chat.id,
                 photo=thumbnail,
-                has_spoiler=True,
                 message_effect_id=random.choice(EFFECT_IDS),
                 caption=searched_text,
                 reply_markup=key,
@@ -146,7 +144,7 @@ async def start_pm(client, message: Message, _):
                 )
 
     else:
-        REVANGE = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
+        SHIVI = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
         await asyncio.sleep(0.4)
         await REVANGE.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
         await asyncio.sleep(0.4)
@@ -157,7 +155,6 @@ async def start_pm(client, message: Message, _):
         out = private_panel(_)
         await message.reply_photo(
             random.choice(NEXIO),
-            has_spoiler=True,
             message_effect_id=random.choice(EFFECT_IDS),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
@@ -177,7 +174,6 @@ async def start_gp(client, message: Message, _):
     uptime = int(time.time() - _boot_)
     await message.reply_photo(
         random.choice(NEXIO),
-        has_spoiler=True,
         caption=_["start_1"].format(app.mention, get_readable_time(uptime)),
         reply_markup=InlineKeyboardMarkup(out),
     )
@@ -213,7 +209,6 @@ async def welcome(client, message: Message):
                 out = start_panel(_)
                 await message.reply_photo(
                     random.choice(NEXIO),
-                    has_spoiler=True,
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
