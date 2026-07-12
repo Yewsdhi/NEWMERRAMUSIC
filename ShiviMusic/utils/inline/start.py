@@ -23,7 +23,6 @@ def start_panel(_):
             InlineKeyboardButton(
                 text=_["S_B_1"],
                 url=f"https://t.me/{app.username}?startgroup=true",
-                icon_custom_emoji_id=4958489311726011319"
             ),
             InlineKeyboardButton(
                 text=_["S_B_2"],
