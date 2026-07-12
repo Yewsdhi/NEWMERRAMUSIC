@@ -146,11 +146,11 @@ async def start_pm(client, message: Message, _):
     else:
         SHIVI = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
         await asyncio.sleep(0.4)
-        await REVANGE.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
+        await SHIVI.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
         await asyncio.sleep(0.4)
-        await REVANGE.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
+        await SHIVI.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
         await asyncio.sleep(0.4)
-        await REVANGE.delete()
+        await SHIVI.delete()
 
         out = private_panel(_)
         await message.reply_photo(
