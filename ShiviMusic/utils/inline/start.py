@@ -23,19 +23,19 @@ def start_panel(_):
             InlineKeyboardButton(
                 text=_["S_B_1"],
                 url=f"https://t.me/{app.username}?startgroup=true",
-                icon_custom_emoji_id=_E_SPARK
+                icon_custom_emoji_id="4958489311726011319"
             ),
             InlineKeyboardButton(
                 text=_["S_B_2"],
                 url=config.SUPPORT_CHAT,
-                icon_custom_emoji_id=_E_SUPPORT
+                icon_custom_emoji_id="4958714479681471536"
             ),
         ],
         [
             InlineKeyboardButton(
                 text=_["S_B_4"],
                 url=f"https://t.me/{app.username}?start=help",
-                icon_custom_emoji_id=_E_BULB
+                icon_custom_emoji_id="4956420911310832630"
             ),
         ],
     ]
@@ -48,33 +48,33 @@ def private_panel(_):
             InlineKeyboardButton(
                 text=_["S_B_3"],
                 url=f"https://t.me/{app.username}?startgroup=true",
-                icon_custom_emoji_id=_E_SPARK
+                icon_custom_emoji_id="4956475826762679249"
             )
         ],
         [
             InlineKeyboardButton(
                 text=_["S_B_6"],
                 url=config.SUPPORT_CHANNEL,
-                icon_custom_emoji_id=_E_UPDATE
+                icon_custom_emoji_id="4956475826762679249"
             ),
             InlineKeyboardButton(
                 text=_["S_B_2"],
                 url=config.SUPPORT_CHAT,
-                icon_custom_emoji_id=_E_SUPPORT
+                icon_custom_emoji_id=4956475826762679249"
             ),
         ],
         [
             InlineKeyboardButton(
                 text=_["S_B_4"],
                 callback_data="settings_back_helper",
-                icon_custom_emoji_id=_E_BULB
+                icon_custom_emoji_id=4956475826762679249"
             ),
         ],
         [
             InlineKeyboardButton(
                 text=_["S_B_5"],
                 url=f"https://t.me/{_clean_username(config.OWNER_USERNAME)}",
-                icon_custom_emoji_id=_E_CROWN
+                icon_custom_emoji_id="4956475826762679249"
             ),
         ],
     ]
