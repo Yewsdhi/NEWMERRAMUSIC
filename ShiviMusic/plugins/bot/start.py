@@ -33,7 +33,7 @@ from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
-NEXIO = [
+badnam = [
     "https://files.catbox.moe/x5lytj.jpg",
     "https://files.catbox.moe/psya34.jpg",
     "https://files.catbox.moe/leaexg.jpg",
@@ -52,7 +52,7 @@ NEXIO = [
 ]
 
 
-SHIVI_STKR = [
+badnam_STKR = [
     "CAACAgUAAxkBAAIBO2i1Spi48ZdWCNehv-GklSI9aRYWAAJ9GAACXB-pVds_sm8brMEqHgQ",
     "CAACAgUAAxkBAAIBOmi1Sogwaoh01l5-e-lJkK1VNY6MAAIlGAACKI6wVVNEvN-6z3Z7HgQ",
     "CAACAgUAAxkBAAIBPGi1Spv1tlx90xM1Q7TRNyL0fhcJAAKDGgACZSupVbmJpWW9LmXJHgQ",
@@ -88,7 +88,7 @@ async def start_pm(client, message: Message, _):
         if name.startswith("help"):
             keyboard = help_pannel(_)
             return await message.reply_photo(
-                random.choice(NEXIO),
+                random.choice(badnam),
                 message_effect_id=random.choice(EFFECT_IDS),
                 caption=_["help_1"].format(config.SUPPORT_CHAT),
                 reply_markup=keyboard,
@@ -144,17 +144,17 @@ async def start_pm(client, message: Message, _):
                 )
 
     else:
-        SHIVI = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
+        badnam = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
         await asyncio.sleep(0.4)
-        await SHIVI.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
+        await badnam.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
         await asyncio.sleep(0.4)
-        await SHIVI.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
+        await badnam.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
         await asyncio.sleep(0.4)
-        await SHIVI.delete()
+        await badnam.delete()
 
         out = private_panel(_)
         await message.reply_photo(
-            random.choice(NEXIO),
+            random.choice(badnam),
             message_effect_id=random.choice(EFFECT_IDS),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
             reply_markup=InlineKeyboardMarkup(out),
@@ -208,7 +208,7 @@ async def welcome(client, message: Message):
 
                 out = start_panel(_)
                 await message.reply_photo(
-                    random.choice(NEXIO),
+                    random.choice(badnam),
                     caption=_["start_3"].format(
                         message.from_user.mention,
                         app.mention,
