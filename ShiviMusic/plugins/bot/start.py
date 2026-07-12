@@ -33,7 +33,7 @@ from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
-badnam = [
+REVANGE = [
     "https://files.catbox.moe/x5lytj.jpg",
     "https://files.catbox.moe/psya34.jpg",
     "https://files.catbox.moe/leaexg.jpg",
@@ -52,7 +52,7 @@ badnam = [
 ]
 
 
-badnam_STKR = [
+REVANGE_STKR = [
     "CAACAgUAAxkBAAIBO2i1Spi48ZdWCNehv-GklSI9aRYWAAJ9GAACXB-pVds_sm8brMEqHgQ",
     "CAACAgUAAxkBAAIBOmi1Sogwaoh01l5-e-lJkK1VNY6MAAIlGAACKI6wVVNEvN-6z3Z7HgQ",
     "CAACAgUAAxkBAAIBPGi1Spv1tlx90xM1Q7TRNyL0fhcJAAKDGgACZSupVbmJpWW9LmXJHgQ",
@@ -144,13 +144,13 @@ async def start_pm(client, message: Message, _):
                 )
 
     else:
-        badnam = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
+        REVANGE = await message.reply_text(f"**ʜᴇʏ ʙᴧʙʏ {message.from_user.mention}**")
         await asyncio.sleep(0.4)
-        await badnam.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
+        await REVANGE.edit_text("**ɪ ᴧᴍ ʏᴏᴜʀ ᴏᴡɴ ᴍᴜsɪᴄ ʙᴏᴛ..🦋**")
         await asyncio.sleep(0.4)
-        await badnam.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
+        await REVANGE.edit_text("**ʜᴏᴡ ᴧʀᴇ ʏᴏᴜ ᴛᴏᴅᴧʏ.....??**")
         await asyncio.sleep(0.4)
-        await badnam.delete()
+        await REVANGE.delete()
 
         out = private_panel(_)
         await message.reply_photo(
