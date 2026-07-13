@@ -32,16 +32,9 @@ ASSUSERNAME = getenv("ASSUSERNAME")
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 LOGGER_ID = int(getenv("LOGGER_ID", -1003670001038))
 
-# Railway self-hosted YouTube API
-RAILWAY_YT_API_URL = getenv(
-    "RAILWAY_YT_API_URL",
-    "https://youtube-api-saas-backend.onrender.com"
-)
+API_URL = "https://marco-yt-api-production.up.railway.app"
 
-RAILWAY_YT_API_KEY = getenv(
-    "RAILWAY_YT_API_KEY",
-    "lily_ET32aq9zFK71L8HfVuyBEYjaZ0fuiNC"
-)
+API_KEY = "MARCO_6F04BCE8B639A9421FD0CACC"
 
 
 
