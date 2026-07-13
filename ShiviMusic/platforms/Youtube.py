@@ -19,7 +19,7 @@ import aiohttp
 API_URL = os.environ.get("API_URL", "https://marco-yt-api-production.up.railway.app")
 
 # 🔑 बोट से जनरेट होने वाली 28-दिन वाली API KEY यहाँ डालें
-API_KEY = os.environ.get("API_KEY", "MARCO_6F04BCE8B639A9421FD0CACC")
+API_KEY = os.environ.get("API_KEY", "यहाँ_अपनी_बोट_की_एक_Valid_API_Key_डालें")
 
 DOWNLOAD_DIR = "downloads"
 
@@ -30,7 +30,7 @@ def time_to_seconds(time):
 
 
 async def download_from_marco_api(video_id: str, mode: str) -> str:
-    """FastAPI server"""
+    """आपके नए FastAPI सर्वर से डायरेक्ट हाई-स्पीड डाउनलोड लॉजिक"""
     os.makedirs(DOWNLOAD_DIR, exist_ok=True)
     ext = "mp3" if mode == "audio" else "mp4"
     file_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.{ext}")
