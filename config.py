@@ -32,10 +32,9 @@ ASSUSERNAME = getenv("ASSUSERNAME")
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
 LOGGER_ID = int(getenv("LOGGER_ID", -1003670001038))
 
-API_URL = "https://marco-yt-api-production.up.railway.app"
+API_URL = "https://teaminflex.xyz"
 
-API_KEY = "MARCO_6F04BCE8B639A9421FD0CACC"
-
+API_KEY = "INFLEX57606928D"
 
 
 # ======================================================
