@@ -8,11 +8,11 @@ from pyrogram.types import Message
 from py_yt import VideosSearch, Playlist
 import aiohttp
 
-API_URL = os.environ.get("SHRUTI_API_URL", "https://api.shrutibots.site")
+API_URL = os.environ.get("SHRUTI_API_URL", "https://api01.shrutibots.site")
 
 API_KEY = os.environ.get(
     "SHRUTI_API_KEY",
-    "ShrutiBotsAlSpfeG7JItQmuoxCqKd"
+    "ShrutiBots3OYSuzKa7u0PyQi3ifqT"
 )
 
 DOWNLOAD_DIR = "downloads"
