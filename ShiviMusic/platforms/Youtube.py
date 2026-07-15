@@ -5,15 +5,20 @@ from typing import Union
 import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
-from py_yt import VideosSearch, Playlist
+from youtubesearchpython.future import VideosSearch
 import aiohttp
 
-API_URL = os.environ.get("SHRUTI_API_URL", "https://api01.shrutibots.site")
+API_URL = os.environ.get("SHRUTI_API_URL", "https://api.shrutibots.site")
 
-API_KEY = os.environ.get("SHRUTI_API_KEY", "ShrutiBots3OYSuzKa7u0PyQi3ifqT") ## Get This API KEY FROM TELEGRAM BOT USERNAME: @SHRUTIAPIBOT 
+API_KEY = os.environ.get(
+    "SHRUTI_API_KEY",
+    "ShrutiBotsAlSpfeG7JItQmuoxCqKd"
+)
 
 DOWNLOAD_DIR = "downloads"
 
+# Cookie file path
+cookie_txt_file = os.environ.get("COOKIE_FILE", "cookies.txt")
 
 def time_to_seconds(time):
     stringt = str(time)
