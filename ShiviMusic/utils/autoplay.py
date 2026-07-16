@@ -8,8 +8,12 @@
 # 📩 DM for permission : @TheSigmaCoder
 # ===========================================================
 
+import asyncio
+import glob
+import os
 import random
 
+import yt_dlp
 from py_yt import VideosSearch
 
 # =========================================================
@@ -66,12 +70,99 @@ def _extract_candidates(results, chat_id: int, skip_history: bool):
     return candidates
 
 
-async def fetch_autoplay_track(chat_id: int, seed_title: str):
+# =========================================================
+# ASHOK-STYLE: YouTube Mix playlist ("RD" + videoID)
+# Genuinely YouTube's own "related songs" algorithm — much
+# better variety than a plain title-text search, which often
+# just returns covers/remixes of the same song.
+# =========================================================
+
+def _cookie_file():
+    folder = os.path.join(os.getcwd(), "ShiviMusic", "assets")
+    txt_files = glob.glob(os.path.join(folder, "*.txt"))
+    if not txt_files:
+        return None
+    return random.choice(txt_files)
+
+
+def _fetch_mix_sync(video_id: str, limit: int = 20) -> list:
+    ydl_opts = {
+        "quiet": True,
+        "extract_flat": True,
+        "skip_download": True,
+        "playlistend": limit,
+        "no_warnings": True,
+    }
+    cookiefile = _cookie_file()
+    if cookiefile:
+        ydl_opts["cookiefile"] = cookiefile
+    url = f"https://www.youtube.com/watch?v={video_id}&list=RD{video_id}"
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+    return (info or {}).get("entries") or []
+
+
+def _extract_mix_candidates(entries, chat_id: int, skip_history: bool):
+    candidates = []
+    played = [] if skip_history else _history(chat_id)
+    for e in entries or []:
+        if not e:
+            continue
+        vidid = e.get("id")
+        title = e.get("title")
+        if not (vidid and title):
+            continue
+        if vidid in played:
+            continue
+        duration = e.get("duration")
+        if isinstance(duration, (int, float)):
+            m, s = divmod(int(duration), 60)
+            duration_min = f"{m}:{s:02d}"
+        else:
+            duration_min = str(duration) if duration else "Live"
+        candidates.append(
+            {
+                "vidid": vidid,
+                "title": title,
+                "link": f"https://www.youtube.com/watch?v={vidid}",
+                "duration_min": duration_min,
+                "thumb": e.get("thumbnail")
+                or f"https://i.ytimg.com/vi/{vidid}/hqdefault.jpg",
+            }
+        )
+    return candidates
+
+
+async def _fetch_mix_candidates(chat_id: int, seed_vidid: str) -> list:
+    loop = asyncio.get_event_loop()
+    try:
+        entries = await loop.run_in_executor(None, _fetch_mix_sync, seed_vidid, 20)
+    except Exception as e:
+        print(f"[AUTOPLAY MIX ERROR] {e}")
+        return []
+
+    candidates = _extract_mix_candidates(entries, chat_id, skip_history=False)
+    if not candidates:
+        # Sab kuch is Mix se already played ho chuka -> history reset karke
+        # dobara try karo, taaki autoplay kabhi stall na ho
+        clear_history(chat_id)
+        candidates = _extract_mix_candidates(entries, chat_id, skip_history=True)
+    return candidates
+
+
+async def fetch_autoplay_track(chat_id: int, seed_title: str, seed_vidid: str = None):
     """
-    Searches YouTube using the last played song's title and returns a
-    random track that this chat hasn't already heard in this session.
-    Returns None if nothing usable could be found.
+    Primary: Ashok-Go style — seed video ka YouTube "Mix"/radio playlist
+    ("RD" + videoID) fetch karta hai, phir un candidates me se random pick.
+    Fallback: agar seed_vidid na ho ya Mix fetch fail ho jaaye (network
+    issue, video unavailable, etc.), purana title-text search wala
+    approach use hota hai — taaki autoplay kabhi silently stall na ho.
     """
+    if seed_vidid:
+        mix_candidates = await _fetch_mix_candidates(chat_id, seed_vidid)
+        if mix_candidates:
+            return random.choice(mix_candidates)
+
     if not seed_title:
         return None
 
