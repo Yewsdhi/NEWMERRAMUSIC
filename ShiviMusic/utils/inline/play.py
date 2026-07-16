@@ -1,10 +1,7 @@
 import math
-from config import SUPPORT_CHAT, OWNER_USERNAME, SUPPORT_CHANNEL
-from pyrogram.types import InlineKeyboardButton, WebAppInfo
-from ShiviMusic import app
-import config
+from pyrogram.types import InlineKeyboardButton
 from ShiviMusic.utils.formatters import time_to_seconds
-
+from ShiviMusic import app
 
 def track_markup(_, videoid, user_id, channel, fplay):
     buttons = [
@@ -28,13 +25,14 @@ def track_markup(_, videoid, user_id, channel, fplay):
     return buttons
 
 
-def stream_markup_timer(_, chat_id, played, dur, autoplay_on: bool = False):
+def stream_markup_timer(_, chat_id, played, dur):
     played_sec = time_to_seconds(played)
     duration_sec = time_to_seconds(dur)
 
     remaining_sec = duration_sec - played_sec
     if remaining_sec < 0:
         remaining_sec = 0
+
     rem_min = remaining_sec // 60
     rem_sec = remaining_sec % 60
     remaining = f"{rem_min:02d}:{rem_sec:02d}"
@@ -64,44 +62,47 @@ def stream_markup_timer(_, chat_id, played, dur, autoplay_on: bool = False):
         bar = "|━━━━━━━━━⚪|"
 
     buttons = [
-        [InlineKeyboardButton(text=f"{played} {bar} -{remaining}", url=f"https://t.me/{app.username}?startgroup=true")],
+        [
+            InlineKeyboardButton(
+                text=f"{played} {bar} {remaining}",
+                callback_data="GetTimer",
+            )
+        ],
         [
             InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="⎘", callback_data=f"ADMIN OtherOPEN|{chat_id}"),
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
             InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="⪻ -𝟸𝟻s", callback_data=f"backward_25|{chat_id}"),
-            InlineKeyboardButton(text="+𝟸𝟻s ⪼", callback_data=f"forward_25|{chat_id}"),
+            InlineKeyboardButton(text="⪻ -𝟸𝟶s", callback_data="seek_backward_20"),
+            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="+𝟸𝟶s ⪼", callback_data="seek_forward_20"),
         ],
         [
-
             InlineKeyboardButton(text="✙ 𝐀ᴅᴅ 𝐌є", url=f"https://t.me/{app.username}?startgroup=true"),
-            InlineKeyboardButton(text="𝐔ᴘᴅᴧᴛєs ⎈", url=SUPPORT_CHANNEL),
+            InlineKeyboardButton(text="𝐂ʟᴏsᴇ[✗]", callback_data="close"),
         ],
     ]
     return buttons
 
 
-def stream_markup(_, chat_id, autoplay_on: bool = False):
+def stream_markup(_, chat_id):
     buttons = [
         [
             InlineKeyboardButton(text="❚❚", callback_data=f"ADMIN Pause|{chat_id}"),
             InlineKeyboardButton(text="▷", callback_data=f"ADMIN Resume|{chat_id}"),
-            InlineKeyboardButton(text="⎘", callback_data=f"ADMIN OtherOPEN|{chat_id}"),
             InlineKeyboardButton(text="▢", callback_data=f"ADMIN Stop|{chat_id}"),
             InlineKeyboardButton(text="‣‣I", callback_data=f"ADMIN Skip|{chat_id}"),
         ],
         [
-            InlineKeyboardButton(text="⪻ -𝟸𝟻s", callback_data=f"backward_25|{chat_id}"),
-            InlineKeyboardButton(text="+𝟸𝟻s ⪼", callback_data=f"forward_25|{chat_id}"),
+            InlineKeyboardButton(text="⪻ -𝟸𝟶s", callback_data="seek_backward_20"),
+            InlineKeyboardButton(text="↻", callback_data=f"ADMIN Replay|{chat_id}"),
+            InlineKeyboardButton(text="+𝟸𝟶s ⪼", callback_data="seek_forward_20"),
         ],
         [
-
             InlineKeyboardButton(text="✙ 𝐀ᴅᴅ 𝐌є", url=f"https://t.me/{app.username}?startgroup=true"),
-              InlineKeyboardButton(text="𝐔ᴘᴅᴧᴛєs ⎈", url=SUPPORT_CHANNEL),
+            InlineKeyboardButton(text="𝐂ʟᴏsᴇ[✗]", callback_data="close"),
         ],
     ]
     return buttons
@@ -112,11 +113,11 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
-                callback_data=f"Shivilaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
+                callback_data=f"ShiviPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
-                callback_data=f"Shivilaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
+                callback_data=f"ShiviPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
             ),
         ],
         [
