@@ -284,9 +284,26 @@ class Call(PyTgCalls):
         if seed_vidid:
             remember_played(chat_id, seed_vidid)
 
-        track = await fetch_autoplay_track(chat_id, seed_title)
-        if not track:
+        status_msg = None
+        try:
+            status_msg = await app.send_message(
+                original_chat_id,
+                "ʜσʟᴅ ση...\n\nᴅσᴡηʟσᴧᴅɪηɢ ηєxᴛ ϻєᴅɪᴧ ғʀσϻ ᴛʜє ǫυєυє.",
+            )
+        except Exception:
+            status_msg = None
+
+        async def _fail() -> bool:
+            if status_msg:
+                try:
+                    await status_msg.delete()
+                except Exception:
+                    pass
             return False
+
+        track = await fetch_autoplay_track(chat_id, seed_title, seed_vidid)
+        if not track:
+            return await _fail()
 
         language = await get_lang(chat_id)
         _ = get_string(language)
@@ -296,9 +313,9 @@ class Call(PyTgCalls):
                 track["vidid"], None, videoid=True
             )
         except Exception:
-            return False
+            return await _fail()
         if not file_path:
-            return False
+            return await _fail()
 
         remember_played(chat_id, track["vidid"])
         title = track["title"].title()
@@ -322,7 +339,7 @@ class Call(PyTgCalls):
         try:
             await self._play_on_assistant(assistant, chat_id, stream)
         except Exception:
-            return False
+            return await _fail()
 
         try:
             img = await gen_thumb(track["vidid"])
@@ -342,6 +359,12 @@ class Call(PyTgCalls):
             db[chat_id][0]["markup"] = "stream"
         except Exception:
             pass
+
+        if status_msg:
+            try:
+                await status_msg.delete()
+            except Exception:
+                pass
 
         return True
 
