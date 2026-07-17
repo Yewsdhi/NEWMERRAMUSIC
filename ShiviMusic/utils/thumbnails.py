@@ -68,7 +68,7 @@ class Thumbnail:
                 await asyncio.sleep(1)
         return output_path
 
-    from typing import Any
+    from typing import ShiviMusic
 
 async def generate(self, song: Any) -> str:
     
