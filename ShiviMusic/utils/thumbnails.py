@@ -68,7 +68,10 @@ class Thumbnail:
                 await asyncio.sleep(1)
         return output_path
 
-    async def generate(self, song: Track) -> str:
+    from typing import Any
+
+async def generate(self, song: Any) -> str:
+    
         try:
             os.makedirs("cache", exist_ok=True)
             temp = f"cache/temp_{song.id}.jpg"
