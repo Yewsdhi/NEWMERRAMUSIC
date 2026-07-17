@@ -1,407 +1,191 @@
+# Copyright (c) 2025 TheHamkerAlone 
+# Licensed under the MIT License.
+# This file is part of AloneX
+
 import os
+import asyncio
+import numpy as np
 import re
-import random
-import time
-import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageEnhance
-from py_yt import VideosSearch
-from config import YOUTUBE_IMG_URL
+from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
+from collections import Counter
+from ishu import config
+from ishu.helpers import Track
 
-FONT_TITLE = "ShiviMusic/assets/f (1).ttf"
-FONT_AXIOM = "ShiviMusic/assets/f (1).ttf"
-FONT_META  = "ShiviMusic/assets/cfont (1).ttf"
-FONT_TIME  = "ShiviMusic/assets/cfont (1).ttf"
+try:
+    from unidecode import unidecode
+except ImportError:
+    def unidecode(text):
+        return text
 
-CACHE_DIR = "cache"
-os.makedirs(CACHE_DIR, exist_ok=True)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FONT_TITLE_PATH = os.path.join(BASE_DIR, "font.ttf")
+FONT_INFO_PATH = os.path.join(BASE_DIR, "font2.ttf")
+TEMPLATE_PATH = os.path.join(BASE_DIR, "..", "assets", "template.png")
 
-COLOR_PALETTE = [
-    (0, 230, 118), (124, 77, 255), (255, 23, 68), (255, 109, 0),
-    (0, 176, 255), (255, 193, 7), (233, 30, 99), (0, 200, 150),
-    (156, 39, 176), (255, 87, 34), (33, 150, 243), (76, 175, 80),
-    (255, 152, 0), (121, 85, 72), (96, 125, 139), (244, 67, 54),
-    (232, 30, 99), (103, 58, 183), (63, 81, 181), (3, 169, 244),
-    (0, 188, 212), (0, 150, 136), (139, 195, 74), (205, 220, 57),
-    (255, 235, 59), (255, 64, 129), (224, 64, 251), (92, 107, 192),
-    (68, 138, 255), (0, 229, 255), (29, 233, 182), (118, 255, 3),
-    (176, 255, 0), (238, 255, 65), (255, 234, 0), (255, 214, 0),
-    (255, 145, 0), (255, 82, 82), (255, 128, 171), (255, 179, 207),
-    (234, 199, 255), (209, 196, 233), (197, 202, 233), (197, 214, 255),
-    (178, 235, 242), (178, 223, 219), (200, 230, 201), (220, 237, 200),
-    (240, 244, 195), (255, 249, 196), (255, 236, 179), (255, 224, 178),
-    (255, 204, 188), (255, 205, 210), (252, 228, 236), (243, 229, 245),
-    (237, 231, 246), (232, 234, 246), (227, 242, 253), (224, 247, 250),
-    (224, 242, 241), (232, 245, 233), (241, 248, 233), (249, 251, 231),
-    (255, 252, 225), (255, 248, 225), (255, 243, 224), (251, 233, 231),
-    (255, 235, 238), (255, 99, 71), (255, 140, 0), (255, 215, 0),
-    (50, 205, 50), (64, 224, 208), (72, 61, 139), (95, 158, 160),
-    (100, 149, 237), (102, 205, 170), (106, 90, 205), (112, 128, 144),
-    (119, 136, 153), (123, 104, 238), (127, 255, 0), (127, 255, 212),
-    (128, 0, 0), (128, 0, 128), (128, 128, 0), (135, 206, 235),
-    (135, 206, 250), (138, 43, 226), (139, 69, 19), (143, 188, 143),
-    (144, 238, 144), (147, 112, 219), (148, 0, 211), (152, 251, 152),
-    (153, 50, 204), (154, 205, 50), (160, 82, 45), (165, 42, 42),
-    (169, 169, 169), (173, 216, 230), (175, 238, 238), (176, 196, 222),
-    (176, 224, 230), (178, 34, 34), (184, 134, 11), (186, 85, 211),
-    (188, 143, 143), (189, 183, 107), (192, 192, 192), (199, 21, 133),
-    (205, 92, 92), (205, 133, 63), (208, 32, 144), (210, 105, 30),
-    (210, 180, 140), (216, 191, 216), (218, 112, 214), (218, 165, 32),
-    (219, 112, 147), (220, 20, 60), (220, 220, 220), (221, 160, 221),
-    (222, 184, 135), (224, 255, 255), (230, 230, 250), (233, 150, 122),
-    (238, 130, 238), (238, 221, 130), (238, 232, 170), (240, 128, 128),
-    (240, 230, 140), (240, 248, 255), (240, 255, 240), (240, 255, 255),
-    (244, 164, 96), (245, 222, 179), (245, 245, 220), (245, 245, 245),
-    (245, 255, 250), (246, 255, 237), (248, 248, 255), (249, 255, 240),
-    (250, 128, 114), (250, 235, 215), (250, 240, 230), (253, 245, 230),
-    (255, 0, 0), (255, 0, 255), (255, 20, 147), (255, 218, 185),
-    (255, 222, 173), (255, 228, 185), (255, 228, 196), (255, 228, 225),
-    (255, 239, 213), (255, 240, 245), (255, 245, 238), (255, 250, 205),
-    (255, 250, 240), (255, 250, 250), (255, 255, 0), (255, 255, 224),
-    (255, 255, 240), (255, 255, 250), (255, 255, 245),
-    (0, 0, 0), (25, 25, 112), (30, 144, 255), (46, 139, 87),
-    (47, 79, 79), (60, 179, 113), (65, 105, 225), (70, 130, 180),
-    (72, 209, 204), (75, 0, 130), (85, 107, 47), (100, 0, 0),
-    (105, 105, 105), (111, 0, 255), (118, 0, 255), (120, 0, 255),
-    (125, 0, 255), (130, 0, 255), (135, 0, 255), (140, 0, 255),
-    (145, 0, 255), (150, 0, 255), (155, 0, 255), (160, 0, 255),
-    (165, 0, 255), (170, 0, 255), (175, 0, 255), (180, 0, 255),
-    (185, 0, 255), (190, 0, 255), (195, 0, 255), (200, 0, 255),
-    (205, 0, 255), (210, 0, 255), (215, 0, 255), (220, 0, 255),
-    (225, 0, 255), (230, 0, 255), (235, 0, 255), (240, 0, 255),
-    (245, 0, 255), (250, 0, 255), (255, 0, 250), (255, 0, 245),
-    (255, 0, 240), (255, 0, 235), (255, 0, 230), (255, 0, 225),
-    (255, 0, 220), (255, 0, 215), (255, 0, 210), (255, 0, 205),
-    (255, 0, 200), (255, 0, 195), (255, 0, 190), (255, 0, 185),
-    (255, 0, 180), (255, 0, 175), (255, 0, 170), (255, 0, 165),
-    (255, 0, 160), (255, 0, 155), (255, 0, 150), (255, 0, 145),
-    (255, 0, 140), (255, 0, 135), (255, 0, 130), (255, 0, 125),
-    (255, 0, 120), (255, 0, 115), (255, 0, 110), (255, 0, 105),
-    (255, 0, 100), (255, 0, 95), (255, 0, 90), (255, 0, 85),
-    (255, 0, 80), (255, 0, 75), (255, 0, 70), (255, 0, 65),
-    (255, 0, 60), (255, 0, 55), (255, 0, 50), (255, 0, 45),
-    (255, 0, 40), (255, 0, 35), (255, 0, 30), (255, 0, 25),
-    (255, 0, 20), (255, 0, 15), (255, 0, 10), (255, 0, 5),
-    (255, 5, 0), (255, 10, 0), (255, 15, 0), (255, 20, 0),
-    (255, 25, 0), (255, 30, 0), (255, 35, 0), (255, 40, 0),
-    (255, 45, 0), (255, 50, 0), (255, 55, 0), (255, 60, 0),
-    (255, 65, 0), (255, 70, 0), (255, 75, 0), (255, 80, 0),
-    (255, 85, 0), (255, 90, 0), (255, 95, 0), (255, 100, 0),
-    (255, 105, 0), (255, 110, 0), (255, 115, 0), (255, 120, 0),
-    (255, 125, 0), (255, 130, 0), (255, 135, 0), (255, 140, 0),
-    (255, 145, 0), (255, 150, 0), (255, 155, 0), (255, 160, 0),
-    (255, 165, 0), (255, 170, 0), (255, 175, 0), (255, 180, 0),
-    (255, 185, 0), (255, 190, 0), (255, 195, 0), (255, 200, 0),
-    (255, 205, 0), (255, 210, 0), (215, 255, 0), (220, 255, 0),
-    (225, 255, 0), (230, 255, 0), (235, 255, 0), (240, 255, 0),
-    (245, 255, 0), (255, 250, 0), (250, 255, 0), (245, 255, 0),
-    (240, 255, 0), (235, 255, 0), (230, 255, 0), (225, 255, 0),
-    (220, 255, 0), (215, 255, 0), (210, 255, 0), (205, 255, 0),
-    (200, 255, 0), (195, 255, 0), (190, 255, 0), (185, 255, 0),
-    (180, 255, 0), (175, 255, 0), (170, 255, 0), (165, 255, 0),
-    (160, 255, 0), (155, 255, 0), (150, 255, 0), (145, 255, 0),
-    (140, 255, 0), (135, 255, 0), (130, 255, 0), (125, 255, 0),
-    (120, 255, 0), (115, 255, 0), (110, 255, 0), (105, 255, 0),
-    (100, 255, 0), (95, 255, 0), (90, 255, 0), (85, 255, 0),
-    (80, 255, 0), (75, 255, 0), (70, 255, 0), (65, 255, 0),
-    (60, 255, 0), (55, 255, 0), (50, 255, 0), (45, 255, 0),
-    (40, 255, 0), (35, 255, 0), (30, 255, 0), (25, 255, 0),
-    (20, 255, 0), (15, 255, 0), (10, 255, 0), (5, 255, 0),
-    (0, 255, 5), (0, 255, 10), (0, 255, 15), (0, 255, 20),
-    (0, 255, 25), (0, 255, 30), (0, 255, 35), (0, 255, 40),
-    (0, 255, 45), (0, 255, 50), (0, 255, 55), (0, 255, 60),
-    (0, 255, 65), (0, 255, 70), (0, 255, 75), (0, 255, 80),
-    (0, 255, 85), (0, 255, 90), (0, 255, 95), (0, 255, 100),
-    (0, 255, 105), (0, 255, 110), (0, 255, 115), (0, 255, 120),
-    (0, 255, 125), (0, 255, 130), (0, 255, 135), (0, 255, 140),
-    (0, 255, 145), (0, 255, 150), (0, 255, 155), (0, 255, 160),
-    (0, 255, 165), (0, 255, 170), (0, 255, 175), (0, 255, 180),
-    (0, 255, 185), (0, 255, 190), (0, 255, 195), (0, 255, 200),
-    (0, 255, 205), (0, 255, 210), (0, 255, 215), (0, 255, 220),
-    (0, 255, 225), (0, 255, 230), (0, 255, 235), (0, 255, 240),
-    (0, 255, 245), (0, 255, 250), (0, 250, 255), (0, 245, 255),
-    (0, 240, 255), (0, 235, 255), (0, 230, 255), (0, 225, 255),
-    (0, 220, 255), (0, 215, 255), (0, 210, 255), (0, 205, 255),
-    (0, 200, 255), (0, 195, 255), (0, 190, 255), (0, 185, 255),
-    (0, 180, 255), (0, 175, 255), (0, 170, 255), (0, 165, 255),
-    (0, 160, 255), (0, 155, 255), (0, 150, 255), (0, 145, 255),
-    (0, 140, 255), (0, 135, 255), (0, 130, 255), (0, 125, 255),
-    (0, 120, 255), (0, 115, 255), (0, 110, 255), (0, 105, 255),
-    (0, 100, 255), (0, 95, 255), (0, 90, 255), (0, 85, 255),
-    (0, 80, 255), (0, 75, 255), (0, 70, 255), (0, 65, 255),
-    (0, 60, 255), (0, 55, 255), (0, 50, 255), (0, 45, 255),
-    (0, 40, 255), (0, 35, 255), (0, 30, 255), (0, 25, 255),
-    (0, 20, 255), (0, 15, 255), (0, 10, 255), (0, 5, 255),
-    (5, 0, 255), (10, 0, 255), (15, 0, 255), (20, 0, 255),
-    (25, 0, 255), (30, 0, 255), (35, 0, 255), (40, 0, 255),
-    (45, 0, 255), (50, 0, 255), (55, 0, 255), (60, 0, 255),
-    (65, 0, 255), (70, 0, 255), (75, 0, 255), (80, 0, 255),
-    (85, 0, 255), (90, 0, 255), (95, 0, 255), (100, 0, 255),
-    (105, 0, 255), (110, 0, 255), (115, 0, 255), (120, 0, 255),
-    (125, 0, 255), (130, 0, 255), (135, 0, 255), (140, 0, 255),
-    (145, 0, 255), (150, 0, 255), (155, 0, 255), (160, 0, 255),
-    (165, 0, 255), (170, 0, 255), (175, 0, 255), (180, 0, 255),
-    (185, 0, 255), (190, 0, 255), (195, 0, 255), (200, 0, 255),
-    (205, 0, 255), (210, 0, 255), (215, 0, 255), (220, 0, 255),
-    (225, 0, 255), (230, 0, 255), (235, 0, 255), (240, 0, 255),
-    (245, 0, 255), (250, 0, 255),
-]
-
-THUMB_SIZE = 420
-THUMB_X = 60
-THUMB_Y = (720 - THUMB_SIZE) // 2
-THUMB_RADIUS = 50
-
-TITLE_X = THUMB_X + THUMB_SIZE + 50
-TITLE_Y = THUMB_Y + 20
-META_Y = TITLE_Y + 75
-VIEWS_Y = META_Y + 55
-PLAYER_Y = VIEWS_Y + 55
-DEV_Y = PLAYER_Y + 55
-REQUESTED_Y = DEV_Y + 55
-
-BAR_X = TITLE_X
-BAR_Y = REQUESTED_Y + 85
-BAR_WIDTH = 630
-BAR_HEIGHT = 8
-
-TIME_Y = BAR_Y + 35
-
-MAX_TITLE_WIDTH = 630
-
-
-def trim_text(text, font, max_width):
+def safe_font(path, size):
     try:
-        if hasattr(font, 'getlength'):
-            if font.getlength(text) <= max_width:
-                return text
-            for i in range(len(text) - 1, 0, -1):
-                if font.getlength(text[:i] + "…") <= max_width:
-                    return text[:i] + "…"
-            return "…"
-        else:
-            return text[:60]
-    except:
-        return text[:60]
+        return ImageFont.truetype(path, size)
+    except Exception:
+        return ImageFont.load_default()
 
+class Thumbnail:
+    def __init__(self):
+        self.size = (1280, 720)
+        self.font_title = safe_font(FONT_TITLE_PATH, 26)
+        self.font_info = safe_font(FONT_INFO_PATH, 20)
 
-async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = True, user_name: str = "Badnam") -> str:
-    print(f"📥 get_thumb called with videoid: {videoid}, progress: {progress_percent}%")
+    async def start(self):
+        os.makedirs("cache", exist_ok=True)
 
-    use_cache = False
-    
-    timestamp = int(time.time()) if not use_cache else 0
-    cache_path = os.path.join(CACHE_DIR, f"{videoid}_p{progress_percent}_t{timestamp}.png")
-    
-    if use_cache and os.path.exists(cache_path):
-        return cache_path
+        if not os.path.exists(FONT_TITLE_PATH):
+            print(f"Missing font: {FONT_TITLE_PATH}")
 
-    thumb_path = os.path.join(CACHE_DIR, f"thumb_{videoid}.png")
-    accent = random.choice(COLOR_PALETTE)
+        if not os.path.exists(FONT_INFO_PATH):
+            print(f"Missing font: {FONT_INFO_PATH}")
 
-    try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        results_data = await results.next()
-        data = results_data.get("result", [{}])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Song")).title()
-        thumbnail_url = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown")
-        channel = data.get("channel", {}).get("name", "YouTube")
-    except:
-        title, thumbnail_url, duration, views, channel = (
-            "Song", YOUTUBE_IMG_URL, None, "Unknown", "YouTube"
-        )
+        if not os.path.exists(TEMPLATE_PATH):
+            print(f"Missing template: {TEMPLATE_PATH}")
 
-    is_live = not duration or str(duration).strip().lower() in {"", "live"}
-    duration_text = "LIVE" if is_live else (duration or "0:00")
+        return True
 
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(thumbnail_url, timeout=10) as resp:
-                if resp.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
-                        await f.write(await resp.read())
-    except:
-        return YOUTUBE_IMG_URL
+    async def save_thumb(self, output_path: str, url: str) -> str:
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+        }
+        for attempt in range(3):
+            try:
+                if url.startswith("http"):
+                    async with aiohttp.ClientSession(headers=headers) as session:
+                        async with session.get(url, timeout=15) as resp:
+                            if resp.status == 200:
+                                content = await resp.read()
+                                with open(output_path, "wb") as f:
+                                    f.write(content)
+                                return output_path
+            except Exception as e:
+                if attempt == 2:
+                    print(f"Error saving thumb: {e}")
+                await asyncio.sleep(1)
+        return output_path
 
-    try:
-        base = Image.open(thumb_path).convert("RGBA")
-        base = base.resize((1280, 720), Image.LANCZOS)
-        base = ImageEnhance.Brightness(base).enhance(1.1)
-        bg = base.filter(ImageFilter.GaussianBlur(50))
-        dark = Image.new("RGBA", bg.size, (0, 0, 0, 100))
-        bg = Image.alpha_composite(bg, dark)
+    async def generate(self, song: Track) -> str:
+        try:
+            os.makedirs("cache", exist_ok=True)
+            temp = f"cache/temp_{song.id}.jpg"
+            final_path = f"cache/{song.id}.png"
+            if os.path.exists(final_path):
+                return final_path
 
-        border_layer = Image.new("RGBA", (1280, 720), (0, 0, 0, 0))
-        bd = ImageDraw.Draw(border_layer)
-        
-        bd.rectangle((0, 0, 1279, 719), outline=accent, width=6)
-        
-        inner_glow_params = [
-            (2, 250), (4, 235), (6, 218), (8, 195), (10, 172),
-            (12, 150), (14, 130), (16, 112), (18, 95), (20, 80),
-            (22, 65), (24, 52), (26, 40), (28, 30), (30, 22), (32, 15)
-        ]
-        
-        for inset, alpha in inner_glow_params:
-            bd.rectangle(
-                (inset, inset, 1279 - inset, 719 - inset),
-                outline=(*accent, alpha),
-                width=2
-            )
+            await self.save_thumb(temp, song.thumbnail)
             
-        bg = Image.alpha_composite(bg, border_layer)
+            try:
+                src = Image.open(temp).convert("RGBA")
+            except Exception:
+                try:
+                    src = Image.new("RGBA", (1280, 720), (30, 30, 30, 255))
+                except Exception:
+                    return config.DEFAULT_THUMB
 
-        thumb_img = Image.open(thumb_path).convert("RGBA")
-        thumb_img = thumb_img.resize((THUMB_SIZE, THUMB_SIZE), Image.LANCZOS)
-        thumb_img = ImageEnhance.Brightness(thumb_img).enhance(1.1)
+            W, H = self.size
 
-        thumb_mask = Image.new("L", (THUMB_SIZE, THUMB_SIZE), 0)
-        ImageDraw.Draw(thumb_mask).rounded_rectangle(
-            (0, 0, THUMB_SIZE, THUMB_SIZE), radius=THUMB_RADIUS, fill=255
-        )
-
-        shadow = Image.new("RGBA", (1280, 720), (0, 0, 0, 0))
-        sd = ImageDraw.Draw(shadow)
-        sd.rounded_rectangle(
-            (THUMB_X - 8, THUMB_Y - 8,
-             THUMB_X + THUMB_SIZE + 8, THUMB_Y + THUMB_SIZE + 8),
-            radius=THUMB_RADIUS + 10, fill=(*accent, 140)
-        )
-        shadow = shadow.filter(ImageFilter.GaussianBlur(25))
-        bg = Image.alpha_composite(bg, shadow)
-
-        thumb_glow = Image.new("RGBA", (1280, 720), (0, 0, 0, 0))
-        tg = ImageDraw.Draw(thumb_glow)
-        
-        for spread, alpha in [(32, 15), (30, 22), (28, 30), (26, 40), (24, 52), (22, 65), (20, 80), (18, 95), 
-                              (16, 112), (14, 130), (12, 150), (10, 172), (8, 195), (6, 218), (4, 235), (2, 250)]:
-            tg.rounded_rectangle(
-                (THUMB_X - spread, THUMB_Y - spread,
-                 THUMB_X + THUMB_SIZE + spread, THUMB_Y + THUMB_SIZE + spread),
-                radius=THUMB_RADIUS + spread,
-                outline=(*accent, alpha),
-                width=3
-            )
-        
-        for inner, alpha in [(3, 120), (6, 80)]:
-            tg.rounded_rectangle(
-                (THUMB_X + inner, THUMB_Y + inner,
-                 THUMB_X + THUMB_SIZE - inner, THUMB_Y + THUMB_SIZE - inner),
-                radius=THUMB_RADIUS - inner,
-                outline=(*accent, alpha),
-                width=2
-            )
-        
-        bg = Image.alpha_composite(bg, thumb_glow)
-        bg.paste(thumb_img, (THUMB_X, THUMB_Y), thumb_mask)
-
-        draw = ImageDraw.Draw(bg)
-
-        try:
-            title_font = ImageFont.truetype(FONT_TITLE, 52)
-            axiom_font = ImageFont.truetype(FONT_AXIOM, 30)
-            meta_font = ImageFont.truetype(FONT_META, 32)
-            time_font = ImageFont.truetype(FONT_TIME, 28)
-        except:
-            title_font = ImageFont.load_default()
-            axiom_font = title_font
-            meta_font = title_font
-            time_font = title_font
-
-        trimmed = trim_text(title, title_font, MAX_TITLE_WIDTH)
-        draw.text((TITLE_X + 1, TITLE_Y + 1), trimmed, fill=(0, 0, 0, 100), font=title_font)
-        draw.text((TITLE_X, TITLE_Y), trimmed, fill="white", font=title_font)
-
-        draw.text((TITLE_X, META_Y), f"Channel | {channel}",
-                  fill=(190, 190, 190), font=axiom_font)
-
-        draw.text((TITLE_X, VIEWS_Y), f"Views | {views}",
-                  fill=(190, 190, 190), font=axiom_font)
-
-        draw.text((TITLE_X, PLAYER_Y), f"Player | @Kirtiprobot",
-                  fill=(190, 190, 190), font=axiom_font)
-
-        draw.text((TITLE_X, DEV_Y), "",
-                  fill=(190, 190, 190), font=axiom_font)
-
-        try:
-            from unidecode import unidecode
-            clean_name = re.sub(r'<[^>]+>', '', str(user_name))
-            clean_name = unidecode(clean_name).strip()
-        except:
-            clean_name = re.sub(r'<[^>]+>', '', str(user_name)).strip()
-        
-        if not clean_name:
-            clean_name = "BADNAM"
-        
-        prefix_text = "Requested By | "
-        draw.text((TITLE_X, DEV_Y), prefix_text, 
-                  fill=(190, 190, 190), font=axiom_font)
-        
-        prefix_width = axiom_font.getlength(prefix_text)
-        draw.text((TITLE_X + prefix_width, DEV_Y), clean_name, 
-                  fill=accent, font=axiom_font)
-
-        bar_end = BAR_X + BAR_WIDTH
-        draw.rounded_rectangle(
-            [(BAR_X, BAR_Y), (bar_end, BAR_Y + BAR_HEIGHT)],
-            radius=10, fill=(60, 60, 60)
-        )
-
-        progress = int(BAR_WIDTH * (progress_percent / 100))
-        draw.rounded_rectangle(
-            [(BAR_X, BAR_Y), (BAR_X + progress, BAR_Y + BAR_HEIGHT)],
-            radius=10, fill=accent
-        )
-
-        cx, cy = BAR_X + progress, BAR_Y + BAR_HEIGHT // 2
-        
-        for glow_size, alpha in [(12, 30), (8, 60), (4, 100)]:
-            draw.ellipse([(cx - glow_size, cy - glow_size), 
-                         (cx + glow_size, cy + glow_size)],
-                        fill=(*accent, alpha))
-        
-        draw.ellipse([(cx - 3, cy - 3), (cx + 3, cy + 3)], fill="white")
-
-        try:
-            if duration and ":" in str(duration):
-                parts = str(duration).split(":")
-                if len(parts) == 2:
-                    total_seconds = int(parts[0]) * 60 + int(parts[1])
-                elif len(parts) == 3:
-                    total_seconds = int(parts[0]) * 3600 + int(parts[1]) * 60 + int(parts[2])
-                else:
-                    total_seconds = 0
-                
-                current_seconds = int((progress_percent / 100) * total_seconds)
-                current_minutes = current_seconds // 60
-                current_secs = current_seconds % 60
-                current_time = f"{current_minutes}:{current_secs:02d}"
+            # 1. BLURRED BACKGROUND from song image
+            bg_ratio = W / H
+            src_ratio = src.width / src.height
+            if src_ratio > bg_ratio:
+                new_w = int(src.height * bg_ratio)
+                offset = (src.width - new_w) // 2
+                bg = src.crop((offset, 0, offset + new_w, src.height))
             else:
-                current_time = "0:00"
-        except:
-            current_time = "0:00"
+                new_h = int(src.width / bg_ratio)
+                offset = (src.height - new_h) // 2
+                bg = src.crop((0, offset, src.width, offset + new_h))
 
-        draw.text((BAR_X, TIME_Y), current_time, fill=(200, 200, 200), font=time_font)  
-        total = duration_text if not is_live else "LIVE"
-        draw.text((bar_end - 50, TIME_Y), total, fill=(200, 200, 200), font=time_font)  
+            bg = bg.resize((W, H), Image.Resampling.LANCZOS)
+            bg = bg.filter(ImageFilter.GaussianBlur(25))
 
-        bg = bg.convert("RGB")
-        bg.save(cache_path, "PNG", quality=100)
-        print(f"✓ Thumbnail saved with color RGB{accent} | Progress: {progress_percent}%")
+            # Darken slightly
+            bg_overlay = Image.new("RGBA", (W, H), (0, 0, 0, 100))
+            bg = Image.alpha_composite(bg, bg_overlay)
 
-    except Exception as e:
-        import traceback
-        print(f"Error: {e}")
-        traceback.print_exc()
-        return YOUTUBE_IMG_URL
-    finally:
-        try:
-            if os.path.exists(thumb_path):
-                os.remove(thumb_path)
-        except:
-            pass
+            # 2. LOAD TEMPLATE & extract UI with soft alpha
+            if os.path.exists(TEMPLATE_PATH):
+                tpl = Image.open(TEMPLATE_PATH).convert("RGBA")
+                tpl = tpl.resize((W, H), Image.Resampling.LANCZOS)
 
-    return cache_path
+                tpl_arr = np.array(tpl).astype(float)
+                r, g, b = tpl_arr[:,:,0], tpl_arr[:,:,1], tpl_arr[:,:,2]
+
+                d_bg = np.maximum(np.maximum(np.abs(r - 147.5), np.abs(g - 147.5)), np.abs(b - 147.5))
+                alpha = np.clip((d_bg - 8) / 17.0 * 255, 0, 255)
+                alpha[:, :640] = 0
+
+                tpl_arr[:,:,3] = alpha
+                tpl = Image.fromarray(tpl_arr.astype(np.uint8))
+                
+                bg = Image.alpha_composite(bg, tpl)
+
+            # 3. PASTE COVER ART & DROP SHADOW
+            cover_x, cover_y = 100, 104
+            cover_w, cover_h = 512, 512
+            cover_radius = 38
+
+            shadow_layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            shadow_draw = ImageDraw.Draw(shadow_layer)
+            shadow_draw.rounded_rectangle(
+                (cover_x + 6, cover_y + 8, cover_x + cover_w + 6, cover_y + cover_h + 8),
+                radius=cover_radius + 4,
+                fill=(0, 0, 0, 140),
+            )
+            shadow_layer = shadow_layer.filter(ImageFilter.GaussianBlur(18))
+            bg = Image.alpha_composite(bg, shadow_layer)
+
+            cover_resized = src.resize((cover_w, cover_h), Image.Resampling.LANCZOS)
+            cover_mask = Image.new("L", (cover_w, cover_h), 0)
+            ImageDraw.Draw(cover_mask).rounded_rectangle(
+                (0, 0, cover_w, cover_h), radius=cover_radius, fill=255
+            )
+            bg.paste(cover_resized, (cover_x, cover_y), cover_mask)
+
+            # 4. ADD TEXT 
+            draw = ImageDraw.Draw(bg)
+            text_x = 715
+            text_max_w = 320
+
+            def ellipsize(s, font, max_w):
+                if draw.textbbox((0, 0), s, font=font)[2] <= max_w:
+                    return s
+                lo, hi = 1, len(s)
+                best = "…"
+                while lo <= hi:
+                    mid = (lo + hi) // 2
+                    cand = s[:mid].rstrip() + "…"
+                    if draw.textbbox((0, 0), cand, font=font)[2] <= max_w:
+                        best = cand
+                        lo = mid + 1
+                    else:
+                        hi = mid - 1
+                return best
+
+            title_str = ellipsize(unidecode(str(song.title)), self.font_title, text_max_w)
+            title_y = cover_y + 12
+            draw.text((text_x, title_y), title_str, fill=(255, 255, 255, 255), font=self.font_title)
+
+            artist_str = ellipsize(unidecode(str(song.channel_name)), self.font_info, text_max_w + 60)
+            artist_y = title_y + 40
+            draw.text((text_x, artist_y), artist_str, fill=(200, 200, 200, 255), font=self.font_info)
+            
+            out = bg.convert("RGB")
+            out.save(final_path, "PNG")
+
+            try:
+                if os.path.exists(temp):
+                    os.remove(temp)
+            except Exception:
+                pass
+
+            return final_path
+
+        except Exception as e:
+            print(f"Error: {e}")
+            return config.DEFAULT_THUMB
