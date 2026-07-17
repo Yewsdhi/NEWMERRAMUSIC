@@ -1,16 +1,15 @@
 # Copyright (c) 2025 TheHamkerAlone 
 # Licensed under the MIT License.
 # This file is part of AloneX
-
 import os
-import asyncio
-import numpy as np
 import re
+import random
+import time
+import aiofiles
 import aiohttp
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont, ImageOps
-from collections import Counter
-from ishu import config
-from ishu.helpers import Track
+from PIL import Image, ImageDraw, ImageFilter, ImageFont, ImageEnhance
+from py_yt import VideosSearch
+from config import YOUTUBE_IMG_URL
 
 try:
     from unidecode import unidecode
