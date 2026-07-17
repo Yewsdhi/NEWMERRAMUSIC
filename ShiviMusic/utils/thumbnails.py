@@ -70,7 +70,7 @@ class Thumbnail:
 
     from typing import ShiviMusic
 
-async def generate(self, song: Any) -> str:
+async def generate(self, song: Shivi) -> str:
     
         try:
             os.makedirs("cache", exist_ok=True)
