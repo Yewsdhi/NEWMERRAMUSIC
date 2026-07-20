@@ -334,12 +334,4 @@ gban_9 : "<emoji id=6177218988141976689>💎</emoji> » تم رفع الحظر �
 gban_10 : "<emoji id=6177218988141976689>💎</emoji> » لا يوجد أي مستخدم محظور على مستوى البوت."
 gban_11 : "<emoji id=6177218988141976689>💎</emoji> » جاري جلب قائمة المستخدمين المحظورين على مستوى البوت..."
 gban_12 : "<emoji id=6177218988141976689>💎</emoji> 🙂 <b>قائمة المستخدمين المحظورين عالميًا :</b>\n\n"
-
-Maine kaha the normal hatane kiske button ke naakibtext ke text mr premium rahne di aur button ka ek sec
-
-Dekh isme CLOSE_BUTTON : "إغلاق <emoji id=6100670215522094562>❌</emoji>"
-
-
-Ye error deta ha ok aise rahna chihiye CLOSE_BUTTON : "إغلاق ❌" aise normal ok yaha sr yaha tak H_B_10 : "<emoji id=6177218988141976689>💎</emoji> بنج <emoji id=6177218988141976689>💎</emoji>" aise nahi 
-
-H_B_10 : "💎 بنج 💎" aisa rshan chahiye ek bhi button me premium nai hona chahiye varna pura string fat jayea smajh gye text me rahne de text me premium chhalega
+Ye error deta ha ok aise rahna chihiye CLOSE_BUTTON : "إغلاق ❌" aise normal ok yaha sr yaha tak H_B_10 : "<emoji id=6177218988141976689>💎</emoji> بنج <emoji id=6177218988141976689>💎</emoji>" 
