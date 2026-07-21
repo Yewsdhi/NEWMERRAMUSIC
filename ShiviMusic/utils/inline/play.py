@@ -66,7 +66,7 @@ def stream_markup_timer(_, chat_id, played, dur):
             InlineKeyboardButton(
                 text=f"{played} {bar} {remaining}",
                 callback_data="GetTimer",
-                icon_custom_emoji_id=5204046146955153467
+                icon_custom_emoji_id=5204046146955153467,
             )
         ],
         [
