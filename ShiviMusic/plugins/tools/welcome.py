@@ -184,21 +184,21 @@ async def greet_new_member(_, member: ChatMemberUpdated):
             chat_id,
             photo=welcomeimg,
             caption=f"""
-**🌸 ʜ є ʟ ʟ σ  ᴅ є ᴧ ʀ ✦ ᴡ є ʟ ᴄ σ ᴍ є : {member.chat.title}**
+**⏤͟͟͞͞★ ʜᴇʟʟᴏ ᴅᴇᴀʀ ᴡᴇʟᴄᴏᴍᴇ ᴛᴏ : {member.chat.title}**
 
-<u>**📋 s ʜ σ ʀ ᴛ  ɪ η ғ σ**</u>
+<u>**❖ ᴜsᴇʀ sʜᴏʀᴛ ɪɴғᴏ**</u>
 
-**🪪 η ᴧ ᴍ є »** {user.mention}
-**✦ ᴄ ʜ ᴧ ᴛ_ɪ ᴅ »** `{user.id}`
-**🔖 υ s є ʀ η ᴧ ᴍ є »** @{user.username}
+**➻ ɴᴀᴍᴇ »** {user.mention}
+**➻ ᴄʜᴀᴛ_ɪᴅ »** `{user.id}`
+**➻ ᴜ_ɴᴀᴍᴇ »** @{user.username}
 
-**🌸 ᴛ ʜ ᴧ η ᴋ s  ғ σ ʀ  ᴊ σ ɪ η ɪ η ɢ  ♡~!
+**➻ ᴛʜᴀɴᴋs ғᴏʀ ᴊᴏɪɴɪɴɢ ᴜs ⚡️~!
 ❅─────✧❅✦❅✧─────❅**
 """,
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
-                        "ᴧ ᴅ ᴅ ᴍ є ᴛ σ  ʏ σ υ ʀ ɢ ʀ σ υ ᴘ",
+                        "ᴀᴅᴅ ᴍᴇ ɪɴ ʏᴏᴜʀ ɢʀᴏᴜᴘ",
                         url=f"https://t.me/{app.username}?startgroup=true"
                     )
                 ]
@@ -206,7 +206,7 @@ async def greet_new_member(_, member: ChatMemberUpdated):
         )
 
         async def delete_welcome():
-            await asyncio.sleep(300)
+            await asyncio.sleep(10)
             try:
                 await msg.delete()
                 if f"welcome-{chat_id}" in temp.MELCOW:
