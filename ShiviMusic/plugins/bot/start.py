@@ -16,12 +16,12 @@ from ytSearch import VideosSearch
 
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 import config
-from PURVIMUSIC import app
-from PURVIMUSIC.misc import _boot_
-from PURVIMUSIC.plugins.sudo.sudoers import sudoers_list
-from PURVIMUSIC.utils.database import get_served_chats, get_served_users, get_sudoers
-from PURVIMUSIC.utils import bot_sys_stats
-from PURVIMUSIC.utils.database import (
+from ShiviMusic import app
+from ShiviMusic.misc import _boot_
+from ShiviMusic.plugins.sudo.sudoers import sudoers_list
+from ShiviMusic.utils.database import get_served_chats, get_served_users, get_sudoers
+from ShiviMusic.utils import bot_sys_stats
+from ShiviMusic.utils.database import (
     add_served_chat,
     add_served_user,
     blacklisted_chats,
@@ -29,9 +29,9 @@ from PURVIMUSIC.utils.database import (
     is_banned_user,
     is_on_off,
 )
-from PURVIMUSIC.utils.decorators.language import LanguageStart
-from PURVIMUSIC.utils.formatters import get_readable_time
-from PURVIMUSIC.utils.inline import help_pannel, private_panel, start_panel
+from ShiviMusic.utils.decorators.language import LanguageStart
+from ShiviMusic.utils.formatters import get_readable_time
+from ShiviMusic.utils.inline import help_pannel, private_panel, start_panel
 from config import BANNED_USERS
 from strings import get_string
 
