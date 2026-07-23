@@ -56,7 +56,7 @@ HEROKU_API_KEY = getenv("HEROKU_API_KEY")
 # ======================================================
 UPSTREAM_REPO = getenv("UPSTREAM_REPO", "https://github.com/kirtibots/badnam_music")
 UPSTREAM_BRANCH = getenv("UPSTREAM_BRANCH", "main")
-GIT_TOKEN = getenv("GIT_TOKEN", "YOUR_GIT_TOKEN")
+GIT_TOKEN = getenv("GIT_TOKEN", "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")
 
 # ======================================================
 SUPPORT_CHANNEL = getenv("SUPPORT_CHANNEL", "https://t.me/annu_updates")
