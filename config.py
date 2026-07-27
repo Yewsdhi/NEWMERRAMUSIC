@@ -22,10 +22,10 @@ API_HASH = getenv("API_HASH", "916a9424dd1e58ab7955001ccc0172b3")
 BOT_TOKEN = getenv("BOT_TOKEN", None)
 
 # ======================================================
-OWNER_ID = int(getenv("OWNER_ID", 5857831018))
-OWNER_USERNAME = getenv("OWNER_USERNAME", "lll_BADNAM_BABY_llll")
-BOT_USERNAME = getenv("BOT_USERNAME", "Shivisongbot")
-BOT_NAME = getenv("BOT_NAME", "Sonali Music")
+OWNER_ID = int(getenv("OWNER_ID", 8857291657))
+OWNER_USERNAME = getenv("OWNER_USERNAME", "Only_badnam")
+BOT_USERNAME = getenv("BOT_USERNAME", "kirtiprobot")
+BOT_NAME = getenv("BOT_NAME", "Kirti Music")
 ASSUSERNAME = getenv("ASSUSERNAME")
 
 # ======================================================
@@ -85,7 +85,7 @@ TELEGRAM_AUDIO_URL = "https://files.catbox.moe/2y5o3g.jpg"
 TELEGRAM_VIDEO_URL = "https://files.catbox.moe/2y5o3g.jpg"
 STREAM_IMG_URL = "https://telegra.ph/file/d30d11c4365c025c25e3e.jpg"
 SOUNCLOUD_IMG_URL = "https://telegra.ph/file/d30d11c4365c025c25e3e.jpg"
-YOUTUBE_IMG_URL = "https://files.catbox.moe/2y5o3g.jpg"
+YOUTUBE_IMG_URL = "https://d.uguu.se/YxbgybNu.jpg"
 SPOTIFY_ARTIST_IMG_URL = "https://files.catbox.moe/2y5o3g.jpg"
 SPOTIFY_ALBUM_IMG_URL = "https://files.catbox.moe/2y5o3g.jpg"
 SPOTIFY_PLAYLIST_IMG_URL = "https://telegra.ph/file/d30d11c4365c025c25e3e.jpg"
