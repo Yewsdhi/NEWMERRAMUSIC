@@ -121,11 +121,16 @@ async def start_nightmode():
                 chat_id,
                 photo="https://d.uguu.se/agsYnJwN.jpg", 
                 caption=(
-    "**☀️ ɴɪɢʜᴛᴍᴏᴅᴇ ᴇɴᴅᴇᴅ ɢʀᴏᴜᴘ ᴏᴘᴇɴᴇᴅ.**\n\n"
-    "**๏ ɴᴏɴ-ᴀᴅᴍɪɴs ᴄᴀɴ ᴄʜᴀᴛ ɴᴏᴡ ɢᴏᴏᴅ ᴍᴏʀɴɪɴɢ ᴇᴠᴇʀʏᴏɴᴇ 🌸**\n\n"
-    f"**✧ ᴄʜᴀᴛ ɴᴀᴍᴇ : {title}**\n"
+    "**🌙 ɴɪɢʜᴛᴍᴏᴅᴇ sᴛᴀʀᴛᴇᴅ ɢʀᴏᴜᴘ ᴄʟᴏsᴇᴅ.**\n\n"
+
+    "**๏ ɴᴏɴ-ᴀᴅᴍɪɴs ᴄᴀɴ'ᴛ sᴇɴᴅ ᴍᴇssᴀɢᴇs ɴᴏᴡ "
+    "ɢᴏᴏᴅ ɴɪɢʜᴛ ᴇᴠᴇʀʏᴏɴᴇ 🌙**\n\n"
+
+    f"**✧ ᴄʜᴀᴛ ɴᴀᴍᴇ : {title} 🚩**\n"
     f"**✧ ᴄʜᴀᴛ ɪᴅ : {chat_id}**\n\n"
-    "**๏ ᴘᴏᴡᴇʀᴇᴅ ʙʏ : <a href='https://t.me/annu_updates'>˹ᴋɪʀᴛɪ ꭙ ᴍᴜsɪᴄ˼ ♪</a>**"
+
+    "**๏ ᴘᴏᴡᴇʀᴇᴅ ʙʏ : "
+    "<a href='https://t.me/annu_updates'>˹ᴋɪʀᴛɪ ꭙ ᴍᴜsɪᴄ˼ ♪</a>**"
                 )
                 parse_mode=enums.ParseMode.MARKDOWN,
                 reply_markup=NIGHT_MSG_BUTTONS
