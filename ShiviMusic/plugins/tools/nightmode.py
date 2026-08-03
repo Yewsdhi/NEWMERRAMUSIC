@@ -131,7 +131,7 @@ async def start_nightmode():
 
     "**๏ ᴘᴏᴡᴇʀᴇᴅ ʙʏ : "
     "<a href='https://t.me/annu_updates'>˹ᴋɪʀᴛɪ ꭙ ᴍᴜsɪᴄ˼ ♪</a>**"
-                )
+                ),
                 parse_mode=enums.ParseMode.MARKDOWN,
                 reply_markup=NIGHT_MSG_BUTTONS
             )
