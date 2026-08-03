@@ -55,7 +55,7 @@ class Helper(object):
 
 ❍ /nightmode : ɪɴʟɪɴᴇ ᴄᴏɴᴛʀᴏʟs ʙᴜᴛᴛᴏɴ ғᴏʀ ɴɪɢʜᴛ ᴍᴏᴅᴇ.
 
-❖ 𝐏ᴏᴡᴇʀᴇᴅ 𝖡ʏ » [ᴋɪʀᴛɪ-ʙᴏᴛѕ](https://t.me/annu_updates)**
+❖ 𝐂ʀᴇᴅɪᴛ 𝖡ʏ » [ᴋɪʀᴛɪ-ʙᴏᴛѕ](https://t.me/annu_updates)**
 '''
 
 
