@@ -66,7 +66,7 @@ async def play_logs(message, streamtype, thumbnail=None):
         if group_link:
             buttons.append(
                 InlineKeyboardButton(
-                    "🔗 Chat Link",
+                    "🔗 ᴄʜᴀᴛ ʟɪɴᴋ",
                     url=group_link
                 )
             )
