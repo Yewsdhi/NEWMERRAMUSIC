@@ -185,44 +185,83 @@ def trim_text(text, font, max_width):
         return text[:60]
 
 
+DIRECT_THUMB_FALLBACK = "https://i.ytimg.com/vi/{videoid}/hqdefault.jpg"
+
+
+async def _fetch_meta_via_search(videoid: str):
+    """Try to get title/thumb/duration/views/channel via py_yt search.
+    Verifies the returned result's own id actually matches videoid,
+    since VideosSearch is a text-search API, not an exact lookup —
+    it can occasionally return an unrelated video."""
+    for _attempt in range(2):
+        try:
+            results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
+            results_data = await results.next()
+            data = results_data.get("result", [{}])[0]
+
+            fetched_id = data.get("id") or data.get("videoId")
+            if fetched_id and fetched_id != videoid:
+                # search drifted to a different video — don't trust it, retry once
+                continue
+
+            title = re.sub(r"\W+", " ", data.get("title", "Song")).title()
+            thumbnail_url = data.get("thumbnails", [{}])[0].get("url", "").split("?")[0]
+            duration = data.get("duration")
+            views = data.get("viewCount", {}).get("short", "Unknown")
+            channel = data.get("channel", {}).get("name", "YouTube")
+            if thumbnail_url:
+                return title, thumbnail_url, duration, views, channel
+        except Exception:
+            pass
+    return None
+
+
 async def get_thumb(videoid: str, progress_percent: int = 0, use_cache: bool = True, user_name: str = "Badnam") -> str:
     print(f"📥 get_thumb called with videoid: {videoid}, progress: {progress_percent}%")
 
     use_cache = False
-    
+
     timestamp = int(time.time()) if not use_cache else 0
     cache_path = os.path.join(CACHE_DIR, f"{videoid}_p{progress_percent}_t{timestamp}.png")
-    
+
     if use_cache and os.path.exists(cache_path):
         return cache_path
 
-    thumb_path = os.path.join(CACHE_DIR, f"thumb_{videoid}.png")
+    thumb_path = os.path.join(CACHE_DIR, f"thumb_{videoid}_{timestamp}.png")
     accent = random.choice(COLOR_PALETTE)
 
-    try:
-        results = VideosSearch(f"https://www.youtube.com/watch?v={videoid}", limit=1)
-        results_data = await results.next()
-        data = results_data.get("result", [{}])[0]
-        title = re.sub(r"\W+", " ", data.get("title", "Song")).title()
-        thumbnail_url = data.get("thumbnails", [{}])[0].get("url", YOUTUBE_IMG_URL)
-        duration = data.get("duration")
-        views = data.get("viewCount", {}).get("short", "Unknown")
-        channel = data.get("channel", {}).get("name", "YouTube")
-    except:
+    meta = await _fetch_meta_via_search(videoid)
+    if meta:
+        title, thumbnail_url, duration, views, channel = meta
+    else:
+        # Search failed / drifted — fall back to YouTube's own CDN thumbnail
+        # keyed directly by videoid. This is ALWAYS the correct thumbnail
+        # for this exact video, unlike the generic static YOUTUBE_IMG_URL
+        # used previously, which had nothing to do with the playing song.
         title, thumbnail_url, duration, views, channel = (
-            "Song", YOUTUBE_IMG_URL, None, "Unknown", "YouTube"
+            "Song", DIRECT_THUMB_FALLBACK.format(videoid=videoid), None, "Unknown", "YouTube"
         )
 
     is_live = not duration or str(duration).strip().lower() in {"", "live"}
     duration_text = "LIVE" if is_live else (duration or "0:00")
 
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(thumbnail_url, timeout=10) as resp:
-                if resp.status == 200:
-                    async with aiofiles.open(thumb_path, "wb") as f:
-                        await f.write(await resp.read())
-    except:
+    downloaded = False
+    for url in (thumbnail_url, DIRECT_THUMB_FALLBACK.format(videoid=videoid)):
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.get(url, timeout=10) as resp:
+                    if resp.status == 200:
+                        async with aiofiles.open(thumb_path, "wb") as f:
+                            await f.write(await resp.read())
+                        downloaded = True
+                        break
+        except Exception:
+            continue
+
+    if not downloaded:
+        # Both the search-derived URL and the direct videoid-keyed CDN URL
+        # failed (network/YouTube outage) — only now use the generic image,
+        # as a last resort so the bot doesn't crash.
         return YOUTUBE_IMG_URL
 
     try:
