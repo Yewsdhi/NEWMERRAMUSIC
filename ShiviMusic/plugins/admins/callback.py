@@ -3,10 +3,10 @@ import asyncio
 from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from BadnamMusic import YouTube, app
-from BadnamMusic.core.call import Badnam
-from BadnamMusic.misc import SUDOERS, db
-from BadnamMusic.utils.database import (
+from ShiviMusic import YouTube, app
+from ShiviMusic.core.call import Badnam
+from ShiviMusic.misc import SUDOERS, db
+from ShiviMusic.utils.database import (
     get_active_chats,
     get_lang,
     get_upvote_count,
@@ -18,11 +18,11 @@ from BadnamMusic.utils.database import (
     set_loop,
     get_loop,
 )
-from BadnamMusic.utils.decorators.language import languageCB
-from BadnamMusic.utils.formatters import seconds_to_min
-from BadnamMusic.utils.inline import close_markup, stream_markup, stream_markup_timer
-from BadnamMusic.utils.stream.autoclear import auto_clean
-from BadnamMusic.utils.thumbnails import get_thumb
+from ShiviMusic.utils.decorators.language import languageCB
+from ShiviMusic.utils.formatters import seconds_to_min
+from ShiviMusic.utils.inline import close_markup, stream_markup, stream_markup_timer
+from ShiviMusic.utils.stream.autoclear import auto_clean
+from ShiviMusic.utils.thumbnails import get_thumb
 from config import (
     BANNED_USERS,
     SUPPORT_CHAT,
