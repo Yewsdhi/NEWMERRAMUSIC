@@ -101,7 +101,7 @@ def admin_buttons(chat_id):
         ],
         [
             InlineKeyboardButton(
-                "-20s",
+                "< - 𝟤𝟢ˢ",
                 callback_data="seek_backward_20",
                 style=random.choice(styles),
             ),
@@ -116,7 +116,7 @@ def admin_buttons(chat_id):
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
-                "+20s",
+                "𝟤𝟢ˢ + >",
                 callback_data="seek_forward_20",
                 style=random.choice(styles),
             ),
