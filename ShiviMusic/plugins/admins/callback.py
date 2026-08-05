@@ -4,7 +4,7 @@ from pyrogram import filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from ShiviMusic import YouTube, app
-from ShiviMusic.core.call import Badnam
+from ShiviMusic.core.call import Shivi
 from ShiviMusic.misc import SUDOERS, db
 from ShiviMusic.utils.database import (
     get_active_chats,
