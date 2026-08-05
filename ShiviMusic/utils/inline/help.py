@@ -22,7 +22,7 @@ def help_pannel(_, START: Union[bool, int] = None):
         InlineKeyboardButton(
             text=_["BACK_BUTTON"],
             callback_data="settingsback_helper",
-            style=ButtonStyle.DANGER,
+            style=random.choice(styles),
         ),
     ]
 
@@ -34,68 +34,68 @@ def help_pannel(_, START: Union[bool, int] = None):
                 InlineKeyboardButton(
                     text=_["H_B_25"],
                     callback_data="help_callback hb1",
-                    style=ButtonStyle.DANGER,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_26"],
                     callback_data="help_callback hb2",
-                    style=ButtonStyle.DANGER,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_28"],
                     callback_data="help_callback hb3",
-                    style=ButtonStyle.DANGER,
+                    style=random.choice(styles),
                 ),
             ],
             [
                 InlineKeyboardButton(
                     text=_["H_B_27"],
                     callback_data="help_callback hb4",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_31"],
                     callback_data="help_callback hb5",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_29"],
                     callback_data="help_callback hb6",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
             ],
             [
                 InlineKeyboardButton(
                     text=_["H_B_33"],
                     callback_data="help_callback hb7",
-                    style=ButtonStyle.PRIMARY,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_30"],
                     callback_data="help_callback hb8",
-                    style=ButtonStyle.PRIMARY,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text=_["H_B_32"],
                     callback_data="help_callback hb9",
-                    style=ButtonStyle.PRIMARY,
+                    style=random.choice(styles),
                 ),
             ],
             [
                 InlineKeyboardButton(
                     text="• ᴡᴇʟᴄᴏᴍᴇ •",
                     callback_data="wel_cb",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text="• ʟᴏᴄᴋs •",
                     callback_data="lock_cb",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
                 InlineKeyboardButton(
                     text="• ɴɪɢʜᴛᴍᴏᴅᴇ •",
                     callback_data="night_cb",
-                    style=ButtonStyle.SUCCESS,
+                    style=random.choice(styles),
                 ),
             ],
             mark,
@@ -111,7 +111,7 @@ def help_back_markup(_):
                 InlineKeyboardButton(
                     text=_["BACK_BUTTON"],
                     callback_data=f"settings_back_helper",
-                    style=ButtonStyle.DANGER,
+                    style=random.choice(styles),
                 ),
             ]
         ]
@@ -125,7 +125,7 @@ def private_help_panel(_):
             InlineKeyboardButton(
                 text=_["S_B_4"],
                 url=f"https://t.me/{app.username}?start=help",
-                style=ButtonStyle.PRIMARY,
+                style=random.choice(styles),
             ),
         ],
     ]
