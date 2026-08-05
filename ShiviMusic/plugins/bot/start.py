@@ -134,12 +134,17 @@ async def start_pm(client, message: Message, _):
 ✦ <b>ᴜsᴇʀ ɪᴅ ➠</b> <code>{message.from_user.id}</code>
 ✦ <b>ᴜsᴇʀɴᴀᴍᴇ ➠</b> @{message.from_user.username if message.from_user.username else 'N/A'}
 """,
+    parse_mode=ParseMode.HTML,
     reply_markup=InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
                     "👤 ᴜsᴇʀ ᴘʀᴏғɪʟᴇ",
-                    url=f"tg://user?id={message.from_user.id}"
+                    url=(
+                        f"https://t.me/{message.from_user.username}"
+                        if message.from_user.username
+                        else f"tg://user?id={message.from_user.id}"
+                    )
                 )
             ]
         ]
