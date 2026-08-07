@@ -46,6 +46,7 @@ async def stream(
         await Sona.force_stop_stream(chat_id)
 
     user_mention = f"[{user_name}](tg://user?id={user_id})"
+    stream_type = "🎬 Video" if video else "🎵 Audio"
 
     if streamtype == "playlist":
         msg = f"{_['play_19']}\n\n"
@@ -83,7 +84,8 @@ async def stream(
                     original_chat_id,
                     photo=img,
                     has_spoiler=True,
-                    caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention),
+                    caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention,
+                    stream_type),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
                 db[chat_id][0]["mystic"] = run
@@ -123,7 +125,8 @@ async def stream(
             button = aq_markup(_, chat_id)
             await app.send_message(
                 chat_id=original_chat_id,
-                text=_["queue_4"].format(position, title[:27], duration_min, user_mention),
+                text=_["queue_4"].format(position, title[:27], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
                 disable_web_page_preview=True
             )
@@ -137,7 +140,8 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=img,
-                caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention),
+                caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -153,7 +157,8 @@ async def stream(
             button = aq_markup(_, chat_id)
             await app.send_message(
                 chat_id=original_chat_id,
-                text=_["queue_4"].format(position, title[:27], duration_min, user_mention),
+                text=_["queue_4"].format(position, title[:27], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
                 disable_web_page_preview=True
             )
@@ -166,7 +171,8 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=config.SOUNCLOUD_IMG_URL,
-                caption=_["stream_1"].format(config.SUPPORT_CHAT, title[:23], duration_min, user_mention),
+                caption=_["stream_1"].format(config.SUPPORT_CHAT, title[:23], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -184,7 +190,8 @@ async def stream(
             button = aq_markup(_, chat_id)
             await app.send_message(
                 chat_id=original_chat_id,
-                text=_["queue_4"].format(position, title[:27], duration_min, user_mention),
+                text=_["queue_4"].format(position, title[:27], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
                 disable_web_page_preview=True
             )
@@ -199,7 +206,8 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=config.TELEGRAM_VIDEO_URL if video else config.TELEGRAM_AUDIO_URL,
-                caption=_["stream_1"].format(link, title[:23], duration_min, user_mention),
+                caption=_["stream_1"].format(link, title[:23], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -218,7 +226,8 @@ async def stream(
             button = aq_markup(_, chat_id)
             await app.send_message(
                 chat_id=original_chat_id,
-                text=_["queue_4"].format(position, title[:27], duration_min, user_mention),
+                text=_["queue_4"].format(position, title[:27], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
                 disable_web_page_preview=True
             )
@@ -235,7 +244,8 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=img,
-                caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention),
+                caption=_["stream_1"].format(f"https://t.me/{app.username}?start=info_{vidid}", title[:23], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -251,7 +261,8 @@ async def stream(
             position = len(db.get(chat_id)) - 1
             button = aq_markup(_, chat_id)
             await mystic.edit_text(
-                text=_["queue_4"].format(position, title[:27], duration_min, user_mention),
+                text=_["queue_4"].format(position, title[:27], duration_min, user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
                 disable_web_page_preview=True
             )
@@ -264,7 +275,8 @@ async def stream(
             run = await app.send_photo(
                 original_chat_id,
                 photo=config.STREAM_IMG_URL,
-                caption=_["stream_2"].format(user_mention),
+                caption=_["stream_2"].format(user_mention,
+                    stream_type),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
