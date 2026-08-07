@@ -145,7 +145,7 @@ async def play_commnd(
                 "⚠️ <b>Security Alert!</b>\n\n"
                 "<b>Invalid or potentially harmful URL detected.</b>\n"
                 "Only valid music platform URLs are allowed.\n\n"
-                "Protected From @Pyxzo_xd"
+                "Protected From @Only_badnam"
             )
 
     if audio_telegram:
