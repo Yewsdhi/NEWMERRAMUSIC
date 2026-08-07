@@ -46,7 +46,7 @@ async def stream(
         await Sona.force_stop_stream(chat_id)
 
     user_mention = f"[{user_name}](tg://user?id={user_id})"
-    stream_type = "🎬 Video" if video else "🎵 Audio"
+    stream_type = "🎥 Vɪᴅᴇᴏ" if video else "🎵 Aᴜᴅɪᴏ"
 
     if streamtype == "playlist":
         msg = f"{_['play_19']}\n\n"
