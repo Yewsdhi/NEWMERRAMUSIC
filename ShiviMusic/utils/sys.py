@@ -14,6 +14,7 @@ import psutil
 
 from ShiviMusic.misc import _boot_
 from ShiviMusic.utils.formatters import get_readable_time
+from .guest import *
 
 
 async def bot_sys_stats():
