@@ -324,7 +324,7 @@ class Call(PyTgCalls):
         await put_queue(
             chat_id,
             original_chat_id,
-            file_path if direct else f"vid_{track['vidid']}",
+            file_path if direct else f"vid_{track["vidid"]}",
             title,
             duration_min,
             "🔁 ᴋɪʀᴛɪ-ʙᴏᴛs",
@@ -333,6 +333,16 @@ class Call(PyTgCalls):
             "audio",
             forceplay=True,
         )
+
+        # Autoplay entry must have the same runtime fields used by
+        # callbacks/timer/change_stream.
+        if db.get(chat_id):
+            db[chat_id][0]["played"] = 0
+            db[chat_id][0]["seconds"] = 0
+            db[chat_id][0]["speed"] = 1.0
+            db[chat_id][0]["speed_path"] = None
+            db[chat_id][0]["old_dur"] = None
+            db[chat_id][0]["old_second"] = 0
 
         stream = self._build_stream(file_path, video=False)
         assistant = client or await group_assistant(self, chat_id)
@@ -365,6 +375,12 @@ class Call(PyTgCalls):
                 await status_msg.delete()
             except Exception:
                 pass
+
+        try:
+            await add_active_chat(chat_id)
+            await music_on(chat_id)
+        except Exception:
+            pass
 
         return True
 
