@@ -1,4 +1,4 @@
-from SHUKLAMUSIC import app as app
+from ShiviMusic import app as app
 from config import BOT_USERNAME
 from pyrogram import filters
 from pyrogram.types import (
@@ -20,7 +20,7 @@ switch_btn = InlineKeyboardMarkup([[InlineKeyboardButton("💒 Start Whisper", s
 # Isliye ye result sabse upar dikhaya jata hai jab query khali ho.
 
 ADD_ME_PROMO_TEXT = (
-    "❖ Doom music - A Most Powerful Music Streamer Bot For Your Groups & Channels 🚀\n\n"
+    "❖ Kirti music - A Most Powerful Music Streamer Bot For Your Groups & Channels 🚀\n\n"
     "▸ Tap The Below Button To Add Me in Your Group & Enjoy High Quality Songs 🎵"
 )
 
@@ -40,7 +40,7 @@ def add_me_btn() -> InlineKeyboardMarkup:
 
 def add_me_article() -> InlineQueryResultArticle:
     return InlineQueryResultArticle(
-        title="❖ Raushan Music",
+        title="❖ badnam Music",
         description="Tap to send the Add Me card in this chat 🎵",
         thumb_url="https://files.catbox.moe/qv2ob4.jpg",
         input_message_content=InputTextMessageContent(ADD_ME_PROMO_TEXT),
@@ -148,8 +148,8 @@ async def in_help():
         add_me_article(),
         InlineQueryResultArticle(
             title="💒 Whisper",
-            description=f"@DoomAudiobot [USERNAME | ID] [TEXT]",
-            input_message_content=InputTextMessageContent(f"**📍Usage:**\n\n@DoomAudiobot (Target Username or ID) (Your Message).\n\n**Example:**\n@DoomAudiobot @username type message "),
+            description=f"@kirtiprobot [USERNAME | ID] [TEXT]",
+            input_message_content=InputTextMessageContent(f"**📍Usage:**\n\n@kirtiprobot (Target Username or ID) (Your Message).\n\n**Example:**\n@DoomAudiobot @username type message "),
             thumb_url="https://files.catbox.moe/gaz9cc.jpg",
             reply_markup=switch_btn
         )
