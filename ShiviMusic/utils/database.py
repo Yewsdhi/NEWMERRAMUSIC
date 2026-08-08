@@ -13,7 +13,6 @@ from typing import Dict, List, Union
 
 from ShiviMusic import userbot
 from ShiviMusic.core.mongo import mongodb
-from .guest import *
 
 authdb = mongodb.adminauth
 authuserdb = mongodb.authuser
