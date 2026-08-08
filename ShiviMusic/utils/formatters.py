@@ -10,6 +10,7 @@
 
 import json
 import subprocess
+from .guest import *
 
 
 def get_readable_time(seconds: int) -> str:
