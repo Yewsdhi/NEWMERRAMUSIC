@@ -11,8 +11,19 @@ from ShiviMusic import app
 
 
 # ================================
-#        BOT INFORMATION
+#   GUEST BOTS (@-mention anywhere)
 # ================================
+# Telegram's "Guest Mode" lets a bot be summoned by tagging its
+# @username in ANY chat — a group, a channel, or even a private DM
+# between two other people — without the bot being a member of that
+# chat at all. Telegram delivers this as a "guest message" and the
+# bot gets exactly ONE reply via answer_guest_query().
+#
+# IMPORTANT (one-time setup, cannot be done from code):
+#   Open @BotFather's Mini App (blue "Open" button, NOT /mybots text
+#   menu) -> your bot -> Bot Settings -> Guest Mode -> Enable.
+#   Without this toggle ON, Telegram will never send guest messages
+#   to your bot, no matter what code is running.
 
 BOT_NAME = app.me.first_name
 BOT_USERNAME = app.username.lstrip("@")
