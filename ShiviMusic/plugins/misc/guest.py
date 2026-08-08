@@ -1,86 +1,64 @@
-from html import escape
-
-from pyrogram import filters
+from pyrogram.enums import ButtonStyle
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
     InlineQueryResultArticle,
     InputTextMessageContent,
+    Message,
 )
 
 from ShiviMusic import app
 
+# ================================
+#   GUEST BOTS (@-mention anywhere)
+# ================================
+# Telegram's "Guest Mode" lets a bot be summoned by tagging its
+# @username in ANY chat — a group, a channel, or even a private DM
+# between two other people — without the bot being a member of that
+# chat at all. Telegram delivers this as a "guest message" and the
+# bot gets exactly ONE reply via answer_guest_query().
+#
+# IMPORTANT (one-time setup, cannot be done from code):
+#   Open @BotFather's Mini App (blue "Open" button, NOT /mybots text
+#   menu) -> your bot -> Bot Settings -> Guest Mode -> Enable.
+#   Without this toggle ON, Telegram will never send guest messages
+#   to your bot, no matter what code is running.
 
-# ==========================================
-# INLINE PROMO
-# ==========================================
+ADD_ME_PROMO_TEXT = (
+    "❖ 𝗗𝗼𝗼𝗺 𝗠𝘂𝘀𝗶𝗰 - 𝗔 𝗠𝗼𝘀𝘁 𝗣𝗼𝘄𝗲𝗿𝗳𝘂𝗹 𝗠𝘂𝘀𝗶𝗰 𝗦𝘁𝗿𝗲𝗮𝗺𝗲𝗿 𝗕𝗼𝘁 𝗙𝗼𝗿 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽𝘀 & 𝗖𝗵𝗮𝗻𝗻𝗲𝗹𝘀 🚀\n\n"
+    "▸ 𝗧𝗮𝗽 𝗧𝗵𝗲 𝗕𝗲𝗹𝗼𝘄 𝗕𝘂𝘁𝘁𝗼𝗻 𝗧𝗼 𝗔𝗱𝗱 𝗠𝗲 𝗶𝗻 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 & 𝗘𝗻𝗷𝗼𝘆 𝗛𝗶𝗴𝗵 𝗤𝘂𝗮𝗹𝗶𝘁𝘆 𝗦𝗼𝗻𝗴𝘀 🎵"
+)
 
-@app.on_inline_query()
-async def shivi_inline_promo(client, inline_query):
+
+def _add_me_markup() -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    text="➕ 𝗔𝗱𝗱 𝗠𝗲 𝗧𝗼 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 ➕",
+                    url=f"https://t.me/{app.username}?startgroup=true",
+                    style=ButtonStyle.SUCCESS,
+                )
+            ]
+        ]
+    )
+
+
+@app.on_guest_message()
+async def guest_username_mention(_, message: Message):
+    # message.guest_query_id is the id you must answer with, exactly once.
+    if not message.guest_query_id:
+        return
+
+    result = InlineQueryResultArticle(
+        title="❖ 𝗗𝗼𝗼𝗺 𝗠𝘂𝘀𝗶𝗰",
+        description="Tap to send the Add Me card in this chat 🎵",
+        thumb_url="https://files.catbox.moe/qv2ob4.jpg",
+        input_message_content=InputTextMessageContent(ADD_ME_PROMO_TEXT),
+        reply_markup=_add_me_markup(),
+    )
 
     try:
-        # Get bot information
-        me = await client.get_me()
-
-        bot_name = escape(me.first_name or "Shivi Music")
-        bot_username = me.username
-
-        if not bot_username:
-            return
-
-        bot_link = f"https://t.me/{bot_username}"
-        add_group_link = f"{bot_link}?startgroup=true"
-
-        # ==================================
-        # PROMO TEXT
-        # ==================================
-
-        promo_text = (
-            f'❖ <a href="{bot_link}">˹{bot_name}˼ ♪</a> — '
-            "𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖬𝗎𝗌𝗂𝖼 𝖲𝗍𝗋𝖾𝖺𝗆𝖾𝗋 𝖡𝗈𝗍 🎶\n\n"
-            "▸ 𝖥𝖺𝗌𝗍 • 𝖫𝖺𝗀 𝖥𝗋𝖾𝖾 • 𝖭𝗈 𝖠𝖽𝗌 🍃\n"
-            "▸ 𝖠𝗎𝗍𝗈-𝖯𝗅𝖺𝗒 • 𝖠𝗎𝖽𝗂𝗈 • 𝖵𝗂𝖽𝖾𝗈 🎥\n\n"
-            f'➜ 𝖠𝖽𝖽 <a href="{bot_link}">˹{bot_name}˼ ♪</a> '
-            "𝖳𝗈 𝖸𝗈𝗎𝗋 𝖦𝗋𝗈𝗎𝗉 & 𝖤𝗇𝗃𝗈𝗒 "
-            "𝖧𝗂𝗀𝗁 𝖰𝗎𝖺𝗅𝗂𝗍𝗒 𝖲𝗈𝗇𝗀𝗌 🎶"
-        )
-
-        # ==================================
-        # BUTTON
-        # ==================================
-
-        keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        f"➕ Add {bot_name} To Your Group",
-                        url=add_group_link,
-                    )
-                ]
-            ]
-        )
-
-        # ==================================
-        # INLINE RESULT
-        # ==================================
-
-        result = InlineQueryResultArticle(
-            id="shivi_music_promo",
-            title=f"❖ {bot_name} ♪",
-            description=f"Tap to send {bot_name} card 🎶",
-            thumb_url="https://files.catbox.moe/qv2ob4.jpg",
-            input_message_content=InputTextMessageContent(
-                promo_text,
-                parse_mode="html",
-            ),
-            reply_markup=keyboard,
-        )
-
-        await inline_query.answer(
-            results=[result],
-            cache_time=1,
-            is_personal=True,
-        )
-
-    except Exception as e:
-        print(f"Shivi inline error: {type(e).__name__}: {e}")
+        await app.answer_guest_query(message.guest_query_id, result=result)
+    except Exception:
+        pass
