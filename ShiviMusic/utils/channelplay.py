@@ -10,6 +10,7 @@
 
 from ShiviMusic import app
 from ShiviMusic.utils.database import get_cmode
+from .guest import *
 
 
 async def get_channeplayCB(_, command, CallbackQuery):
