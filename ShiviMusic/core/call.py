@@ -324,7 +324,7 @@ class Call(PyTgCalls):
         await put_queue(
             chat_id,
             original_chat_id,
-            file_path if direct else f"vid_{track["vidid"]}",
+            file_path if direct else f"vid_{track['vidid']}",
             title,
             duration_min,
             "🔁 ᴋɪʀᴛɪ-ʙᴏᴛs",
@@ -334,8 +334,7 @@ class Call(PyTgCalls):
             forceplay=True,
         )
 
-        # Autoplay entry must have the same runtime fields used by
-        # callbacks/timer/change_stream.
+        # Initialize the same runtime fields used by callbacks/timer.
         if db.get(chat_id):
             db[chat_id][0]["played"] = 0
             db[chat_id][0]["seconds"] = 0
