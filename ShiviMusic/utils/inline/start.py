@@ -13,7 +13,6 @@ from pyrogram.enums import ButtonStyle
 
 import config
 from ShiviMusic import app
-from .guest import *
 
 
 def start_panel(_):
