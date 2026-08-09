@@ -7,7 +7,7 @@ from pyrogram.types import (
     Message,
 )
 
-from SHUKLAMUSIC import app
+from ShiviMusic import app
 
 
 PROMO_TEXT = (
