@@ -34,7 +34,7 @@ def _add_me_markup(username: str):
         [
             [
                 InlineKeyboardButton(
-                    text="➕ 𝐀ᴅᴅ 𝐌ᴇ 𝐈ɴ 𝐘ᴏᴜʀ 𝐆ʀᴏᴜᴘ ➕",
+                    text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙",
                     url=f"https://t.me/{username}?startgroup=true",
                 )
             ]
