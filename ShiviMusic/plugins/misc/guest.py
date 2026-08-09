@@ -1,4 +1,4 @@
-from pyrogram.enums import ButtonStyle, ParseMode
+from pyrogram.enums import ParseMode
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -36,16 +36,8 @@ def _add_me_markup(username: str):
                 InlineKeyboardButton(
                     text="➕ Add Me In Your Group",
                     url=f"https://t.me/{username}?startgroup=true",
-                    style=ButtonStyle.SUCCESS,
                 )
-            ],
-            [
-               # InlineKeyboardButton(
-                    text="🎶 Open Music Bot",
-                    url=f"https://t.me/{username}",
-                    style=ButtonStyle.PRIMARY,
-                )
-            ],
+            ]
         ]
     )
 
