@@ -10,18 +10,12 @@ from pyrogram.types import (
 from ShiviMusic import app
 
 
-# ==========================================
-#        GUEST BOT MENTION CARD
-# ==========================================
-
 PROMO_TEXT = (
     "❖ <b>{name}</b> ♪ — Your Premium Music Streamer Bot 🎶\n\n"
-
     "<blockquote>"
-    "▸ <b>Fast • Lag Free • No Ads</b> 🍃\n"
-    "▸ <b>Auto-Play • Audio • Video</b> 🎥"
+    "▸ Fast • Lag Free • No Ads 🍃\n"
+    "▸ Auto-Play • Audio • Video 🎥"
     "</blockquote>\n"
-
     "➜ <b>Add {name} To Your Group & "
     "Enjoy High Quality Songs 🎶</b>"
 )
@@ -43,7 +37,6 @@ def add_me_button(username: str) -> InlineKeyboardMarkup:
 
 @app.on_guest_message()
 async def guest_username_mention(_, message: Message):
-
     guest_query_id = getattr(message, "guest_query_id", None)
 
     if not guest_query_id:
@@ -52,11 +45,14 @@ async def guest_username_mention(_, message: Message):
     try:
         me = await app.get_me()
 
-        username = me.username or ""
+        username = me.username
         name = me.first_name or "Shivi Music"
 
+        if not username:
+            return
+
         promo_text = PROMO_TEXT.format(
-            name=name,
+            name=name
         )
 
         result = InlineQueryResultArticle(
