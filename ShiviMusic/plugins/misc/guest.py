@@ -7,7 +7,7 @@ from pyrogram.types import (
     Message,
 )
 
-from ShiviMusic import app
+from SHUKLAMUSIC import app
 
 
 PROMO_TEXT = (
@@ -15,13 +15,14 @@ PROMO_TEXT = (
     "<blockquote>"
     "▸ Fast • Lag Free • No Ads 🍃\n"
     "▸ Auto-Play • Audio • Video 🎥"
-    "</blockquote>\n"
-    "➜ <b>Add {name} To Your Group & "
-    "Enjoy High Quality Songs 🎶</b>"
+    "</blockquote>\n\n"
+    "➜ <b>{name}</b> "
+    "<code>@{username}</code> "
+    "To Your Group & Enjoy High Quality Songs 🎶"
 )
 
 
-def add_me_button(username: str) -> InlineKeyboardMarkup:
+def add_me_markup(username: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [
             [
@@ -37,6 +38,7 @@ def add_me_button(username: str) -> InlineKeyboardMarkup:
 
 @app.on_guest_message()
 async def guest_username_mention(_, message: Message):
+
     guest_query_id = getattr(message, "guest_query_id", None)
 
     if not guest_query_id:
@@ -45,24 +47,25 @@ async def guest_username_mention(_, message: Message):
     try:
         me = await app.get_me()
 
+        name = me.first_name or "Music Bot"
         username = me.username
-        name = me.first_name or "Shivi Music"
 
         if not username:
             return
 
         promo_text = PROMO_TEXT.format(
-            name=name
+            name=name,
+            username=username,
         )
 
         result = InlineQueryResultArticle(
-            title=f"❖ {name} ♪",
-            description="Your Premium Music Streamer Bot 🎶",
+            title=f"❖ {name}",
+            description="Add Me In Your Group 🎶",
             thumb_url="https://files.catbox.moe/qv2ob4.jpg",
             input_message_content=InputTextMessageContent(
                 promo_text
             ),
-            reply_markup=add_me_button(username),
+            reply_markup=add_me_markup(username),
         )
 
         await app.answer_guest_query(
@@ -71,4 +74,4 @@ async def guest_username_mention(_, message: Message):
         )
 
     except Exception as e:
-        print(f"Guest Mention Error: {e}")
+        print(f"Guest Mode Error: {e}")
