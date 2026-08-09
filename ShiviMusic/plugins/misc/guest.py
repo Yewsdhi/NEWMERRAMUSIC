@@ -1,4 +1,4 @@
-from pyrogram.enums import ButtonStyle
+from pyrogram.enums import ButtonStyle, ParseMode
 from pyrogram.types import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -47,11 +47,13 @@ async def guest_username_mention(_, message: Message):
     try:
         me = await app.get_me()
 
+        # Full bot name
         name = me.first_name or "Music Bot"
 
         if me.last_name:
             name = f"{name} {me.last_name}"
 
+        # Username is ONLY required for the Add Me button.
         username = me.username
 
         if not username:
@@ -66,7 +68,9 @@ async def guest_username_mention(_, message: Message):
             description="Add Me In Your Group 🎶",
             thumb_url="https://files.catbox.moe/qv2ob4.jpg",
             input_message_content=InputTextMessageContent(
-                promo_text
+                message_text=promo_text,
+                parse_mode=ParseMode.HTML,
+                disable_web_page_preview=True,
             ),
             reply_markup=_add_me_markup(username),
         )
