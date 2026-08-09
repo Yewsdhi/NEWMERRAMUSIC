@@ -14,8 +14,6 @@ from ShiviMusic import app
 # GUEST MESSAGE
 # ==========================================================
 
-# Stylish font added, wrapped in <b> tags for bigger size, 
-# along with blockquote and clickable bot name.
 ADD_ME_PROMO_TEXT = (
     "❖ <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> — <b>𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖬𝗎𝗌𝗂𝖼 𝖲𝗍𝗋𝖾𝖺𝗆𝖾𝗋 𝖡𝗈𝗍 🎶</b>\n\n"
     
@@ -42,7 +40,7 @@ def _add_me_markup(username: str):
                 )
             ],
             [
-                InlineKeyboardButton(
+               # InlineKeyboardButton(
                     text="🎶 Open Music Bot",
                     url=f"https://t.me/{username}",
                     style=ButtonStyle.PRIMARY,
