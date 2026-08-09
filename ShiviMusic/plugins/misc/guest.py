@@ -9,22 +9,10 @@ from pyrogram.types import (
 
 from ShiviMusic import app
 
-# ================================
-#   GUEST BOTS (@-mention anywhere)
-# ================================
-# Telegram's "Guest Mode" lets a bot be summoned by tagging its
-# @username in ANY chat — a group, a channel, or even a private DM
-# between two other people — without the bot being a member of that
-# chat at all. Telegram delivers this as a "guest message" and the
-# bot gets exactly ONE reply via answer_guest_query().
-#
-# IMPORTANT (one-time setup, cannot be done from code):
-#   Open @BotFather's Mini App (blue "Open" button, NOT /mybots text
-#   menu) -> your bot -> Bot Settings -> Guest Mode -> Enable.
-#   Without this toggle ON, Telegram will never send guest messages
-#   to your bot, no matter what code is running.
 
-me = await app.get_me()
+# ==========================================
+#   GUEST BOTS (@username MENTION ANYWHERE)
+# ==========================================
 
 ADD_ME_PROMO_TEXT = (
     '❖ <a href="https://t.me/{username}">{name}</a> ♪ — '
@@ -37,19 +25,16 @@ ADD_ME_PROMO_TEXT = (
 
     '➜ <a href="https://t.me/{username}">{name}</a> 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖦𝗋𝗈𝗎𝗉 & '
     '𝖤𝗇𝗃𝗈𝗒 𝖧𝗂𝗀𝗁 𝖰𝗎𝖺𝗅𝗂𝗍𝗒 𝖲𝗈𝗇𝗀𝗌 🎶'
-).format(
-    username=me.username,
-    name=me.first_name
 )
 
 
-def _add_me_markup() -> InlineKeyboardMarkup:
+def _add_me_markup(username: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
                     text="➕ Add me in your Group",
-                    url=f"https://t.me/{app.username}?startgroup=true",
+                    url=f"https://t.me/{username}?startgroup=true",
                     style=ButtonStyle.SUCCESS,
                 )
             ]
@@ -59,19 +44,38 @@ def _add_me_markup() -> InlineKeyboardMarkup:
 
 @app.on_guest_message()
 async def guest_username_mention(_, message: Message):
-    # message.guest_query_id is the id you must answer with, exactly once.
-    if not message.guest_query_id:
+    # Guest query ID is required to answer the guest request.
+    guest_query_id = getattr(message, "guest_query_id", None)
+
+    if not guest_query_id:
         return
 
-    result = InlineQueryResultArticle(
-        title="❖ kirti music",
-        description="Tap to send the Add Me card in this chat 🎵",
-        thumb_url="https://files.catbox.moe/qv2ob4.jpg",
-        input_message_content=InputTextMessageContent(ADD_ME_PROMO_TEXT),
-        reply_markup=_add_me_markup(),
-    )
-
     try:
-        await app.answer_guest_query(message.guest_query_id, result=result)
-    except Exception:
-        pass
+        # Get bot information inside async handler.
+        me = await app.get_me()
+
+        username = me.username or ""
+        name = me.first_name or "Music Bot"
+
+        promo_text = ADD_ME_PROMO_TEXT.format(
+            username=username,
+            name=name,
+        )
+
+        result = InlineQueryResultArticle(
+            title=f"❖ {name}",
+            description="Tap to send the Add Me card in this chat 🎵",
+            thumb_url="https://files.catbox.moe/qv2ob4.jpg",
+            input_message_content=InputTextMessageContent(
+                promo_text
+            ),
+            reply_markup=_add_me_markup(username),
+        )
+
+        await app.answer_guest_query(
+            guest_query_id,
+            result=result,
+        )
+
+    except Exception as e:
+        print(f"Guest message error: {e}")
