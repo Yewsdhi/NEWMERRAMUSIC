@@ -14,13 +14,15 @@ from ShiviMusic import app
 # GUEST MESSAGE
 # ==========================================================
 
+# Stylish font added, wrapped in <b> tags for bigger size, 
+# along with blockquote and clickable bot name.
 ADD_ME_PROMO_TEXT = (
-    "❖ <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> — <b>Your Premium Music Streamer Bot 🎶</b>\n\n"
+    "❖ <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> — <b>𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖬𝗎𝗌𝗂𝖼 𝖲𝗍𝗋𝖾𝖺𝗆𝖾𝗋 𝖡𝗈𝗍 🎶</b>\n\n"
     
-    "<blockquote>▸ Fast • Lag Free • No Ads 🍃\n"
-    "▸ Auto-Play • Audio • Video 🎥</blockquote>\n\n"
+    "<blockquote><b>▸ 𝖥𝖺𝗌𝗍 • 𝖫𝖺𝗀 𝖥𝗋𝖾𝖾 • 𝖭𝗈 𝖠𝖽𝗌 🍃</b>\n"
+    "<b>▸ 𝖠𝗎𝗍𝗈-𝖯𝗅𝖺𝗒 • 𝖠𝗎𝖽𝗂𝗈 • 𝖵𝗂𝖽𝖾𝗈 🎥</b></blockquote>\n\n"
     
-    "<b>➜ Add</b> <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> <b>To Your Group & Enjoy High Quality Songs 🎶</b>"
+    "<b>➜ 𝖠𝖽𝖽</b> <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> <b>𝖳𝗈 𝖸𝗈𝗎𝗋 𝖦𝗋𝗈𝗎𝗉 & 𝖤𝗇𝗃𝗈𝗒 𝖧𝗂𝗀𝗁 𝖰𝗎𝖺𝗅𝗂𝗍𝗒 𝖲𝗈𝗇𝗀𝗌 🎶</b>"
 )
 
 
@@ -90,7 +92,6 @@ async def guest_username_mention(_, message: Message):
         # CREATE MESSAGE
         # --------------------------------------------------
 
-        # Yahan name ke sath username bhi pass kiya hai link banane ke liye
         promo_text = ADD_ME_PROMO_TEXT.format(
             name=name,
             username=username,
