@@ -15,14 +15,12 @@ from ShiviMusic import app
 # ==========================================================
 
 ADD_ME_PROMO_TEXT = (
-    "<b>❖ ˹{name}˼ ♪ — @{username}</b>\n"
-    "<b>𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖬𝗎𝗌𝗂𝖼 𝖲𝗍𝗋𝖾𝖺𝗆𝖾𝗋 𝖡𝗈𝗍 🎶</b>\n\n"
-
-    "<b>▸ 𝖥𝖺𝗌𝗍 • 𝖫𝖺𝗀 𝖥𝗋𝖾𝖾 • 𝖭𝗈 𝖠𝖽𝗌 🍃</b>\n"
-    "<b>▸ 𝖠𝗎𝗍𝗈-𝖯𝗅𝖺𝗒 • 𝖠𝗎𝖽𝗂𝗈 • 𝖵𝗂𝖽𝖾𝗈 🎥</b>\n\n"
-
-    "<b>➜ 𝖠𝖽𝖽 ˹{name}˼ ♪ 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖦𝗋𝗈𝗎𝗉 & "
-    "𝖤𝗇𝗃𝗈𝗒 𝖧𝗂𝗀𝗁 𝖰𝗎𝖺𝗅𝗂𝗍𝗒 𝖲𝗈𝗇𝗀𝗌 🎶</b>"
+    "❖ ˹{name}˼ ♪ — <b>Your Premium Music Streamer Bot 🎶</b>\n\n"
+    
+    "<blockquote>▸ Fast • Lag Free • No Ads 🍃\n"
+    "▸ Auto-Play • Audio • Video 🎥</blockquote>\n\n"
+    
+    "<b>➜ Add ˹{name}˼ ♪ To Your Group & Enjoy High Quality Songs 🎶</b>"
 )
 
 
@@ -94,7 +92,6 @@ async def guest_username_mention(_, message: Message):
 
         promo_text = ADD_ME_PROMO_TEXT.format(
             name=name,
-            username=username,
         )
 
         # --------------------------------------------------
@@ -135,3 +132,4 @@ async def guest_username_mention(_, message: Message):
         print(
             f"Guest Mode Error: {type(e).__name__}: {e}"
         )
+        
