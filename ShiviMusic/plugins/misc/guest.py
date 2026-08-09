@@ -25,13 +25,7 @@ ADD_ME_PROMO_TEXT = (
 )
 
 
-def _add_me_markup(username=None):
-    if username is None:
-        username = getattr(app, "username", None)
-
-    if not username:
-        return None
-
+def _add_me_markup(username: str):
     return InlineKeyboardMarkup(
         [
             [
@@ -54,27 +48,37 @@ async def guest_username_mention(_, message: Message):
         return
 
     try:
+        # Get current bot information
         me = await app.get_me()
 
-        # Full bot name
+        # ==================================================
+        # FULL BOT NAME
+        # ==================================================
         name = me.first_name or "Music Bot"
 
         if me.last_name:
             name = f"{name} {me.last_name}"
 
-        # Username is ONLY used internally for Add Me button.
+        # ==================================================
+        # USERNAME ONLY FOR ADD-ME BUTTON
+        # ==================================================
         username = me.username
 
         if not username:
             return
 
-        # Replace bot name
+        # ==================================================
+        # MESSAGE
+        # ==================================================
         promo_text = ADD_ME_PROMO_TEXT.format(
-            name=name,
+            name=name
         )
 
         keyboard = _add_me_markup(username)
 
+        # ==================================================
+        # INLINE RESULT
+        # ==================================================
         result = InlineQueryResultArticle(
             title=f"❖ {name}",
             description="Add Me In Your Group 🎶",
@@ -87,6 +91,9 @@ async def guest_username_mention(_, message: Message):
             reply_markup=keyboard,
         )
 
+        # ==================================================
+        # ANSWER GUEST QUERY
+        # ==================================================
         await app.answer_guest_query(
             guest_query_id,
             result=result,
