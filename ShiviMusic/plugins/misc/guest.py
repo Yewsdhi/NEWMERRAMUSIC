@@ -10,20 +10,28 @@ from pyrogram.types import (
 from ShiviMusic import app
 
 
+# ==========================================================
+# GUEST MESSAGE
+# ==========================================================
+
 ADD_ME_PROMO_TEXT = (
-    "<b>"
-    "❖ {name} ♪ — Your Premium Music Streamer Bot 🎶\n\n"
+    "<b>❖ {name} ♪ — Your Premium Music Streamer Bot 🎶</b>\n\n"
     "<blockquote>"
-    "▸ Fast • Lag Free • No Ads 🍃\n"
-    "▸ Auto-Play • Audio • Video 🎥"
+    "<b>▸ Fast • Lag Free • No Ads 🍃\n"
+    "▸ Auto-Play • Audio • Video 🎥</b>"
     "</blockquote>\n\n"
-    "➜ Add {name} To Your Group & "
-    "Enjoy High Quality Songs 🎶"
-    "</b>"
+    "<b>➜ Add {name} To Your Group & "
+    "Enjoy High Quality Songs 🎶</b>"
 )
 
 
-def _add_me_markup(username: str) -> InlineKeyboardMarkup:
+def _add_me_markup(username=None):
+    if username is None:
+        username = getattr(app, "username", None)
+
+    if not username:
+        return None
+
     return InlineKeyboardMarkup(
         [
             [
@@ -39,6 +47,7 @@ def _add_me_markup(username: str) -> InlineKeyboardMarkup:
 
 @app.on_guest_message()
 async def guest_username_mention(_, message: Message):
+
     guest_query_id = getattr(message, "guest_query_id", None)
 
     if not guest_query_id:
@@ -53,15 +62,18 @@ async def guest_username_mention(_, message: Message):
         if me.last_name:
             name = f"{name} {me.last_name}"
 
-        # Username is ONLY required for the Add Me button.
+        # Username is ONLY used internally for Add Me button.
         username = me.username
 
         if not username:
             return
 
+        # Replace bot name
         promo_text = ADD_ME_PROMO_TEXT.format(
             name=name,
         )
+
+        keyboard = _add_me_markup(username)
 
         result = InlineQueryResultArticle(
             title=f"❖ {name}",
@@ -72,7 +84,7 @@ async def guest_username_mention(_, message: Message):
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True,
             ),
-            reply_markup=_add_me_markup(username),
+            reply_markup=keyboard,
         )
 
         await app.answer_guest_query(
