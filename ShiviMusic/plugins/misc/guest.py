@@ -14,8 +14,10 @@ from ShiviMusic import app
 # GUEST MESSAGE
 # ==========================================================
 
+# Yahan {name} lagane se ye automatically us bot ka naam 
+# utha lega jis bot token par ye code run ho raha hoga.
 ADD_ME_PROMO_TEXT = (
-    "❖ ˹{name}˼ ♪ — <b>Your Premium Music Streamer Bot 🎶</b>\n\n"
+    "<b>❖ ˹{name}˼ ♪ — Your Premium Music Streamer Bot 🎶</b>\n\n"
     
     "<blockquote>▸ Fast • Lag Free • No Ads 🍃\n"
     "▸ Auto-Play • Audio • Video 🎥</blockquote>\n\n"
@@ -69,12 +71,12 @@ async def guest_username_mention(_, message: Message):
     try:
 
         # --------------------------------------------------
-        # GET BOT INFORMATION
+        # GET BOT INFORMATION (Ye auto bot ki details nikalega)
         # --------------------------------------------------
 
         me = await app.get_me()
 
-        # Full bot name
+        # Full bot name (Apne aap repo wale bot ka naam fetch karega)
         name = me.first_name or "Music Bot"
 
         if me.last_name:
@@ -90,6 +92,7 @@ async def guest_username_mention(_, message: Message):
         # CREATE MESSAGE
         # --------------------------------------------------
 
+        # Yahan .format(name=name) apke bot ka live name replace karega text me
         promo_text = ADD_ME_PROMO_TEXT.format(
             name=name,
         )
