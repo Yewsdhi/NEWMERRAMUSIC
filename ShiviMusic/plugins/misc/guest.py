@@ -10,19 +10,21 @@ from pyrogram.types import (
 from ShiviMusic import app
 
 
-PROMO_TEXT = (
+ADD_ME_PROMO_TEXT = (
     "❖ <b>{name}</b> ♪ — Your Premium Music Streamer Bot 🎶\n\n"
     "<blockquote>"
     "▸ Fast • Lag Free • No Ads 🍃\n"
     "▸ Auto-Play • Audio • Video 🎥"
     "</blockquote>\n\n"
-    "➜ <b>{name}</b> "
-    "<code>@{username}</code> "
+    "➜ <b>{name}</b> <code>@{username}</code>\n"
     "To Your Group & Enjoy High Quality Songs 🎶"
 )
 
 
-def add_me_markup(username: str) -> InlineKeyboardMarkup:
+def _add_me_markup(username=None):
+    if username is None:
+        username = app.username
+
     return InlineKeyboardMarkup(
         [
             [
@@ -38,7 +40,6 @@ def add_me_markup(username: str) -> InlineKeyboardMarkup:
 
 @app.on_guest_message()
 async def guest_username_mention(_, message: Message):
-
     guest_query_id = getattr(message, "guest_query_id", None)
 
     if not guest_query_id:
@@ -53,7 +54,7 @@ async def guest_username_mention(_, message: Message):
         if not username:
             return
 
-        promo_text = PROMO_TEXT.format(
+        promo_text = ADD_ME_PROMO_TEXT.format(
             name=name,
             username=username,
         )
@@ -65,7 +66,7 @@ async def guest_username_mention(_, message: Message):
             input_message_content=InputTextMessageContent(
                 promo_text
             ),
-            reply_markup=add_me_markup(username),
+            reply_markup=_add_me_markup(username),
         )
 
         await app.answer_guest_query(
