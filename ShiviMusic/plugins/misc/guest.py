@@ -48,7 +48,7 @@ def _add_me_markup() -> InlineKeyboardMarkup:
         [
             [
                 InlineKeyboardButton(
-                    text="➕ 𝗔𝗱𝗱 𝗠𝗲 𝗧𝗼 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 ➕",
+                    text="➕ Add me in your Group",
                     url=f"https://t.me/{app.username}?startgroup=true",
                     style=ButtonStyle.SUCCESS,
                 )
@@ -64,7 +64,7 @@ async def guest_username_mention(_, message: Message):
         return
 
     result = InlineQueryResultArticle(
-        title="❖ 𝗗𝗼𝗼𝗺 𝗠𝘂𝘀𝗶𝗰",
+        title="❖ kirti music",
         description="Tap to send the Add Me card in this chat 🎵",
         thumb_url="https://files.catbox.moe/qv2ob4.jpg",
         input_message_content=InputTextMessageContent(ADD_ME_PROMO_TEXT),
