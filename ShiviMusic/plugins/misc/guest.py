@@ -24,9 +24,22 @@ from ShiviMusic import app
 #   Without this toggle ON, Telegram will never send guest messages
 #   to your bot, no matter what code is running.
 
+me = await app.get_me()
+
 ADD_ME_PROMO_TEXT = (
-    "❖ 𝗗𝗼𝗼𝗺 𝗠𝘂𝘀𝗶𝗰 - 𝗔 𝗠𝗼𝘀𝘁 𝗣𝗼𝘄𝗲𝗿𝗳𝘂𝗹 𝗠𝘂𝘀𝗶𝗰 𝗦𝘁𝗿𝗲𝗮𝗺𝗲𝗿 𝗕𝗼𝘁 𝗙𝗼𝗿 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽𝘀 & 𝗖𝗵𝗮𝗻𝗻𝗲𝗹𝘀 🚀\n\n"
-    "▸ 𝗧𝗮𝗽 𝗧𝗵𝗲 𝗕𝗲𝗹𝗼𝘄 𝗕𝘂𝘁𝘁𝗼𝗻 𝗧𝗼 𝗔𝗱𝗱 𝗠𝗲 𝗶𝗻 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽 & 𝗘𝗻𝗷𝗼𝘆 𝗛𝗶𝗴𝗵 𝗤𝘂𝗮𝗹𝗶𝘁𝘆 𝗦𝗼𝗻𝗴𝘀 🎵"
+    '❖ <a href="https://t.me/{username}">{name}</a> ♪ — '
+    '𝖸𝗈𝗎𝗋 𝖯𝗋𝖾𝗆𝗂𝗎𝗆 𝖬𝗎𝗌𝗂𝖼 𝖲𝗍𝗋𝖾𝖺𝗆𝖾𝗋 𝖡𝗈𝗍 🎶\n\n'
+
+    '<blockquote>'
+    '▸ 𝖥𝖺𝗌𝗍 • 𝖫𝖺𝗀 𝖥𝗋𝖾𝖾 • 𝖭𝗈 𝖠𝖽𝗌 🍃\n'
+    '▸ 𝖠𝗎𝗍𝗈-𝖯𝗅𝖺𝗒 • 𝖠𝗎𝖽𝗂𝗈 • 𝖵𝗂𝖽𝖾𝗈 🎥'
+    '</blockquote>\n'
+
+    '➜ <a href="https://t.me/{username}">{name}</a> 𝖳𝗈 𝖸𝗈𝗎𝗋 𝖦𝗋𝗈𝗎𝗉 & '
+    '𝖤𝗇𝗃𝗈𝗒 𝖧𝗂𝗀𝗁 𝖰𝗎𝖺𝗅𝗂𝗍𝗒 𝖲𝗈𝗇𝗀𝗌 🎶'
+).format(
+    username=me.username,
+    name=me.first_name
 )
 
 
