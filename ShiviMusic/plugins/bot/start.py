@@ -1,4 +1,4 @@
-# =======================================================
+ =======================================================
 # ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
 
 # This source code is under MIT License 📜 Unauthorized forking, importing, or using this code without giving proper credit will result in legal action ⚠️
@@ -118,28 +118,11 @@ async def start_pm(client, message: Message, _):
                 
     else:
         out = private_panel(_)
-
-        # ➕ Add Me In Your Group button
-        bot = await client.get_me()
-
-        keyboard = InlineKeyboardMarkup(
-            [
-                [
-                    InlineKeyboardButton(
-                        "➕ Add Me In Your Group",
-                        url=f"https://t.me/{bot.username}?startgroup=true",
-                    )
-                ],
-                *out,
-            ]
-        )
-
         await message.reply_photo(
             random.choice(shivi_PIC),
             caption=_["start_2"].format(message.from_user.mention, app.mention),
-            reply_markup=keyboard,
+            reply_markup=InlineKeyboardMarkup(out),
         )
-
         if await is_on_off(2):
             return await app.send_message(
                 chat_id=config.LOGGER_ID,
