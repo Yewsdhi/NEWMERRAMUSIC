@@ -299,13 +299,6 @@ class Call(PyTgCalls):
 
         language = await get_lang(chat_id)
         _ = get_string(language)
-        
-        chat_title = "Group"
-        try:
-            chat_obj = await app.get_chat(original_chat_id)
-            chat_title = chat_obj.title
-        except Exception:
-            pass
 
         try:
             file_path, direct = await YouTube.download(
@@ -359,7 +352,6 @@ class Call(PyTgCalls):
                     title[:23],
                     duration_min,
                     "ᴋɪʀᴛɪ-ʙᴏᴛs",
-                    chat_title,
                     "Audio"
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
@@ -466,13 +458,6 @@ class Call(PyTgCalls):
         videoid = check[0]["vidid"]
         db[chat_id][0]["played"] = 0
         exis = (check[0]).get("old_dur")
-        
-        chat_title = "Group"
-        try:
-            chat_obj = await app.get_chat(original_chat_id)
-            chat_title = chat_obj.title
-        except Exception:
-            pass
 
         if exis:
             db[chat_id][0]["dur"] = exis
@@ -505,7 +490,6 @@ class Call(PyTgCalls):
                     title[:23],
                     check[0]["dur"],
                     user,
-                    chat_title,
                     stype
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
@@ -544,7 +528,6 @@ class Call(PyTgCalls):
                     title[:23],
                     check[0]["dur"],
                     user,
-                    chat_title,
                     stype
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
@@ -565,7 +548,7 @@ class Call(PyTgCalls):
             run = await app.send_photo(
                 chat_id=original_chat_id,
                 photo=config.STREAM_IMG_URL,
-                caption=_["stream_2"].format(user, chat_title),
+                caption=_["stream_2"].format(user),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -589,7 +572,7 @@ class Call(PyTgCalls):
                         else config.TELEGRAM_VIDEO_URL
                     ),
                     caption=_["stream_1"].format(
-                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, chat_title, stype
+                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
@@ -601,7 +584,7 @@ class Call(PyTgCalls):
                     chat_id=original_chat_id,
                     photo=config.SOUNCLOUD_IMG_URL,
                     caption=_["stream_1"].format(
-                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, chat_title, stype
+                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
@@ -618,7 +601,6 @@ class Call(PyTgCalls):
                         title[:23],
                         check[0]["dur"],
                         user,
-                        chat_title,
                         stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
