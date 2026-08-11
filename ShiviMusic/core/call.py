@@ -243,8 +243,7 @@ class Call(PyTgCalls):
             await assistant.leave_call(chat_id, close=False)
         except Exception:
             pass
-
-    async def skip_stream(
+            async def skip_stream(
         self,
         chat_id: int,
         link: str,
@@ -274,13 +273,6 @@ class Call(PyTgCalls):
         seed_vidid: str = None,
         client: PyTgCalls = None,
     ) -> bool:
-        """
-        Called whenever the queue runs dry. Picks a random, not-recently-played
-        related track based on the last played song's title and starts it
-        instead of leaving the call. Returns True on success, False if
-        autoplay could not find/play anything (caller should fall back to
-        the normal "queue ended" behaviour).
-        """
         if seed_vidid:
             remember_played(chat_id, seed_vidid)
 
@@ -307,6 +299,13 @@ class Call(PyTgCalls):
 
         language = await get_lang(chat_id)
         _ = get_string(language)
+        
+        chat_title = "Group"
+        try:
+            chat_obj = await app.get_chat(original_chat_id)
+            chat_title = chat_obj.title
+        except Exception:
+            pass
 
         try:
             file_path, direct = await YouTube.download(
@@ -334,7 +333,6 @@ class Call(PyTgCalls):
             forceplay=True,
         )
 
-        # Initialize the same runtime fields used by callbacks/timer.
         if db.get(chat_id):
             db[chat_id][0]["played"] = 0
             db[chat_id][0]["seconds"] = 0
@@ -361,6 +359,8 @@ class Call(PyTgCalls):
                     title[:23],
                     duration_min,
                     "ᴋɪʀᴛɪ-ʙᴏᴛs",
+                    chat_title,
+                    "Audio"
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
             )
@@ -462,9 +462,18 @@ class Call(PyTgCalls):
         user = check[0]["by"]
         original_chat_id = check[0]["chat_id"]
         streamtype = check[0]["streamtype"]
+        stype = streamtype.title() if streamtype else "Audio"
         videoid = check[0]["vidid"]
         db[chat_id][0]["played"] = 0
         exis = (check[0]).get("old_dur")
+        
+        chat_title = "Group"
+        try:
+            chat_obj = await app.get_chat(original_chat_id)
+            chat_title = chat_obj.title
+        except Exception:
+            pass
+
         if exis:
             db[chat_id][0]["dur"] = exis
             db[chat_id][0]["seconds"] = check[0]["old_second"]
@@ -496,6 +505,8 @@ class Call(PyTgCalls):
                     title[:23],
                     check[0]["dur"],
                     user,
+                    chat_title,
+                    stype
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
             )
@@ -533,6 +544,8 @@ class Call(PyTgCalls):
                     title[:23],
                     check[0]["dur"],
                     user,
+                    chat_title,
+                    stype
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
             )
@@ -552,7 +565,7 @@ class Call(PyTgCalls):
             run = await app.send_photo(
                 chat_id=original_chat_id,
                 photo=config.STREAM_IMG_URL,
-                caption=_["stream_2"].format(user),
+                caption=_["stream_2"].format(user, chat_title),
                 reply_markup=InlineKeyboardMarkup(button),
             )
             db[chat_id][0]["mystic"] = run
@@ -576,7 +589,7 @@ class Call(PyTgCalls):
                         else config.TELEGRAM_VIDEO_URL
                     ),
                     caption=_["stream_1"].format(
-                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user
+                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, chat_title, stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
@@ -588,7 +601,7 @@ class Call(PyTgCalls):
                     chat_id=original_chat_id,
                     photo=config.SOUNCLOUD_IMG_URL,
                     caption=_["stream_1"].format(
-                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user
+                        config.SUPPORT_GROUP, title[:23], check[0]["dur"], user, chat_title, stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
@@ -605,6 +618,8 @@ class Call(PyTgCalls):
                         title[:23],
                         check[0]["dur"],
                         user,
+                        chat_title,
+                        stype
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
@@ -662,3 +677,4 @@ class Call(PyTgCalls):
                         await self.stop_stream(update.chat_id)
 
 Shivi = Call()
+    
