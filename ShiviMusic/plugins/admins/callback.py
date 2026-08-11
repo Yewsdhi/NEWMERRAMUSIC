@@ -150,7 +150,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             return await CallbackQuery.answer(_["admin_1"], show_alert=True)
         await CallbackQuery.answer()
         await music_off(chat_id)
-        await Badnam.pause_stream(chat_id)
+        await Shivi.pause_stream(chat_id)  # Fixed: Badnam -> Shivi
         await CallbackQuery.message.reply_text(
             _["admin_2"].format(mention), reply_markup=close_markup(_)
         )
@@ -160,14 +160,14 @@ async def del_back_playlist(client, CallbackQuery, _):
             return await CallbackQuery.answer(_["admin_3"], show_alert=True)
         await CallbackQuery.answer()
         await music_on(chat_id)
-        await Badnam.resume_stream(chat_id)
+        await Shivi.resume_stream(chat_id)  # Fixed: Badnam -> Shivi
         await CallbackQuery.message.reply_text(
             _["admin_4"].format(mention), reply_markup=close_markup(_)
         )
         
     elif command == "Stop" or command == "End":
         await CallbackQuery.answer()
-        await Badnam.stop_stream(chat_id)
+        await Shivi.stop_stream(chat_id)  # Fixed: Badnam -> Shivi
         await set_loop(chat_id, 0)
         await CallbackQuery.message.reply_text(
             _["admin_5"].format(mention), reply_markup=close_markup(_)
@@ -217,23 +217,40 @@ async def del_back_playlist(client, CallbackQuery, _):
                 if popped:
                     await auto_clean(popped)
                 if not check:
-                    await CallbackQuery.edit_message_text(f"➻ sᴛʀᴇᴀᴍ sᴋɪᴩᴩᴇᴅ 🎄\n│ \n└ʙʏ : {mention} 🥀")
+                    # Fixed: Autoplay Integration Added
+                    started = False
+                    if popped and await is_autoplay_group(chat_id):
+                        try:
+                            started = await Shivi.autoplay_start(
+                                chat_id,
+                                popped.get("chat_id", chat_id),
+                                popped.get("title"),
+                                popped.get("vidid"),
+                            )
+                        except:
+                            pass
+                    
+                    if started:
+                        await CallbackQuery.edit_message_text(txt, reply_markup=close_markup(_))
+                        return
+                    
+                    await CallbackQuery.edit_message_text(txt)
                     await CallbackQuery.message.reply_text(
                         text=_["admin_6"].format(mention, CallbackQuery.message.chat.title),
                         reply_markup=close_markup(_),
                     )
                     try:
-                        return await Badnam.stop_stream(chat_id)
+                        return await Shivi.stop_stream(chat_id)  # Fixed: Badnam -> Shivi
                     except:
                         return
             except:
                 try:
-                    await CallbackQuery.edit_message_text(f"➻ sᴛʀᴇᴀᴍ sᴋɪᴩᴩᴇᴅ 🎄\n│ \n└ʙʏ : {mention} 🥀")
+                    await CallbackQuery.edit_message_text(txt)
                     await CallbackQuery.message.reply_text(
                         text=_["admin_6"].format(mention, CallbackQuery.message.chat.title),
                         reply_markup=close_markup(_),
                     )
-                    return await Badnam.stop_stream(chat_id)
+                    return await Shivi.stop_stream(chat_id)  # Fixed: Badnam -> Shivi
                 except:
                     return
         else:
@@ -268,7 +285,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             except:
                 image = None
             try:
-                await Badnam.skip_stream(chat_id, link, video=status, image=image)
+                await Shivi.skip_stream(chat_id, link, video=status, image=image)  # Fixed: Badnam -> Shivi
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
             button = stream_markup(_, chat_id)
@@ -280,6 +297,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                     title[:23],
                     duration,
                     user,
+                    CallbackQuery.message.chat.title  # Fixed: Added 5th argument
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
             )
@@ -305,7 +323,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             except:
                 image = None
             try:
-                await Badnam.skip_stream(chat_id, file_path, video=status, image=image)
+                await Shivi.skip_stream(chat_id, file_path, video=status, image=image)  # Fixed: Badnam -> Shivi
             except:
                 return await mystic.edit_text(_["call_6"])
             button = stream_markup(_, chat_id)
@@ -317,6 +335,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                     title[:23],
                     duration,
                     user,
+                    CallbackQuery.message.chat.title  # Fixed: Added 5th argument
                 ),
                 reply_markup=InlineKeyboardMarkup(button),
             )
@@ -327,7 +346,7 @@ async def del_back_playlist(client, CallbackQuery, _):
             
         elif "index_" in queued:
             try:
-                await Badnam.skip_stream(chat_id, videoid, video=status)
+                await Shivi.skip_stream(chat_id, videoid, video=status)  # Fixed: Badnam -> Shivi
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
             button = stream_markup(_, chat_id)
@@ -349,7 +368,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                 except:
                     image = None
             try:
-                await Badnam.skip_stream(chat_id, queued, video=status, image=image)
+                await Shivi.skip_stream(chat_id, queued, video=status, image=image)  # Fixed: Badnam -> Shivi
             except:
                 return await CallbackQuery.message.reply_text(_["call_6"])
                 
@@ -357,7 +376,13 @@ async def del_back_playlist(client, CallbackQuery, _):
                 button = stream_markup(_, chat_id)
                 run = await CallbackQuery.message.reply_photo(
                     photo=TELEGRAM_AUDIO_URL if str(streamtype) == "audio" else TELEGRAM_VIDEO_URL,
-                    caption=_["stream_1"].format(SUPPORT_CHAT, title[:23], duration, user),
+                    caption=_["stream_1"].format(
+                        SUPPORT_CHAT, 
+                        title[:23], 
+                        duration, 
+                        user, 
+                        CallbackQuery.message.chat.title  # Fixed: Added 5th argument
+                    ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
                 db[chat_id][0]["mystic"] = run
@@ -367,7 +392,13 @@ async def del_back_playlist(client, CallbackQuery, _):
                 button = stream_markup(_, chat_id)
                 run = await CallbackQuery.message.reply_photo(
                     photo=SOUNCLOUD_IMG_URL if str(streamtype) == "audio" else TELEGRAM_VIDEO_URL,
-                    caption=_["stream_1"].format(SUPPORT_CHAT, title[:23], duration, user),
+                    caption=_["stream_1"].format(
+                        SUPPORT_CHAT, 
+                        title[:23], 
+                        duration, 
+                        user, 
+                        CallbackQuery.message.chat.title  # Fixed: Added 5th argument
+                    ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
                 db[chat_id][0]["mystic"] = run
@@ -383,6 +414,7 @@ async def del_back_playlist(client, CallbackQuery, _):
                         title[:23],
                         duration,
                         user,
+                        CallbackQuery.message.chat.title  # Fixed: Added 5th argument
                     ),
                     reply_markup=InlineKeyboardMarkup(button),
                 )
