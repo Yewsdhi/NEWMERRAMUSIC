@@ -243,7 +243,7 @@ class Call(PyTgCalls):
             await assistant.leave_call(chat_id, close=False)
         except Exception:
             pass
-            async def skip_stream(
+    async def skip_stream(
         self,
         chat_id: int,
         link: str,
@@ -677,4 +677,3 @@ class Call(PyTgCalls):
                         await self.stop_stream(update.chat_id)
 
 Shivi = Call()
-    
