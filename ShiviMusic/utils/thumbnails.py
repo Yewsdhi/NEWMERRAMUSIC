@@ -7,31 +7,62 @@ import asyncio
 import numpy as np
 import aiohttp
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
+from PIL import (
+    Image,
+    ImageDraw,
+    ImageFilter,
+    ImageFont,
+)
 
-from ShiviMusic import config
+# ============================================================
+# CONFIG FIX
+# ============================================================
+
+try:
+    import config
+except ImportError:
+    config = None
+
+
+# ============================================================
+# TRACK IMPORT
+# ============================================================
 
 try:
     from ShiviMusic.helpers import Track
 except ImportError:
-    Track = object
+    try:
+        from ShiviMusic.utils.database import Track
+    except ImportError:
+        Track = object
+
+
+# ============================================================
+# UNIDECODE
+# ============================================================
 
 try:
     from unidecode import unidecode
 except ImportError:
     def unidecode(text):
-        return text
+        return str(text)
 
 
 # ============================================================
-# SHIVIMUSIC PATHS
+# PATHS
 # ============================================================
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(
+    os.path.abspath(__file__)
+)
 
-# ShiviMusic/assets/
+# /app/ShiviMusic/assets/
 ASSETS_DIR = os.path.abspath(
-    os.path.join(BASE_DIR, "..", "assets")
+    os.path.join(
+        BASE_DIR,
+        "..",
+        "assets",
+    )
 )
 
 FONT_PATH = os.path.join(
@@ -49,44 +80,73 @@ TEMPLATE_PATH = os.path.join(
     "template.png",
 )
 
+CACHE_DIR = os.path.abspath(
+    os.path.join(
+        os.getcwd(),
+        "cache",
+    )
+)
+
+
+# ============================================================
+# DEFAULT THUMB
+# ============================================================
+
+def get_default_thumb():
+    if config is not None:
+        return getattr(
+            config,
+            "DEFAULT_THUMB",
+            "",
+        )
+
+    return ""
+
 
 # ============================================================
 # SAFE FONT
 # ============================================================
 
 def safe_font(path, size):
+
     try:
+
         if os.path.exists(path):
+
             return ImageFont.truetype(
                 path,
                 size,
             )
 
         print(
-            f"⚠️ Font not found: {path}"
+            f"⚠️ ShiviMusic font not found: {path}"
         )
 
     except Exception as e:
+
         print(
-            f"⚠️ Font loading error: {e}"
+            f"⚠️ ShiviMusic font error: {e}"
         )
 
     return ImageFont.load_default()
 
 
 # ============================================================
-# THUMBNAIL
+# THUMBNAIL CLASS
 # ============================================================
 
 class Thumbnail:
 
     def __init__(self):
 
-        self.size = (1280, 720)
+        self.size = (
+            1280,
+            720,
+        )
 
-        # ====================================================
+        # ----------------------------------------------------
         # SHIVIMUSIC FONTS
-        # ====================================================
+        # ----------------------------------------------------
 
         self.title_font = safe_font(
             FONT_PATH,
@@ -110,38 +170,52 @@ class Thumbnail:
     async def start(self):
 
         os.makedirs(
-            "cache",
+            CACHE_DIR,
             exist_ok=True,
         )
 
-        if not os.path.exists(FONT_PATH):
+        if not os.path.exists(
+            FONT_PATH
+        ):
             print(
-                f"⚠️ Missing: {FONT_PATH}"
+                f"⚠️ Missing font: {FONT_PATH}"
             )
 
-        if not os.path.exists(FONT2_PATH):
+        if not os.path.exists(
+            FONT2_PATH
+        ):
             print(
-                f"⚠️ Missing: {FONT2_PATH}"
+                f"⚠️ Missing font2: {FONT2_PATH}"
             )
 
-        if not os.path.exists(TEMPLATE_PATH):
+        if not os.path.exists(
+            TEMPLATE_PATH
+        ):
             print(
-                f"⚠️ Missing: {TEMPLATE_PATH}"
+                f"⚠️ Missing template: {TEMPLATE_PATH}"
             )
 
         return True
 
     # ========================================================
-    # DOWNLOAD THUMB
+    # DOWNLOAD THUMBNAIL
     # ========================================================
 
     async def save_thumb(
         self,
-        output_path: str,
-        url: str,
+        output_path,
+        url,
     ):
 
         if not url:
+            return output_path
+
+        if not str(url).startswith(
+            (
+                "http://",
+                "https://",
+            )
+        ):
             return output_path
 
         headers = {
@@ -162,18 +236,13 @@ class Thumbnail:
 
             try:
 
-                if not str(url).startswith(
-                    ("http://", "https://")
-                ):
-                    return output_path
-
                 async with aiohttp.ClientSession(
                     headers=headers,
                     timeout=timeout,
                 ) as session:
 
                     async with session.get(
-                        url
+                        str(url)
                     ) as response:
 
                         if response.status == 200:
@@ -186,16 +255,27 @@ class Thumbnail:
                                     output_path,
                                     "wb",
                                 ) as file:
-                                    file.write(data)
+
+                                    file.write(
+                                        data
+                                    )
 
                                 return output_path
+
+                        else:
+
+                            print(
+                                "⚠️ Thumbnail HTTP "
+                                f"status: {response.status}"
+                            )
 
             except Exception as e:
 
                 if attempt == 2:
+
                     print(
                         "❌ Thumbnail download "
-                        f"error: {e}"
+                        f"failed: {e}"
                     )
 
                 await asyncio.sleep(1)
@@ -214,18 +294,23 @@ class Thumbnail:
         max_width,
     ):
 
-        text = str(text or "")
+        text = str(
+            text or ""
+        )
 
         try:
 
-            if draw.textbbox(
+            bbox = draw.textbbox(
                 (0, 0),
                 text,
                 font=font,
-            )[2] <= max_width:
+            )
+
+            if bbox[2] <= max_width:
                 return text
 
         except Exception:
+
             return text
 
         low = 1
@@ -234,43 +319,45 @@ class Thumbnail:
 
         while low <= high:
 
-            middle = (
+            mid = (
                 low + high
             ) // 2
 
             candidate = (
-                text[:middle].rstrip()
+                text[:mid].rstrip()
                 + "…"
             )
 
             try:
 
-                width = draw.textbbox(
+                bbox = draw.textbbox(
                     (0, 0),
                     candidate,
                     font=font,
-                )[2]
+                )
 
-                if width <= max_width:
+                if bbox[2] <= max_width:
 
                     result = candidate
-                    low = middle + 1
+                    low = mid + 1
 
                 else:
-                    high = middle - 1
+
+                    high = mid - 1
 
             except Exception:
+
                 break
 
         return result
 
     # ========================================================
-    # GENERATE THUMBNAIL
+    # GENERATE
     # ========================================================
 
     async def generate(
         self,
-        song: Track,
+        song,
     ):
 
         temp_path = None
@@ -278,7 +365,7 @@ class Thumbnail:
         try:
 
             os.makedirs(
-                "cache",
+                CACHE_DIR,
                 exist_ok=True,
             )
 
@@ -294,19 +381,23 @@ class Thumbnail:
 
             if not song_id:
 
-                song_id = (
-                    getattr(
-                        song,
-                        "vidid",
-                        None,
-                    )
-                    or getattr(
-                        song,
-                        "videoid",
-                        None,
-                    )
-                    or "unknown"
+                song_id = getattr(
+                    song,
+                    "vidid",
+                    None,
                 )
+
+            if not song_id:
+
+                song_id = getattr(
+                    song,
+                    "videoid",
+                    None,
+                )
+
+            if not song_id:
+
+                song_id = "unknown"
 
             song_id = str(
                 song_id
@@ -314,19 +405,27 @@ class Thumbnail:
 
             song_id = "".join(
                 char
-                if char.isalnum()
-                or char in "-_"
+                if (
+                    char.isalnum()
+                    or char in "-_"
+                )
                 else "_"
                 for char in song_id
             )
 
-            temp_path = (
-                f"cache/temp_{song_id}.jpg"
+            temp_path = os.path.join(
+                CACHE_DIR,
+                f"temp_{song_id}.jpg",
             )
 
-            final_path = (
-                f"cache/{song_id}.png"
+            final_path = os.path.join(
+                CACHE_DIR,
+                f"{song_id}.png",
             )
+
+            # ------------------------------------------------
+            # CACHE
+            # ------------------------------------------------
 
             if os.path.exists(
                 final_path
@@ -334,34 +433,30 @@ class Thumbnail:
                 return final_path
 
             # ------------------------------------------------
-            # THUMB URL
+            # THUMBNAIL URL
             # ------------------------------------------------
 
-            thumb_url = getattr(
+            thumbnail_url = getattr(
                 song,
                 "thumbnail",
                 None,
             )
 
-            if not thumb_url:
+            if not thumbnail_url:
 
-                thumb_url = getattr(
+                thumbnail_url = getattr(
                     song,
                     "thumb",
                     None,
                 )
 
-            if not thumb_url:
+            if not thumbnail_url:
 
-                return getattr(
-                    config,
-                    "DEFAULT_THUMB",
-                    "",
-                )
+                return get_default_thumb()
 
             await self.save_thumb(
                 temp_path,
-                thumb_url,
+                thumbnail_url,
             )
 
             # ------------------------------------------------
@@ -374,25 +469,34 @@ class Thumbnail:
                     temp_path
                 ):
                     raise FileNotFoundError(
-                        "Thumbnail not downloaded"
+                        "Thumbnail download failed"
                     )
 
                 source = Image.open(
                     temp_path
                 ).convert("RGBA")
 
-            except Exception:
+            except Exception as e:
+
+                print(
+                    f"⚠️ Thumbnail image error: {e}"
+                )
 
                 source = Image.new(
                     "RGBA",
                     self.size,
-                    (30, 30, 30, 255),
+                    (
+                        30,
+                        30,
+                        30,
+                        255,
+                    ),
                 )
 
             width, height = self.size
 
             # =================================================
-            # BLURRED BACKGROUND
+            # BACKGROUND
             # =================================================
 
             target_ratio = (
@@ -447,23 +551,36 @@ class Thumbnail:
                 )
 
             background = background.resize(
-                self.size,
+                (
+                    width,
+                    height,
+                ),
                 Image.Resampling.LANCZOS,
             )
 
             background = background.filter(
-                ImageFilter.GaussianBlur(25)
+                ImageFilter.GaussianBlur(
+                    25
+                )
             )
 
-            dark_overlay = Image.new(
+            overlay = Image.new(
                 "RGBA",
-                self.size,
-                (0, 0, 0, 100),
+                (
+                    width,
+                    height,
+                ),
+                (
+                    0,
+                    0,
+                    0,
+                    100,
+                ),
             )
 
             background = Image.alpha_composite(
                 background,
-                dark_overlay,
+                overlay,
             )
 
             # =================================================
@@ -481,7 +598,10 @@ class Thumbnail:
                     ).convert("RGBA")
 
                     template = template.resize(
-                        self.size,
+                        (
+                            width,
+                            height,
+                        ),
                         Image.Resampling.LANCZOS,
                     )
 
@@ -489,9 +609,17 @@ class Thumbnail:
                         template
                     ).astype(float)
 
-                    red = template_array[:, :, 0]
-                    green = template_array[:, :, 1]
-                    blue = template_array[:, :, 2]
+                    red = (
+                        template_array[:, :, 0]
+                    )
+
+                    green = (
+                        template_array[:, :, 1]
+                    )
+
+                    blue = (
+                        template_array[:, :, 2]
+                    )
 
                     distance = np.maximum(
                         np.maximum(
@@ -519,7 +647,11 @@ class Thumbnail:
 
                     alpha[:, :640] = 0
 
-                    template_array[:, :, 3] = alpha
+                    template_array[
+                        :,
+                        :,
+                        3
+                    ] = alpha
 
                     template = Image.fromarray(
                         template_array.astype(
@@ -535,8 +667,7 @@ class Thumbnail:
                 except Exception as e:
 
                     print(
-                        "⚠️ Template error: "
-                        f"{e}"
+                        f"⚠️ Template error: {e}"
                     )
 
             # =================================================
@@ -549,12 +680,24 @@ class Thumbnail:
             cover_width = 512
             cover_height = 512
 
-            radius = 38
+            cover_radius = 38
+
+            # ------------------------------------------------
+            # SHADOW
+            # ------------------------------------------------
 
             shadow = Image.new(
                 "RGBA",
-                self.size,
-                (0, 0, 0, 0),
+                (
+                    width,
+                    height,
+                ),
+                (
+                    0,
+                    0,
+                    0,
+                    0,
+                ),
             )
 
             shadow_draw = ImageDraw.Draw(
@@ -572,18 +715,29 @@ class Thumbnail:
                     + cover_height
                     + 8,
                 ),
-                radius=radius + 4,
-                fill=(0, 0, 0, 140),
+                radius=cover_radius + 4,
+                fill=(
+                    0,
+                    0,
+                    0,
+                    140,
+                ),
             )
 
             shadow = shadow.filter(
-                ImageFilter.GaussianBlur(18)
+                ImageFilter.GaussianBlur(
+                    18
+                )
             )
 
             background = Image.alpha_composite(
                 background,
                 shadow,
             )
+
+            # ------------------------------------------------
+            # COVER IMAGE
+            # ------------------------------------------------
 
             cover = source.resize(
                 (
@@ -611,7 +765,7 @@ class Thumbnail:
                     cover_width,
                     cover_height,
                 ),
-                radius=radius,
+                radius=cover_radius,
                 fill=255,
             )
 
@@ -676,7 +830,7 @@ class Thumbnail:
             )
 
             # ------------------------------------------------
-            # CHANNEL / ARTIST
+            # ARTIST
             # ------------------------------------------------
 
             artist = getattr(
@@ -690,6 +844,14 @@ class Thumbnail:
                 artist = getattr(
                     song,
                     "artist",
+                    None,
+                )
+
+            if not artist:
+
+                artist = getattr(
+                    song,
+                    "channel",
                     None,
                 )
 
@@ -733,18 +895,20 @@ class Thumbnail:
 
             brand = "ShiviMusic"
 
-            bbox = draw.textbbox(
+            brand_bbox = draw.textbbox(
                 (0, 0),
                 brand,
                 font=self.tag_font,
             )
 
             brand_width = (
-                bbox[2] - bbox[0]
+                brand_bbox[2]
+                - brand_bbox[0]
             )
 
             brand_height = (
-                bbox[3] - bbox[1]
+                brand_bbox[3]
+                - brand_bbox[1]
             )
 
             brand_x = (
@@ -759,7 +923,7 @@ class Thumbnail:
                 - 30
             )
 
-            # Shadow
+            # Branding shadow
             draw.text(
                 (
                     brand_x + 2,
@@ -806,7 +970,7 @@ class Thumbnail:
             )
 
             # ------------------------------------------------
-            # CLEAN TEMP
+            # DELETE TEMP
             # ------------------------------------------------
 
             try:
@@ -848,11 +1012,7 @@ class Thumbnail:
             except Exception:
                 pass
 
-            return getattr(
-                config,
-                "DEFAULT_THUMB",
-                "",
-            )
+            return get_default_thumb()
 
 
 # ============================================================
@@ -861,3 +1021,18 @@ class Thumbnail:
 
 thumb = Thumbnail()
 thumbnail = thumb
+
+
+# ============================================================
+# COMPATIBILITY FUNCTION
+# ============================================================
+# call.py mein:
+#
+# from ShiviMusic.utils.thumbnails import get_thumb
+#
+# use ho sake isliye get_thumb bhi diya hai.
+# ============================================================
+
+async def get_thumb(song):
+
+    return await thumb.generate(song)
