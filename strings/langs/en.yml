@@ -173,8 +173,8 @@ queue_6 : "<b>🕚 ᴅᴜʀᴀᴛɪᴏɴ :</b> ᴜɴᴋɴᴏᴡɴ ᴅᴜʀᴀᴛ
 queue_7 : "\nᴄʟɪᴄᴋ ᴏɴ ʙᴜᴛᴛᴏɴ ʙᴇʟᴏᴡ ᴛᴏ ɢᴇᴛ ᴡʜᴏʟᴇ ǫᴜᴇᴜᴇᴅ ʟɪsᴛ."
 queue_8 : "<b>{0} ᴘʟᴀʏᴇʀ</b>\n\n🎄 <b>sᴛʀᴇᴀᴍɪɴɢ :</b> {1}\n\n🔗 <b>sᴛʀᴇᴀᴍ ᴛʏᴘᴇ :</b> {2}\n🥀 <b>ʀᴇǫᴜᴇsᴛᴇᴅ ʙʏ :</b> {3}\n{4}"
 
-stream_1 : "<b><blockquote>✮ 𝐒ʈᴧʀʈ𝛆ɗ 𝐒ʈʀ𝛆ɑɱɩŋʛ 𝐍๏Ꮗ ✮</blockquote></b>\n<blockquote expandable><b>✯ 𝐓ɩtɭ𝛆 : </b> <a href={0}>{1}</a>\n<b>✬ 𝐃ʋɽɑʈɩσŋ : </b> {2}\n<b>✭ 𝐁ɣ : </b> {3}\n<b>❃ 𝐒ʈʀ𝛆ɑɱ ʈɣρ𝛆 : </b> {4}</blockquote>\n<blockquote><b>❖ 𝐏ᴏᴡєʀєᴅ 𝐁ɣ : [˹ᴋɪʀᴛɪ-ʙᴏᴛs˼](t.me/annu_updates)</b></blockquote>"
-stream_2 : "<b><blockquote>✮ 𝐒ʈᴧʀʈ𝛆ɗ 𝐒ʈʀ𝛆ɑɱɩŋʛ 𝐍๏Ꮗ ✮</blockquote></b>\n<blockquote><b>❃ 𝐒ʈʀ𝛆ɑɱ ʈɣρ𝛆 : </b> {1}\n<b>✭ 𝐁ɣ : </b> {0}</blockquote>"
+stream_1 : "<b><blockquote>❖ ˹ sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ ˼ ♪</blockquote></b>\n<blockquote expandable><b>✯ ᴛɪᴛʟᴇ : </b> <a href={0}>{1}</a>\n<b>✬ ᴅᴜʀᴀᴛɪᴏɴ : </b> {2}\n<b>✭ ʙʏ : </b> {3}\n<b>❃ sᴛʀᴇᴀᴍ ᴛʏᴘᴇ  : </b> {4}</blockquote>\n<blockquote><b>❖ ᴘᴏᴡᴇʀᴇᴅ ʙʏ : [˹ᴋɪʀᴛɪ-ʙᴏᴛs˼](t.me/annu_updates)</b></blockquote>"
+stream_2 : "<b><blockquote>❖ ˹ sᴛᴀʀᴛᴇᴅ sᴛʀᴇᴀᴍɪɴɢ ɴᴏᴡ ˼ ♪</blockquote></b>\n<blockquote><b>❃ sᴛʀᴇᴀᴍ ᴛʏᴘᴇ  : </b> {1}\n<b>✭ ʙʏ  : </b> {0}</blockquote>"
 
 
 CLOSE_BUTTON  : "• ᴄʟᴏsє •"
