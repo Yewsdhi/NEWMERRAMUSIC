@@ -106,12 +106,12 @@ def admin_buttons(chat_id):
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
-                "🔂",
+                "🛑",
                 callback_data=f"ADMIN Loop|{chat_id}",
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
-                "🔁",
+                "📩",
                 callback_data=f"ADMIN AutoPlay|{chat_id}",
                 style=random.choice(styles),
             ),
@@ -138,7 +138,7 @@ def stream_markup_timer(_, chat_id, played, dur):
         *admin_buttons(chat_id),
         [
             InlineKeyboardButton(
-                "✙ ʌᴅᴅ ϻє ✙",
+                "✙ ᴀᴅᴅ ᴍᴇ ✙",
                 url=f"https://t.me/{app.username}?startgroup=true",
                 style=random.choice(styles),
             ),
@@ -156,7 +156,7 @@ def stream_markup(_, chat_id):
         *admin_buttons(chat_id),
         [
             InlineKeyboardButton(
-                "✙ ʌᴅᴅ ϻє ✙",
+                "✙ ᴀᴅᴅ ᴍᴇ ✙",
                 url=f"https://t.me/{app.username}?startgroup=true",
                 style=random.choice(styles),
             ),
