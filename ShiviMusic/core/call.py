@@ -47,6 +47,15 @@ from strings import get_string
 
 autoend = {}
 counter = {}
+# Prevent /skip and StreamEnded from advancing the same queue twice.
+_change_locks = {}
+
+async def _get_change_lock(chat_id: int):
+    lock = _change_locks.get(chat_id)
+    if lock is None:
+        lock = asyncio.Lock()
+        _change_locks[chat_id] = lock
+    return lock
 
 async def _clear_(chat_id: int):
     db[chat_id] = []
@@ -417,7 +426,7 @@ class Call(PyTgCalls):
             if users == 1:
                 autoend[chat_id] = datetime.now() + timedelta(minutes=1)
 
-    async def change_stream(self, client: PyTgCalls, chat_id: int):
+    async def _change_stream(self, client: PyTgCalls, chat_id: int):
         check = db.get(chat_id)
         popped = None
         loop = await get_loop(chat_id)
@@ -608,6 +617,14 @@ class Call(PyTgCalls):
                 db[chat_id][0]["mystic"] = run
                 db[chat_id][0]["markup"] = "stream"
 
+
+    async def change_stream(self, client: PyTgCalls, chat_id: int):
+        lock = await _get_change_lock(chat_id)
+        if lock.locked():
+            return
+        async with lock:
+            return await self._change_stream(client, chat_id)
+
     async def ping(self):
         pings = []
         if config.STRING1:
@@ -648,8 +665,10 @@ class Call(PyTgCalls):
             @client.on_update()
             async def _update_handler(_, update: types.Update, _client=client):
                 if isinstance(update, types.StreamEnded):
-                    if update.stream_type == types.StreamEnded.Type.AUDIO:
-                        await self.change_stream(_client, update.chat_id)
+                    # Both audio and video must advance the queue.
+                    # The per-chat lock prevents a duplicate transition when
+                    # /skip happens at the same time as StreamEnded.
+                    await self.change_stream(_client, update.chat_id)
                 elif isinstance(update, types.ChatUpdate):
                     if update.status in [
                         types.ChatUpdate.Status.KICKED,
