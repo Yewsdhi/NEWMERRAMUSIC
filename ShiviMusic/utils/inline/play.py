@@ -111,11 +111,6 @@ def admin_buttons(chat_id):
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
-                "📩",
-                callback_data=f"ADMIN AutoPlay|{chat_id}",
-                style=random.choice(styles),
-            ),
-            InlineKeyboardButton(
                 "𝟤𝟢ˢ + >",
                 callback_data="seek_forward_20",
                 style=random.choice(styles),
@@ -266,4 +261,4 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
                 style=random.choice(styles),
             ),
         ],
-                    ]
+                ]
