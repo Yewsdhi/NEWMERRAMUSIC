@@ -287,25 +287,30 @@ async def set_loop(chat_id: int, mode: int):
 
 
 async def is_autoplay_on(chat_id: int) -> bool:
-    cached = autoplaycache.get(chat_id)
-    if cached is not None:
-        return cached
-    data = await autoplaydb.find_one({"chat_id": chat_id})
-    status = bool(data)
+    if chat_id in autoplaycache:
+        return bool(autoplaycache[chat_id])
+    data = await autoplaydb.find_one({"chat_id": int(chat_id)})
+    status = data is not None
     autoplaycache[chat_id] = status
     return status
 
 
 async def autoplay_on(chat_id: int):
-    autoplaycache[chat_id] = True
+    chat_id = int(chat_id)
     await autoplaydb.update_one(
-        {"chat_id": chat_id}, {"$set": {"chat_id": chat_id}}, upsert=True
+        {"chat_id": chat_id},
+        {"$set": {"chat_id": chat_id, "enabled": True}},
+        upsert=True,
     )
+    autoplaycache[chat_id] = True
+    return True
 
 
 async def autoplay_off(chat_id: int):
-    autoplaycache[chat_id] = False
+    chat_id = int(chat_id)
     await autoplaydb.delete_one({"chat_id": chat_id})
+    autoplaycache[chat_id] = False
+    return True
 
 
 async def get_cmode(chat_id: int) -> int:
