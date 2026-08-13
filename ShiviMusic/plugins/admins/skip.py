@@ -88,14 +88,20 @@ async def skip(cli, message: Message, _, chat_id):
             if popped:
                 await auto_clean(popped)
             if not check:
+                # Queue is empty after skipping the current track.
+                # If autoplay is enabled, immediately generate/play the
+                # next related track using the skipped track as the seed.
                 started = False
-                if await is_autoplay_on(chat_id):
-                    started = await Shivi.autoplay_start(
-                        chat_id,
-                        popped.get("chat_id", chat_id),
-                        popped.get("title"),
-                        popped.get("vidid"),
-                    )
+                if popped and await is_autoplay_on(chat_id):
+                    seed_title = popped.get("title") or ""
+                    seed_vidid = popped.get("vidid")
+                    if seed_title or seed_vidid:
+                        started = await Shivi.autoplay_start(
+                            chat_id,
+                            popped.get("chat_id", chat_id),
+                            seed_title,
+                            seed_vidid,
+                        )
                 if started:
                     return
                 await message.reply_text(
