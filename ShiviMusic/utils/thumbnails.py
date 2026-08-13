@@ -93,8 +93,8 @@ async def get_thumb(videoid, user_id=None):
     # Draw details
     draw = ImageDraw.Draw(bg)
     try:
-        title_font = ImageFont.truetype("ShiviMusic/assets/thumb/font2.ttf", 32)
-        regular_font = ImageFont.truetype("ShiviMusic/assets/thumb/font.ttf", 18)
+        title_font = ImageFont.truetype("ShiviMusic/assets/font2.ttf", 32)
+        regular_font = ImageFont.truetype("ShiviMusic/assets/font.ttf", 18)
     except OSError:
         title_font = regular_font = ImageFont.load_default()
 
