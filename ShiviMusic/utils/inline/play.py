@@ -5,6 +5,7 @@
 
 import math
 import random
+
 from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 
@@ -12,7 +13,11 @@ from ShiviMusic import app
 from ShiviMusic.utils.formatters import time_to_seconds
 
 
-styles = [ButtonStyle.PRIMARY, ButtonStyle.SUCCESS, ButtonStyle.DANGER]
+styles = [
+    ButtonStyle.PRIMARY,
+    ButtonStyle.SUCCESS,
+    ButtonStyle.DANGER,
+]
 
 
 def track_markup(_, videoid, user_id, channel, fplay):
@@ -65,7 +70,7 @@ def progress_bar(played, dur):
         "—————————◉",
     ]
 
-    index = min(percent // 10, 9)
+    index = min(max(percent, 0) // 10, 9)
 
     return bars[index]
 
@@ -103,11 +108,6 @@ def admin_buttons(chat_id):
             InlineKeyboardButton(
                 "< - 𝟤𝟢ˢ",
                 callback_data="seek_backward_20",
-                style=random.choice(styles),
-            ),
-            InlineKeyboardButton(
-                "🛑",
-                callback_data=f"ADMIN Loop|{chat_id}",
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
@@ -174,12 +174,18 @@ def playlist_markup(_, videoid, user_id, ptype, channel, fplay):
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
-                callback_data=f"ShiviPlaylists {videoid}|{user_id}|{ptype}|a|{channel}|{fplay}",
+                callback_data=(
+                    f"ShiviPlaylists "
+                    f"{videoid}|{user_id}|{ptype}|a|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
-                callback_data=f"ShiviPlaylists {videoid}|{user_id}|{ptype}|v|{channel}|{fplay}",
+                callback_data=(
+                    f"ShiviPlaylists "
+                    f"{videoid}|{user_id}|{ptype}|v|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
         ],
@@ -198,7 +204,10 @@ def livestream_markup(_, videoid, user_id, mode, channel, fplay):
         [
             InlineKeyboardButton(
                 text=_["P_B_3"],
-                callback_data=f"LiveStream {videoid}|{user_id}|{mode}|{channel}|{fplay}",
+                callback_data=(
+                    f"LiveStream "
+                    f"{videoid}|{user_id}|{mode}|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             )
         ],
@@ -219,19 +228,28 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
-                callback_data=f"MusicStream {videoid}|{user_id}|a|{channel}|{fplay}",
+                callback_data=(
+                    f"MusicStream "
+                    f"{videoid}|{user_id}|a|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
                 text=_["P_B_2"],
-                callback_data=f"MusicStream {videoid}|{user_id}|v|{channel}|{fplay}",
+                callback_data=(
+                    f"MusicStream "
+                    f"{videoid}|{user_id}|v|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
         ],
         [
             InlineKeyboardButton(
                 "◁",
-                callback_data=f"slider B|{query_type}|{query}|{user_id}|{channel}|{fplay}",
+                callback_data=(
+                    f"slider B|{query_type}|{query}|"
+                    f"{user_id}|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
             InlineKeyboardButton(
@@ -241,9 +259,11 @@ def slider_markup(_, videoid, user_id, query, query_type, channel, fplay):
             ),
             InlineKeyboardButton(
                 "▷",
-                callback_data=f"slider F|{query_type}|{query}|{user_id}|{channel}|{fplay}",
+                callback_data=(
+                    f"slider F|{query_type}|{query}|"
+                    f"{user_id}|{channel}|{fplay}"
+                ),
                 style=random.choice(styles),
             ),
         ],
-    ]
-    
+                    ]
