@@ -10,7 +10,7 @@ from textwrap import wrap
 from unidecode import unidecode
 from py_yt import VideosSearch
 
-from SHUKLAMUSIC import app
+from ShiviMusic import app
 from config import YOUTUBE_IMG_URL
 
 
