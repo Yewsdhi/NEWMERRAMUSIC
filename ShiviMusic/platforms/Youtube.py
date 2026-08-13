@@ -8,9 +8,9 @@ import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from py_yt import VideosSearch
-from SHUKLAMUSIC.utils.database import is_on_off
-from SHUKLAMUSIC import app
-from SHUKLAMUSIC.utils.formatters import time_to_seconds
+from ShiviMusic.utils.database import is_on_off
+from ShiviMusic import app
+from ShiviMusic.utils.formatters import time_to_seconds
 import os
 import glob
 import random
