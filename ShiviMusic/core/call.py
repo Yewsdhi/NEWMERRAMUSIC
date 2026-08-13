@@ -47,7 +47,8 @@ from strings import get_string
 
 autoend = {}
 counter = {}
-change_locks = {}
+# Prevent duplicate autoplay starts when multiple stream-end callbacks arrive.
+_autoplay_locks: dict[int, asyncio.Lock] = {}
 
 async def _clear_(chat_id: int):
     db[chat_id] = []
@@ -274,107 +275,155 @@ class Call(PyTgCalls):
         seed_vidid: str = None,
         client: PyTgCalls = None,
     ) -> bool:
-        if seed_vidid:
-            remember_played(chat_id, seed_vidid)
-
-        status_msg = None
-        try:
-            status_msg = await app.send_message(
-                original_chat_id,
-                "ʜσʟᴅ ση...\n\nᴅσᴡηʟσᴧᴅɪηɢ ηєxᴛ ϻєᴅɪᴧ ғʀσϻ ᴛʜє ǫυєυє.",
-            )
-        except Exception:
-            status_msg = None
-
-        async def _fail() -> bool:
-            if status_msg:
-                try:
-                    await status_msg.delete()
-                except Exception:
-                    pass
+        """Start one autoplay track when the queue becomes empty."""
+        lock = _autoplay_locks.setdefault(chat_id, asyncio.Lock())
+        if lock.locked():
             return False
 
-        track = await fetch_autoplay_track(chat_id, seed_title, seed_vidid)
-        if not track:
-            return await _fail()
+        async with lock:
+            # A queued item may have been added while another callback waited.
+            if db.get(chat_id):
+                return False
 
-        language = await get_lang(chat_id)
-        _ = get_string(language)
+            if seed_vidid:
+                remember_played(chat_id, seed_vidid)
 
-        try:
-            file_path, direct = await YouTube.download(
-                track["vidid"], None, videoid=True
-            )
-        except Exception:
-            return await _fail()
-        if not file_path:
-            return await _fail()
-
-        remember_played(chat_id, track["vidid"])
-        title = track["title"].title()
-        duration_min = track["duration_min"]
-
-        await put_queue(
-            chat_id,
-            original_chat_id,
-            file_path if direct else f"vid_{track['vidid']}",
-            title,
-            duration_min,
-            "🔁 𝐀ᴜᴛᴏᴘʟᴀʏ",
-            track["vidid"],
-            1,
-            "audio",
-            forceplay=True,
-        )
-
-        if db.get(chat_id):
-            db[chat_id][0]["played"] = 0
-            db[chat_id][0]["seconds"] = 0
-            db[chat_id][0]["speed"] = 1.0
-            db[chat_id][0]["speed_path"] = None
-            db[chat_id][0]["old_dur"] = None
-            db[chat_id][0]["old_second"] = 0
-
-        stream = self._build_stream(file_path, video=False)
-        assistant = client or await group_assistant(self, chat_id)
-        try:
-            await self._play_on_assistant(assistant, chat_id, stream)
-        except Exception:
-            return await _fail()
-
-        try:
-            img = await gen_thumb(track["vidid"])
-            button = stream_markup(_, chat_id)
-            run = await app.send_photo(
-                chat_id=original_chat_id,
-                photo=img,
-                caption=_["stream_1"].format(
-                    f"https://t.me/{app.username}?start=info_{track['vidid']}",
-                    title[:23],
-                    duration_min,
-                    "𝐀ᴜᴛᴏᴘʟᴀʏ 🚩",
-                    " 🎵 Aᴜᴅɪᴏ"
-                ),
-                reply_markup=InlineKeyboardMarkup(button),
-            )
-            db[chat_id][0]["mystic"] = run
-            db[chat_id][0]["markup"] = "stream"
-        except Exception:
-            pass
-
-        if status_msg:
+            status_msg = None
             try:
-                await status_msg.delete()
+                status_msg = await app.send_message(
+                    original_chat_id,
+                    "ʜᴏʟᴅ ᴏɴ...\n\nᴅᴏᴡɴʟᴏᴀᴅɪɴɢ ɴᴇxᴛ ᴍᴇᴅɪᴀ ғʀᴏᴍ ᴀᴜᴛᴏᴘʟᴀʏ.",
+                )
             except Exception:
                 pass
 
-        try:
-            await add_active_chat(chat_id)
-            await music_on(chat_id)
-        except Exception:
-            pass
+            async def cleanup_status():
+                if status_msg:
+                    try:
+                        await status_msg.delete()
+                    except Exception:
+                        pass
 
-        return True
+            try:
+                track = None
+                file_path = None
+                direct = False
+
+                # Do not let one unavailable YouTube result kill autoplay.
+                for _ in range(5):
+                    track = await fetch_autoplay_track(
+                        chat_id, seed_title, seed_vidid
+                    )
+                    if not track:
+                        break
+
+                    videoid = track.get("vidid")
+                    if not videoid:
+                        track = None
+                        continue
+
+                    # Remember failed candidates too, so the next attempt
+                    # chooses another result instead of looping forever.
+                    remember_played(chat_id, videoid)
+
+                    try:
+                        file_path, direct = await YouTube.download(
+                            videoid,
+                            None,
+                            video=False,
+                            videoid=True,
+                        )
+                    except Exception:
+                        file_path, direct = None, False
+
+                    if file_path:
+                        break
+
+                    track = None
+                    file_path = None
+                    direct = False
+
+                if not track or not file_path:
+                    return False
+
+                language = await get_lang(chat_id)
+                _ = get_string(language)
+
+                title = str(
+                    track.get("title") or seed_title or "Autoplay"
+                ).title()
+                duration_min = track.get("duration_min") or "0:00"
+                videoid = track["vidid"]
+
+                # Keep the autoplay item in the queue so /skip and the next
+                # stream-end event work exactly like a normal song.
+                await put_queue(
+                    chat_id,
+                    original_chat_id,
+                    file_path if direct else f"vid_{videoid}",
+                    title,
+                    duration_min,
+                    "🔁 𝐀ᴜᴛᴏᴩʟᴀʏ",
+                    videoid,
+                    1,
+                    "audio",
+                    forceplay=True,
+                )
+
+                if db.get(chat_id):
+                    db[chat_id][0]["played"] = 0
+                    db[chat_id][0]["seconds"] = 0
+                    db[chat_id][0]["speed"] = 1.0
+                    db[chat_id][0]["speed_path"] = None
+                    db[chat_id][0]["old_dur"] = None
+                    db[chat_id][0]["old_second"] = 0
+                    db[chat_id][0]["dur"] = duration_min
+
+                assistant = client or await group_assistant(self, chat_id)
+                stream = self._build_stream(file_path, video=False)
+
+                try:
+                    await self._play_on_assistant(assistant, chat_id, stream)
+                except Exception:
+                    # Remove the broken autoplay entry so the bot does not
+                    # get stuck on it.
+                    try:
+                        failed = db.get(chat_id) or []
+                        if failed and failed[0].get("vidid") == videoid:
+                            failed.pop(0)
+                    except Exception:
+                        pass
+                    return False
+
+                try:
+                    img = await gen_thumb(videoid)
+                    button = stream_markup(_, chat_id)
+                    run = await app.send_photo(
+                        chat_id=original_chat_id,
+                        photo=img,
+                        caption=_["stream_1"].format(
+                            f"https://t.me/{app.username}?start=info_{videoid}",
+                            title[:23],
+                            duration_min,
+                            "𝐀ᴜᴛᴏᴘʟᴀʏ 🚩",
+                            " 🎵 Aᴜᴅɪᴏ",
+                        ),
+                        reply_markup=InlineKeyboardMarkup(button),
+                    )
+                    db[chat_id][0]["mystic"] = run
+                    db[chat_id][0]["markup"] = "stream"
+                except Exception:
+                    pass
+
+                try:
+                    await add_active_chat(chat_id)
+                    await music_on(chat_id)
+                except Exception:
+                    pass
+
+                return True
+            finally:
+                await cleanup_status()
 
     async def stream_call(self, link):
         assistant = await group_assistant(self, config.LOG_GROUP_ID)
@@ -419,13 +468,6 @@ class Call(PyTgCalls):
                 autoend[chat_id] = datetime.now() + timedelta(minutes=1)
 
     async def change_stream(self, client: PyTgCalls, chat_id: int):
-        lock = change_locks.setdefault(chat_id, asyncio.Lock())
-        if lock.locked():
-            return
-        async with lock:
-            return await self._change_stream(client, chat_id)
-
-    async def _change_stream(self, client: PyTgCalls, chat_id: int):
         check = db.get(chat_id)
         popped = None
         loop = await get_loop(chat_id)
@@ -656,7 +698,8 @@ class Call(PyTgCalls):
             @client.on_update()
             async def _update_handler(_, update: types.Update, _client=client):
                 if isinstance(update, types.StreamEnded):
-                    await self.change_stream(_client, update.chat_id)
+                    if update.stream_type == types.StreamEnded.Type.AUDIO:
+                        await self.change_stream(_client, update.chat_id)
                 elif isinstance(update, types.ChatUpdate):
                     if update.status in [
                         types.ChatUpdate.Status.KICKED,
@@ -666,3 +709,4 @@ class Call(PyTgCalls):
                         await self.stop_stream(update.chat_id)
 
 Shivi = Call()
+    
