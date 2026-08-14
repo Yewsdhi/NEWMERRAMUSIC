@@ -114,7 +114,7 @@ def admin_buttons(chat_id):
         ],
         [
             InlineKeyboardButton(
-                "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : OFF ❌",
+                "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : ON ✅",
                 callback_data=f"ADMIN AutoPlay|{chat_id}",
                 style=ButtonStyle.DANGER,
             ),
