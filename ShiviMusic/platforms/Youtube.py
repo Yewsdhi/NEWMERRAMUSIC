@@ -6,11 +6,6 @@ import yt_dlp
 from pyrogram.enums import MessageEntityType
 from pyrogram.types import Message
 from py_yt import VideosSearch
-import aiohttp
-
-API_URL = os.environ.get("SHRUTI_API_URL", "https://api01.shrutibots.site")
-
-API_KEY = os.environ.get("SHRUTI_API_KEY", "ShrutiBotsAlSpfeG7JItQmuoxCqKd") ## Get This API KEY FROM TELEGRAM BOT USERNAME: @SHRUTIAPIBOT 
 
 DOWNLOAD_DIR = "downloads"
 
@@ -20,72 +15,88 @@ def time_to_seconds(time):
     return sum(int(x) * 60 ** i for i, x in enumerate(reversed(stringt.split(":"))))
 
 
-async def download_song(link: str) -> str:
-    video_id = link.split("v=")[-1].split("&")[0] if "v=" in link else link
-    if not video_id or len(video_id) < 3:
-        return None
+def _yt_info(link: str, video: bool = False):
+    """Extract a direct media URL quickly with yt-dlp, without downloading."""
+    opts = {
+        "quiet": True,
+        "no_warnings": True,
+        "noplaylist": True,
+        "skip_download": True,
+        "format": (
+            "bestvideo[height<=720]+bestaudio/best[height<=720]/best"
+            if video
+            else "bestaudio/best"
+        ),
+    }
 
-    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    file_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.mp3")
-    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-        return file_path
+    with yt_dlp.YoutubeDL(opts) as ydl:
+        return ydl.extract_info(link, download=False)
 
+
+async def get_stream_url(link: str, video: bool = False) -> str:
+    """Return a direct YouTube media URL for fast playback."""
     try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{API_URL}/download",
-                params={"url": video_id, "type": "audio", "api_key": API_KEY},
-                timeout=aiohttp.ClientTimeout(total=300)
-            ) as resp:
-                if resp.status != 200:
-                    return None
-                with open(file_path, "wb") as f:
-                    async for chunk in resp.content.iter_chunked(131072):
-                        f.write(chunk)
-        if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-            return file_path
-        return None
+        info = await asyncio.to_thread(_yt_info, link, video)
+
+        # Prefer a single playable URL when available.
+        if info.get("url"):
+            return info["url"]
+
+        # For DASH/HLS, select the requested media stream.
+        formats = info.get("formats") or []
+        if video:
+            candidates = [
+                f for f in formats
+                if f.get("url")
+                and f.get("vcodec") not in (None, "none")
+                and f.get("acodec") not in (None, "none")
+            ]
+        else:
+            candidates = [
+                f for f in formats
+                if f.get("url")
+                and f.get("acodec") not in (None, "none")
+                and f.get("vcodec") in (None, "none")
+            ]
+
+        if not candidates:
+            candidates = [f for f in formats if f.get("url")]
+
+        if candidates:
+            candidates.sort(
+                key=lambda f: (
+                    f.get("height") or 0,
+                    f.get("abr") or 0,
+                    f.get("tbr") or 0,
+                ),
+                reverse=True,
+            )
+            return candidates[0]["url"]
+
     except Exception:
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except Exception:
-                pass
         return None
+
+    return None
+
+
+async def download_song(link: str) -> str:
+    """
+    Compatibility wrapper.
+
+    This keeps the old function name used by the bot, but returns the
+    direct stream URL instead of downloading a file.
+    """
+    return await get_stream_url(link, video=False)
 
 
 async def download_video(link: str) -> str:
-    video_id = link.split("v=")[-1].split("&")[0] if "v=" in link else link
-    if not video_id or len(video_id) < 3:
-        return None
+    """
+    Compatibility wrapper.
 
-    os.makedirs(DOWNLOAD_DIR, exist_ok=True)
-    file_path = os.path.join(DOWNLOAD_DIR, f"{video_id}.mp4")
-    if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-        return file_path
-
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get(
-                f"{API_URL}/download",
-                params={"url": video_id, "type": "video", "api_key": API_KEY},
-                timeout=aiohttp.ClientTimeout(total=600)
-            ) as resp:
-                if resp.status != 200:
-                    return None
-                with open(file_path, "wb") as f:
-                    async for chunk in resp.content.iter_chunked(131072):
-                        f.write(chunk)
-        if os.path.exists(file_path) and os.path.getsize(file_path) > 0:
-            return file_path
-        return None
-    except Exception:
-        if os.path.exists(file_path):
-            try:
-                os.remove(file_path)
-            except Exception:
-                pass
-        return None
+    Returns a direct video stream URL for fast playback instead of
+    downloading the complete video first.
+    """
+    return await get_stream_url(link, video=True)
 
 
 class YouTubeAPI:
@@ -278,3 +289,4 @@ class YouTubeAPI:
 
 
 YouTube = YouTubeAPI()
+            
