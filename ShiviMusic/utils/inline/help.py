@@ -83,7 +83,7 @@ def help_pannel(_, START: Union[bool, int] = None):
             ],
             [
                 InlineKeyboardButton(
-                    text="• ᴡᴇʟᴄᴏᴍᴇ •",
+                    text="• ᴀᴜᴛᴏᴘʟᴀʏ •",
                     callback_data="wel_cb",
                     style=ButtonStyle.SUCCESS,
                 ),
