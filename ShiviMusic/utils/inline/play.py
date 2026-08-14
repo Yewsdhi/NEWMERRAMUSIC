@@ -116,14 +116,14 @@ def admin_buttons(chat_id):
             InlineKeyboardButton(
                 "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : ON ✅",
                 callback_data=f"ADMIN AutoPlay|{chat_id}",
-                style=ButtonStyle.SUCCESS,
+                style=ButtonStyle.DANGER,
             ),
         ],
         [
             InlineKeyboardButton(
                 "✘ CLOSE ✘",
                 callback_data="close",
-                style=ButtonStyle.DANGER,
+                style=ButtonStyle.SUCCESS,
             ),
         ],
     ]
