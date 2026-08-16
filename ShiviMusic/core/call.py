@@ -342,14 +342,6 @@ class Call(PyTgCalls):
             return await _fail()
 
         try:
-            # Delete previous autoplay "Started Streaming" message
-            try:
-                old_mystic = db.get(chat_id, [{}])[0].get("mystic")
-                if old_mystic:
-                    await old_mystic.delete()
-            except Exception:
-                pass
-
             img = await gen_thumb(track["vidid"])
             button = stream_markup(_, chat_id)
             run = await app.send_photo(
