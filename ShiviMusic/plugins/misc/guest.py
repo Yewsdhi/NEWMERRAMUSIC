@@ -15,7 +15,7 @@ from ShiviMusic import app
 # ==========================================================
 
 ADD_ME_PROMO_TEXT = (
-    "❖ <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> — <b>𝐘ᴏᴜʀ 𝐏ʀᴇᴍɪᴜᴍ 𝐌ᴜsɪᴄ 𝐒ᴛʀᴇᴍᴀʀ 𝐁ᴏᴛ 🍂</b>\n\n"
+    "❖ <a href=\"https://t.me/{@Queenhoneybot}\">˹{QUEEN}˼ ♪</a> — <b>𝐘ᴏᴜʀ 𝐏ʀᴇᴍɪᴜᴍ 𝐌ᴜsɪᴄ 𝐒ᴛʀᴇᴍᴀʀ 𝐁ᴏᴛ 🍂</b>\n\n"
     
     "<blockquote><b>▸ 𝐅ᴀsᴛ • 𝐋ᴀɢ 𝐅ʀᴇᴇ • 𝐍ᴏ 𝐀ᴅs 🍂</b>\n"
     "<b>▸ 𝐀ᴜᴛᴏ-𝐏ʟᴀʏ • 𝐀ᴜᴅɪᴏ • 𝐕ɪᴅᴇᴏ 🎥</b></blockquote>\n\n"
