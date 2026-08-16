@@ -20,7 +20,7 @@ ADD_ME_PROMO_TEXT = (
     "<blockquote><b>▸ 𝐅ᴀsᴛ • 𝐋ᴀɢ 𝐅ʀᴇᴇ • 𝐍ᴏ 𝐀ᴅs 🍂</b>\n"
     "<b>▸ 𝐀ᴜᴛᴏ-𝐏ʟᴀʏ • 𝐀ᴜᴅɪᴏ • 𝐕ɪᴅᴇᴏ 🎥</b></blockquote>\n\n"
     
-    "<b>◼️ 𝐀ᴅᴅ</b> <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> <b>𝐓ᴏ 𝐘ᴏᴜʀ 𝐆ʀᴏᴜᴘ & 𝐄ɴᴊᴏʏ 𝐇ɪɢʜ 𝐐ᴜᴀʟɪᴛʏ 𝐒ᴏɴɢ ❄️</b>"
+    "<b>◼️ 𝐀ᴅᴅ</b> <a href=\"https://t.me/{@Queenhoneybot}\">˹{QUEEN}˼ ♪</a> <b>𝐓ᴏ 𝐘ᴏᴜʀ 𝐆ʀᴏᴜᴘ & 𝐄ɴᴊᴏʏ 𝐇ɪɢʜ 𝐐ᴜᴀʟɪᴛʏ 𝐒ᴏɴɢ ❄️</b>"
 )
 
 
