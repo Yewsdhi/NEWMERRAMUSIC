@@ -427,6 +427,17 @@ class Call(PyTgCalls):
             else:
                 loop = loop - 1
                 await set_loop(chat_id, loop)
+            # Delete the message belonging to the song that just ended.
+            # The message is stored on the popped queue item, because the
+            # next autoplay item is inserted into db[chat_id] separately.
+            if popped:
+                old_mystic = popped.get("mystic")
+                if old_mystic:
+                    try:
+                        await old_mystic.delete()
+                    except Exception:
+                        pass
+
             await auto_clean(popped)
             if not check:
                 if popped and await is_autoplay_on(chat_id):
@@ -659,3 +670,4 @@ class Call(PyTgCalls):
                         await self.stop_stream(update.chat_id)
 
 Shivi = Call()
+        
