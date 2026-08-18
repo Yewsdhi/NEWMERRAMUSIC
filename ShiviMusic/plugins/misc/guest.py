@@ -11,43 +11,31 @@ from ShiviMusic import app
 
 
 # ==========================================================
-# BOT USERNAME
-# ==========================================================
-
-BOT_USERNAME = "Queenhoneybot"
-BOT_NAME = "QUEEN"
-
-
-# ==========================================================
 # GUEST MESSAGE
 # ==========================================================
 
 ADD_ME_PROMO_TEXT = (
-    f'❖ <a href="https://t.me/{BOT_USERNAME}">˹{BOT_NAME}˼ ♪</a> — '
-    '<b>𝐘ᴏᴜʀ 𝐏ʀᴇᴍɪᴜᴍ 𝐌ᴜsɪᴄ 𝐒ᴛʀᴇᴀᴍᴇʀ 𝐁ᴏᴛ 🍂</b>\n\n'
-
-    '<blockquote>'
-    '<b>▸ 𝐅ᴀsᴛ • 𝐋ᴀɢ 𝐅ʀᴇᴇ • 𝐍ᴏ 𝐀ᴅs 🍂</b>\n'
-    '<b>▸ 𝐀ᴜᴛᴏ-𝐏ʟᴀʏ • 𝐀ᴜᴅɪᴏ • 𝐕ɪᴅᴇᴏ 🎥</b>'
-    '</blockquote>\n\n'
-
-    f'<b>◼️ 𝐀ᴅᴅ</b> '
-    f'<a href="https://t.me/{BOT_USERNAME}">˹{BOT_NAME}˼ ♪</a> '
-    '<b>𝐓ᴏ 𝐘ᴏᴜʀ 𝐆ʀᴏᴜᴘ & 𝐄ɴᴊᴏʏ 𝐇ɪɢʜ 𝐐ᴜᴀʟɪᴛʏ 𝐒ᴏɴɢ ❄️</b>'
+    "❖ <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> — <b>𝐘ᴏᴜʀ 𝐏ʀᴇᴍɪᴜᴍ 𝐌ᴜsɪᴄ 𝐒ᴛʀᴇᴍᴀʀ 𝐁ᴏᴛ 🍂</b>\n\n"
+    
+    "<blockquote><b>▸ 𝐅ᴀsᴛ • 𝐋ᴀɢ 𝐅ʀᴇᴇ • 𝐍ᴏ 𝐀ᴅs 🍂</b>\n"
+    "<b>▸ 𝐀ᴜᴛᴏ-𝐏ʟᴀʏ • 𝐀ᴜᴅɪᴏ • 𝐕ɪᴅᴇᴏ 🎥</b></blockquote>\n\n"
+    
+    "<b>◼️ 𝐀ᴅᴅ</b> <a href=\"https://t.me/{username}\">˹{name}˼ ♪</a> <b>𝐓ᴏ 𝐘ᴏᴜʀ 𝐆ʀᴏᴜᴘ & 𝐄ɴᴊᴏʏ 𝐇ɪɢʜ 𝐐ᴜᴀʟɪᴛʏ 𝐒ᴏɴɢ ❄️</b>"
 )
 
 
 # ==========================================================
-# ADD ME BUTTON
+# BUTTONS
 # ==========================================================
 
-def _add_me_markup():
+def _add_me_markup(username: str):
+
     return InlineKeyboardMarkup(
         [
             [
                 InlineKeyboardButton(
                     text="✙ ʌᴅᴅ ϻє ɪη ʏσυʀ ɢʀσυᴘ ✙",
-                    url=f"https://t.me/{BOT_USERNAME}?startgroup=true",
+                    url=f"https://t.me/{username}?startgroup=true",
                 )
             ]
         ]
@@ -68,35 +56,54 @@ async def guest_username_mention(_, message: Message):
     )
 
     if not guest_query_id:
-        print("Guest Mode: guest_query_id not found")
         return
 
     try:
 
         # --------------------------------------------------
+        # GET BOT INFORMATION 
+        # --------------------------------------------------
+
+        me = await app.get_me()
+
+        # Full bot name 
+        name = me.first_name or "Music Bot"
+
+        if me.last_name:
+            name = f"{name} {me.last_name}"
+
+        # Bot username
+        username = me.username
+
+        if not username:
+            return
+
+        # --------------------------------------------------
+        # CREATE MESSAGE
+        # --------------------------------------------------
+
+        promo_text = ADD_ME_PROMO_TEXT.format(
+            name=name,
+            username=username,
+        )
+
+        # --------------------------------------------------
         # KEYBOARD
         # --------------------------------------------------
 
-        keyboard = _add_me_markup()
+        keyboard = _add_me_markup(username)
 
         # --------------------------------------------------
         # INLINE RESULT
         # --------------------------------------------------
 
         result = InlineQueryResultArticle(
-            id="guest_music_bot",
-
-            title=f"❖ {BOT_NAME} ♪",
-
-            description=(
-                f"@{BOT_USERNAME} • "
-                "Add Me In Your Group 🎶"
-            ),
-
+            title=f"❖ {name} ♪",
+            description=f"@{username} • Add Me In Your Group 🎶",
             thumb_url="https://files.catbox.moe/qv2ob4.jpg",
 
             input_message_content=InputTextMessageContent(
-                message_text=ADD_ME_PROMO_TEXT,
+                message_text=promo_text,
                 parse_mode=ParseMode.HTML,
                 disable_web_page_preview=True,
             ),
@@ -113,14 +120,9 @@ async def guest_username_mention(_, message: Message):
             result=result,
         )
 
-        print(
-            f"Guest Mode: Successfully answered "
-            f"@{BOT_USERNAME}"
-        )
-
     except Exception as e:
 
         print(
-            f"Guest Mode Error: "
-            f"{type(e).__name__}: {e}"
+            f"Guest Mode Error: {type(e).__name__}: {e}"
         )
+        
