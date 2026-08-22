@@ -1,12 +1,13 @@
 # ======================================================
 # ©️ 2025-26 All Rights Reserved by Kirti 😎
-
+#
 # 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
 # 🔗 Source link : https://github.com/Badnam019
 # 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
 # =======================================================
 
 from typing import Union
+
 from ShiviMusic import app
 from ShiviMusic.utils.formatters import time_to_seconds
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -21,6 +22,7 @@ def queue_markup(
     played: Union[bool, int] = None,
     dur: Union[bool, int] = None,
 ):
+    # Buttons when duration is unknown
     not_dur = [
         [
             InlineKeyboardButton(
@@ -35,6 +37,8 @@ def queue_markup(
             ),
         ]
     ]
+
+    # Buttons when duration is available
     dur = [
         [
             InlineKeyboardButton(
@@ -56,7 +60,11 @@ def queue_markup(
             ),
         ],
     ]
-    upl = InlineKeyboardMarkup(not_dur if DURATION == "Unknown" else dur)
+
+    upl = InlineKeyboardMarkup(
+        not_dur if DURATION == "Unknown" else dur
+    )
+
     return upl
 
 
@@ -77,37 +85,62 @@ def queue_back_markup(_, CPLAY):
             ]
         ]
     )
+
     return upl
 
 
 def aq_markup(_, chat_id):
+    """
+    Autoplay / Music control buttons.
+    Join Now and Group Chat buttons removed.
+    """
+
     buttons = [
+        # Resume / Pause
         [
             InlineKeyboardButton(
-                text="ᴊᴏɪɴ ɴᴏᴡ",
-                url=f"https://t.me/ll_ROYAL_ABOUT_ll",
+                text="▶️ RESUME",
+                callback_data=f"resume_stream {chat_id}",
+                style=ButtonStyle.SUCCESS,
+            ),
+            InlineKeyboardButton(
+                text="⏸️ PAUSE",
+                callback_data=f"pause_stream {chat_id}",
+                style=ButtonStyle.PRIMARY,
+            ),
+        ],
+
+        # Skip / Stop
+        [
+            InlineKeyboardButton(
+                text="⏭️ SKIP",
+                callback_data=f"skip_stream {chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
             InlineKeyboardButton(
-                text="ɢʀᴏᴜᴘ ᴄʜᴀᴛ",
-                url="https://t.me/hot_dpz_stor",
-                style=ButtonStyle.SUCCESS,
+                text="⏹️ STOP",
+                callback_data=f"stop_stream {chat_id}",
+                style=ButtonStyle.DANGER,
             ),
         ],
+
+        # Close
         [
             InlineKeyboardButton(
-                text="ᴄʟᴏsᴇ",
+                text="❌ CLOSE",
                 callback_data="close",
                 style=ButtonStyle.DANGER,
             )
         ],
     ]
-    return buttons
+
+    return InlineKeyboardMarkup(buttons)
+
 
 # ======================================================
 # ©️ 2025-26 All Rights Reserved by Kirti 😎
-
+#
 # 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
 # 🔗 Source link : https://github.com/Badnam019
 # 📢 Telegram channel : t.me/lll_APNA_BADNAM_BABY_lll
-# =======================================================
+# ======================================================
