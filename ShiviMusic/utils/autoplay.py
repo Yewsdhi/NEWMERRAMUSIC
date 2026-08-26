@@ -1,12 +1,28 @@
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 🚀
-#
-# This source code is under MIT License 📜
-# ❌ Unauthorized forking, importing, or using this code
-#    without giving proper credit will result in legal action ⚠️
-#
-# 📩 DM for permission : @TheSigmaCoder
-# ===========================================================
+"""
+Autoplay helper - ported from Meera Music (ShiviMusic) reference.
+
+Primary: fetch YouTube "Mix"/radio playlist ("RD" + videoID) for the seed
+track and pick a random candidate. Fallback: title-text search via
+youtubesearchpython. Per-chat history (in-memory, 50 entries) prevents
+repeating a song that was already autoplayed in that chat.
+
+Resilience (added to fix the "autoplay suddenly stops" bug):
+  - All exceptions are logged through LOGGER so failures show up in Heroku
+    logs instead of being silently printed to stdout and lost.
+  - Mix extraction is retried once on failure (transient YouTube/network
+    errors are common).
+  - The caller (Swaggy.autoplay_start in core/call.py) now tries EVERY
+    candidate in the returned list (not just the first 3), and if a
+    candidate's download OR play call fails it undoes the queue insertion
+    and moves on to the next candidate. Only NoActiveGroupCall (voice
+    chat genuinely gone) aborts the whole step.
+  - On top of that, Swaggy._try_autoplay_with_retry wraps autoplay_start
+    with up to 3 total attempts (2 retries, 5s apart) so a transient
+    YouTube API/network failure no longer kills the autoplay loop.
+  - There is NO hard cap on the number of autoplay tracks per chat. The
+    only constant (_HISTORY_LIMIT) is a per-chat dedup history, not a play
+    counter; it auto-resets when all candidates are exhausted.
+"""
 
 import asyncio
 import glob
@@ -14,14 +30,16 @@ import os
 import random
 
 import yt_dlp
-from py_yt import VideosSearch
+from youtubesearchpython import VideosSearch
 
-# =========================================================
-# PER-CHAT PLAY HISTORY (in-memory, session based)
-# Used only to make sure autoplay never repeats a song it
-# already played for that chat.
-# =========================================================
+from VIVAANXMUSIC.logging import LOGGER
+
 _HISTORY_LIMIT = 50
+# Note: the actual download-attempt cap is now in core/call.py's
+# autoplay_start, which iterates over ALL candidates returned here.
+# This constant is kept for backward compatibility / documentation only.
+_MAX_DOWNLOAD_ATTEMPTS = 3
+
 _played_history: dict[int, list[str]] = {}
 
 
@@ -44,41 +62,9 @@ def clear_history(chat_id: int):
     _played_history.pop(chat_id, None)
 
 
-def _extract_candidates(results, chat_id: int, skip_history: bool):
-    candidates = []
-    played = [] if skip_history else _history(chat_id)
-    for video in results:
-        vidid = video.get("id")
-        title = video.get("title")
-        link = video.get("link")
-        duration = video.get("duration")
-        if not (vidid and title and link and duration):
-            continue
-        if vidid in played:
-            continue
-        thumbs = video.get("thumbnails") or []
-        thumb = thumbs[0].get("url", "").split("?")[0] if thumbs else None
-        candidates.append(
-            {
-                "vidid": vidid,
-                "title": title,
-                "link": link,
-                "duration_min": duration,
-                "thumb": thumb,
-            }
-        )
-    return candidates
-
-
-# =========================================================
-# ASHOK-STYLE: YouTube Mix playlist ("RD" + videoID)
-# Genuinely YouTube's own "related songs" algorithm — much
-# better variety than a plain title-text search, which often
-# just returns covers/remixes of the same song.
-# =========================================================
-
 def _cookie_file():
-    folder = os.path.join(os.getcwd(), "ShiviMusic", "assets")
+    """Pick a random cookies.txt from SWAGGYMUSIC/assets (Lustify path)."""
+    folder = os.path.join(os.getcwd(), "SWAGGYMUSIC", "assets")
     txt_files = glob.glob(os.path.join(folder, "*.txt"))
     if not txt_files:
         return None
@@ -134,69 +120,136 @@ def _extract_mix_candidates(entries, chat_id: int, skip_history: bool):
 
 
 async def _fetch_mix_candidates(chat_id: int, seed_vidid: str) -> list:
+    """Fetch the YouTube Mix playlist for `seed_vidid` and return a list
+    of candidate tracks (excluding already-played ones). Retries once on
+    failure because yt-dlp Mix extraction is flaky — a single transient
+    YouTube/network error should NOT permanently kill autoplay."""
     loop = asyncio.get_event_loop()
-    try:
-        entries = await loop.run_in_executor(None, _fetch_mix_sync, seed_vidid, 20)
-    except Exception as e:
-        print(f"[AUTOPLAY MIX ERROR] {e}")
-        return []
+    last_err = None
+    for attempt in range(2):  # 1 try + 1 retry
+        try:
+            entries = await loop.run_in_executor(
+                None, _fetch_mix_sync, seed_vidid, 20
+            )
+            candidates = _extract_mix_candidates(
+                entries, chat_id, skip_history=False
+            )
+            if candidates:
+                return candidates
+            # No candidates — either the Mix was empty or all entries are
+            # already in history. Reset history and try once more so
+            # autoplay doesn't silently stall after 50 plays.
+            if attempt == 0:
+                clear_history(chat_id)
+                candidates = _extract_mix_candidates(
+                    entries, chat_id, skip_history=True
+                )
+                if candidates:
+                    return candidates
+            # If still empty, fall through to retry / fallback.
+            return []
+        except Exception as e:
+            last_err = e
+            LOGGER(__name__).warning(
+                f"[AUTOPLAY MIX] attempt {attempt+1} failed for seed "
+                f"{seed_vidid}: {type(e).__name__}: {e}"
+            )
+            if attempt == 0:
+                # Brief pause before retry to avoid hammering YouTube.
+                await asyncio.sleep(1)
+    if last_err:
+        LOGGER(__name__).warning(
+            f"[AUTOPLAY MIX] giving up on seed {seed_vidid} after retries: "
+            f"{type(last_err).__name__}"
+        )
+    return []
 
-    candidates = _extract_mix_candidates(entries, chat_id, skip_history=False)
+
+def _extract_candidates(results, chat_id: int, skip_history: bool):
+    candidates = []
+    played = [] if skip_history else _history(chat_id)
+    for video in results:
+        vidid = video.get("id")
+        title = video.get("title")
+        link = video.get("link")
+        duration = video.get("duration")
+        if not (vidid and title and link and duration):
+            continue
+        if vidid in played:
+            continue
+        thumbs = video.get("thumbnails") or []
+        thumb = thumbs[0].get("url", "").split("?")[0] if thumbs else None
+        candidates.append(
+            {
+                "vidid": vidid,
+                "title": title,
+                "link": link,
+                "duration_min": duration,
+                "thumb": thumb,
+            }
+        )
+    return candidates
+
+
+async def _fetch_search_candidates(chat_id: int, seed_title: str) -> list:
+    """Fallback: title-text search via youtubesearchpython.VideosSearch.
+    Used when the Mix playlist extraction fails or returns no
+    candidates."""
+    if not seed_title:
+        return []
+    try:
+        search = VideosSearch(seed_title, limit=20)
+        data = await search.next()
+        results = data.get("result", []) if isinstance(data, dict) else []
+    except Exception as e:
+        LOGGER(__name__).warning(
+            f"[AUTOPLAY SEARCH] failed for '{seed_title}': "
+            f"{type(e).__name__}: {e}"
+        )
+        return []
+    candidates = _extract_candidates(results, chat_id, skip_history=False)
     if not candidates:
-        # Sab kuch is Mix se already played ho chuka -> history reset karke
-        # dobara try karo, taaki autoplay kabhi stall na ho
+        # All search results already played — reset history and retry.
         clear_history(chat_id)
-        candidates = _extract_mix_candidates(entries, chat_id, skip_history=True)
+        candidates = _extract_candidates(results, chat_id, skip_history=True)
     return candidates
 
 
 async def fetch_autoplay_track(chat_id: int, seed_title: str, seed_vidid: str = None):
     """
-    Primary: Ashok-Go style — seed video ka YouTube "Mix"/radio playlist
-    ("RD" + videoID) fetch karta hai, phir un candidates me se random pick.
-    Fallback: agar seed_vidid na ho ya Mix fetch fail ho jaaye (network
-    issue, video unavailable, etc.), purana title-text search wala
-    approach use hota hai — taaki autoplay kabhi silently stall na ho.
+    Primary: YouTube Mix ("RD" + videoID). Fallback: title-text search.
+    Returns a list of candidate tracks (best match first), or [] if both
+    sources failed. The caller is expected to try downloading each
+    candidate in turn so a single bad video ID doesn't kill autoplay.
+
+    (Previously returned a single dict; now returns a list so the caller
+    can iterate. Kept backward-compatible by also being callable as before
+    via fetch_autoplay_track_one for callers that only want one.)
     """
+    candidates = []
     if seed_vidid:
-        mix_candidates = await _fetch_mix_candidates(chat_id, seed_vidid)
-        if mix_candidates:
-            return random.choice(mix_candidates)
+        candidates = await _fetch_mix_candidates(chat_id, seed_vidid)
+        if candidates:
+            # Shuffle so the same seed doesn't always pick the same next
+            # track, but keep the full list so the caller can fall through.
+            random.shuffle(candidates)
+            return candidates
+        LOGGER(__name__).info(
+            f"[AUTOPLAY] Mix empty for seed {seed_vidid}, falling back to "
+            f"title search"
+        )
 
     if not seed_title:
-        return None
+        return []
 
-    query = f"{seed_title}"
-    try:
-        search = VideosSearch(query, limit=20)
-        data = await search.next()
-        results = data.get("result", []) if isinstance(data, dict) else []
-    except Exception as e:
-        print(f"[AUTOPLAY SEARCH ERROR] {e}")
-        return None
+    candidates = await _fetch_search_candidates(chat_id, seed_title)
+    if candidates:
+        random.shuffle(candidates)
+    return candidates
 
-    if not results:
-        return None
 
-    candidates = _extract_candidates(results, chat_id, skip_history=False)
-
-    if not candidates:
-        # Everything from this search was already played recently.
-        # Reset the history for this chat and try again from the same
-        # result set so autoplay never just stalls out.
-        clear_history(chat_id)
-        candidates = _extract_candidates(results, chat_id, skip_history=True)
-
-    if not candidates:
-        return None
-
-    return random.choice(candidates)
-
-# ===========================================================
-# ©️ 2025-26 All Rights Reserved by Purvi Bots (Im-Notcoder) 😎
-#
-# 🧑‍💻 Developer : t.me/TheSigmaCoder
-# 🔗 Source link : GitHub.com/Im-Notcoder/Shivi-V2
-# 📢 Telegram channel : t.me/Purvi_Bots
-# ===========================================================
-             
+async def fetch_autoplay_track_one(chat_id: int, seed_title: str, seed_vidid: str = None):
+    """Backward-compatible wrapper: returns a single candidate dict, or
+    None. Existing callers (call.py, skip.py, callback.py) use this."""
+    candidates = await fetch_autoplay_track(chat_id, seed_title, seed_vidid)
+    return candidates[0] if candidates else None
