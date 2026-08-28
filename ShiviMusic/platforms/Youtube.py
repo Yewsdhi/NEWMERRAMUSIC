@@ -46,7 +46,6 @@ def _clean_youtube_url(link: str) -> str:
 
     link = str(link).strip()
 
-    # Video ID directly
     if re.fullmatch(r"[\w-]{6,}", link):
         return f"https://www.youtube.com/watch?v={link}"
 
@@ -55,6 +54,7 @@ def _clean_youtube_url(link: str) -> str:
             link.split("youtu.be/", 1)[1]
             .split("?", 1)[0]
             .split("&", 1)[0]
+            .split("/", 1)[0]
         )
         return f"https://www.youtube.com/watch?v={vid}"
 
@@ -62,16 +62,53 @@ def _clean_youtube_url(link: str) -> str:
         vid = link.split("v=", 1)[1].split("&", 1)[0]
         return f"https://www.youtube.com/watch?v={vid}"
 
+    if "youtube.com/embed/" in link:
+        vid = (
+            link.split("youtube.com/embed/", 1)[1]
+            .split("?", 1)[0]
+            .split("&", 1)[0]
+            .split("/", 1)[0]
+        )
+        return f"https://www.youtube.com/watch?v={vid}"
+
+    if "youtube.com/shorts/" in link:
+        vid = (
+            link.split("youtube.com/shorts/", 1)[1]
+            .split("?", 1)[0]
+            .split("&", 1)[0]
+            .split("/", 1)[0]
+        )
+        return f"https://www.youtube.com/watch?v={vid}"
+
     return link
 
 
 def _video_id(link: str) -> str:
+    if not link:
+        return ""
+
     clean = _clean_youtube_url(link)
 
     if "v=" in clean:
-        return clean.split("v=", 1)[1].split("&", 1)[0]
+        return (
+            clean.split("v=", 1)[1]
+            .split("&", 1)[0]
+            .split("?", 1)[0]
+            .strip()
+        )
 
     return ""
+
+
+def _is_video_id(value: str) -> bool:
+    value = str(value or "").strip()
+
+    return bool(
+        re.fullmatch(
+            r"[\w-]{6,20}",
+            value,
+        )
+    )
 
 
 def _normalize_title(value: str) -> str:
@@ -136,6 +173,7 @@ def _ydl_opts():
         "no_warnings": True,
         "noplaylist": True,
         "skip_download": True,
+        "socket_timeout": 30,
         "extractor_args": {
             "youtube": {
                 "player_client": [
@@ -187,6 +225,160 @@ async def _search_youtube(query: str):
     return await asyncio.to_thread(run)
 
 
+async def _get_youtube_title(
+    video_id: str,
+) -> str:
+    """
+    Fetch the real YouTube title using the
+    official YouTube oEmbed endpoint.
+    """
+
+    video_id = str(video_id or "").strip()
+
+    if not video_id:
+        return ""
+
+    url = (
+        "https://www.youtube.com/oembed"
+        "?url=https://www.youtube.com/watch?v="
+        f"{video_id}&format=json"
+    )
+
+    try:
+        timeout = aiohttp.ClientTimeout(
+            total=20,
+        )
+
+        async with aiohttp.ClientSession(
+            timeout=timeout,
+        ) as session:
+
+            async with session.get(
+                url,
+                allow_redirects=True,
+            ) as response:
+
+                if response.status == 200:
+                    data = await response.json(
+                        content_type=None,
+                    )
+
+                    title = str(
+                        data.get("title") or ""
+                    ).strip()
+
+                    if (
+                        title
+                        and not _is_video_id(title)
+                    ):
+                        return title
+
+    except Exception:
+        pass
+
+    return ""
+
+
+async def _get_youtube_details_fallback(
+    video_id: str,
+):
+    """
+    Extra metadata fallback for YouTube videos.
+    """
+
+    video_id = str(video_id or "").strip()
+
+    if not video_id:
+        return None
+
+    try:
+        result = await _search_youtube(
+            f"https://www.youtube.com/watch?v={video_id}"
+        )
+
+        if result:
+            return result
+
+    except Exception:
+        pass
+
+    return None
+
+
+async def _resolve_real_title(
+    info,
+    video_id: str,
+    fallback_query: str = "",
+):
+    """
+    Prevents a video ID from being displayed
+    as the song title.
+    """
+
+    video_id = str(video_id or "").strip()
+
+    title = str(
+        (info or {}).get("title") or ""
+    ).strip()
+
+    invalid_titles = {
+        "",
+        "unknown title",
+        "youtube",
+        video_id.lower(),
+    }
+
+    if title.lower() in invalid_titles:
+        title = ""
+
+    if _is_video_id(title):
+        title = ""
+
+    if not title and video_id:
+        title = await _get_youtube_title(
+            video_id,
+        )
+
+    if not title and video_id:
+        fallback = await _get_youtube_details_fallback(
+            video_id,
+        )
+
+        if fallback:
+            found_title = str(
+                fallback.get("title") or ""
+            ).strip()
+
+            if (
+                found_title
+                and not _is_video_id(found_title)
+                and found_title.lower()
+                not in invalid_titles
+            ):
+                title = found_title
+
+    if not title and fallback_query:
+        search = await _search_youtube(
+            fallback_query,
+        )
+
+        if search:
+            found_title = str(
+                search.get("title") or ""
+            ).strip()
+
+            if (
+                found_title
+                and not _is_video_id(found_title)
+            ):
+                title = found_title
+
+    if not title:
+        title = "YouTube Song"
+
+    return title
+
+
 async def download_song(
     link: str,
 ) -> Union[str, None]:
@@ -212,10 +404,16 @@ async def download_song(
     ):
         return cached
 
-    # API downloader
     if API_URL and API_KEY:
         try:
-            async with aiohttp.ClientSession() as session:
+            timeout = aiohttp.ClientTimeout(
+                total=300,
+            )
+
+            async with aiohttp.ClientSession(
+                timeout=timeout,
+            ) as session:
+
                 async with session.get(
                     f"{API_URL}/download",
                     params={
@@ -223,9 +421,6 @@ async def download_song(
                         "type": "audio",
                         "api_key": API_KEY,
                     },
-                    timeout=aiohttp.ClientTimeout(
-                        total=300,
-                    ),
                 ) as resp:
 
                     if resp.status == 200:
@@ -240,32 +435,38 @@ async def download_song(
                         ):
                             tmp = cached + ".part"
 
-                            with open(
-                                tmp,
-                                "wb",
-                            ) as file:
-                                async for chunk in (
-                                    resp.content.iter_chunked(
-                                        131072,
-                                    )
-                                ):
-                                    if chunk:
-                                        file.write(chunk)
-
-                            if (
-                                os.path.exists(tmp)
-                                and os.path.getsize(tmp) > 0
-                            ):
-                                os.replace(
+                            try:
+                                with open(
                                     tmp,
-                                    cached,
-                                )
-                                return cached
+                                    "wb",
+                                ) as file:
+
+                                    async for chunk in (
+                                        resp.content.iter_chunked(
+                                            131072,
+                                        )
+                                    ):
+                                        if chunk:
+                                            file.write(chunk)
+
+                                if (
+                                    os.path.exists(tmp)
+                                    and os.path.getsize(tmp) > 0
+                                ):
+                                    os.replace(
+                                        tmp,
+                                        cached,
+                                    )
+
+                                    return cached
+
+                            except Exception:
+                                if os.path.exists(tmp):
+                                    os.remove(tmp)
 
         except Exception:
             pass
 
-    # yt-dlp fallback
     try:
         def run():
             base = os.path.join(
@@ -284,6 +485,7 @@ async def download_song(
                 "noplaylist": True,
                 "quiet": True,
                 "no_warnings": True,
+                "socket_timeout": 30,
                 "extractor_args": {
                     "youtube": {
                         "player_client": [
@@ -302,6 +504,7 @@ async def download_song(
                 base + ".webm",
                 base + ".opus",
                 base + ".mp3",
+                base + ".aac",
             ]
 
             for path in candidates:
@@ -333,10 +536,16 @@ async def download_video(
         exist_ok=True,
     )
 
-    # API downloader
     if API_URL and API_KEY:
         try:
-            async with aiohttp.ClientSession() as session:
+            timeout = aiohttp.ClientTimeout(
+                total=600,
+            )
+
+            async with aiohttp.ClientSession(
+                timeout=timeout,
+            ) as session:
+
                 async with session.get(
                     f"{API_URL}/download",
                     params={
@@ -344,9 +553,6 @@ async def download_video(
                         "type": "video",
                         "api_key": API_KEY,
                     },
-                    timeout=aiohttp.ClientTimeout(
-                        total=600,
-                    ),
                 ) as resp:
 
                     if resp.status == 200:
@@ -357,32 +563,38 @@ async def download_video(
 
                         tmp = path + ".part"
 
-                        with open(
-                            tmp,
-                            "wb",
-                        ) as file:
-                            async for chunk in (
-                                resp.content.iter_chunked(
-                                    131072,
-                                )
-                            ):
-                                if chunk:
-                                    file.write(chunk)
-
-                        if (
-                            os.path.exists(tmp)
-                            and os.path.getsize(tmp) > 0
-                        ):
-                            os.replace(
+                        try:
+                            with open(
                                 tmp,
-                                path,
-                            )
-                            return path
+                                "wb",
+                            ) as file:
+
+                                async for chunk in (
+                                    resp.content.iter_chunked(
+                                        131072,
+                                    )
+                                ):
+                                    if chunk:
+                                        file.write(chunk)
+
+                            if (
+                                os.path.exists(tmp)
+                                and os.path.getsize(tmp) > 0
+                            ):
+                                os.replace(
+                                    tmp,
+                                    path,
+                                )
+
+                                return path
+
+                        except Exception:
+                            if os.path.exists(tmp):
+                                os.remove(tmp)
 
         except Exception:
             pass
 
-    # yt-dlp fallback
     try:
         def run():
             path = os.path.join(
@@ -400,6 +612,7 @@ async def download_video(
                 "noplaylist": True,
                 "quiet": True,
                 "no_warnings": True,
+                "socket_timeout": 30,
                 "extractor_args": {
                     "youtube": {
                         "player_client": [
@@ -457,7 +670,7 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         if videoid:
-            link = self.base + link
+            link = self.base + str(link)
 
         return bool(
             re.search(
@@ -485,36 +698,30 @@ class YouTubeAPI:
                 or ""
             )
 
-            if message.entities:
-                for entity in message.entities:
+            entities = (
+                message.entities
+                or message.caption_entities
+                or []
+            )
 
-                    if (
-                        entity.type
-                        == MessageEntityType.URL
-                    ):
-                        return text[
-                            entity.offset:
-                            entity.offset
-                            + entity.length
-                        ]
+            for entity in entities:
 
-                    if (
-                        entity.type
-                        == MessageEntityType.TEXT_LINK
-                        and entity.url
-                    ):
-                        return entity.url
-
-            if message.caption_entities:
-                for entity in (
-                    message.caption_entities
+                if (
+                    entity.type
+                    == MessageEntityType.URL
                 ):
-                    if (
-                        entity.type
-                        == MessageEntityType.TEXT_LINK
-                        and entity.url
-                    ):
-                        return entity.url
+                    return text[
+                        entity.offset:
+                        entity.offset
+                        + entity.length
+                    ]
+
+                if (
+                    entity.type
+                    == MessageEntityType.TEXT_LINK
+                    and entity.url
+                ):
+                    return entity.url
 
         return None
 
@@ -524,32 +731,43 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link).strip()
             if videoid
             else _clean_youtube_url(link)
         )
 
-        try:
-            info = await _extract_info(url)
+        actual_video_id = _video_id(url)
+        info = None
 
+        try:
+            info = await _extract_info(
+                url,
+            )
         except Exception:
             info = None
 
         if not info:
-            info = await _search_youtube(link)
+            try:
+                info = await _search_youtube(
+                    url,
+                )
+            except Exception:
+                info = None
 
-        if not info:
-            raise ValueError(
-                "YouTube track details could not be fetched"
-            )
+        vidid = str(
+            (info or {}).get("id")
+            or actual_video_id
+            or ""
+        ).strip()
 
-        title = (
-            info.get("title")
-            or "Unknown Title"
+        title = await _resolve_real_title(
+            info,
+            vidid,
+            str(link),
         )
 
         duration_sec = int(
-            info.get("duration") or 0
+            (info or {}).get("duration") or 0
         )
 
         duration_min = (
@@ -559,13 +777,8 @@ class YouTubeAPI:
             else "00:00"
         )
 
-        vidid = (
-            info.get("id")
-            or _video_id(url)
-        )
-
         thumbnail = (
-            info.get("thumbnail")
+            (info or {}).get("thumbnail")
             or (
                 f"https://i.ytimg.com/vi/"
                 f"{vidid}/hqdefault.jpg"
@@ -624,7 +837,7 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link)
             if videoid
             else _clean_youtube_url(link)
         )
@@ -656,7 +869,7 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         if videoid:
-            link = self.listbase + link
+            link = self.listbase + str(link)
 
         if "&" in link:
             link = link.split("&")[0]
@@ -685,7 +898,7 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link).strip()
             if videoid
             else _clean_youtube_url(link)
         )
@@ -708,23 +921,33 @@ class YouTubeAPI:
             info = None
 
         if not info:
-            info = await _search_youtube(link)
+            try:
+                info = await _search_youtube(
+                    link,
+                )
+            except Exception:
+                info = None
 
         if not info:
             raise ValueError(
                 "YouTube track details could not be fetched"
             )
 
-        vidid = info.get("id")
+        vidid = str(
+            info.get("id")
+            or _video_id(url)
+            or ""
+        ).strip()
 
         if not vidid:
             raise ValueError(
                 "YouTube video ID not found"
             )
 
-        title = (
-            info.get("title")
-            or "Unknown Title"
+        title = await _resolve_real_title(
+            info,
+            vidid,
+            str(link),
         )
 
         duration_sec = int(
@@ -739,7 +962,7 @@ class YouTubeAPI:
         )
 
         yturl = (
-            f"https://www.youtube.com/watch?v="
+            "https://www.youtube.com/watch?v="
             f"{vidid}"
         )
 
@@ -771,11 +994,6 @@ class YouTubeAPI:
         exclude_ids=None,
         exclude_titles=None,
     ):
-        """
-        Hindi + Punjabi + English + Haryanvi + Bhojpuri.
-        Current/recent songs are excluded.
-        """
-
         seed_id = str(videoid or "").strip()
         query = str(title or "").strip()
 
@@ -812,33 +1030,30 @@ class YouTubeAPI:
                 "ignoreerrors": True,
             })
 
-            with yt_dlp.YoutubeDL(options) as ydl:
+            with yt_dlp.YoutubeDL(
+                options,
+            ) as ydl:
+
                 data = ydl.extract_info(
                     f"ytsearch20:{search_query}",
                     download=False,
                 )
 
-                return data.get("entries") or []
+                return (
+                    data.get("entries")
+                    or []
+                )
 
         search_queries = [
-            # Hindi
             "latest hindi songs official audio",
             "popular hindi bollywood songs",
             "trending hindi songs",
-
-            # Punjabi
             "latest punjabi songs official audio",
             "popular punjabi songs",
-
-            # English
             "latest english songs official audio",
             "popular english songs",
-
-            # Haryanvi
             "latest haryanvi songs official audio",
             "popular haryanvi songs",
-
-            # Bhojpuri
             "latest bhojpuri songs official audio",
             "popular bhojpuri songs",
         ]
@@ -874,22 +1089,20 @@ class YouTubeAPI:
                 if (
                     not candidate_id
                     or not song_title
+                    or _is_video_id(song_title)
                 ):
                     continue
 
-                # Current/recent song
                 if candidate_id in excluded_ids:
                     continue
 
-                # Duplicate candidate
                 if candidate_id in seen_ids:
                     continue
 
                 normalized_title = _normalize_title(
-                    song_title
+                    song_title,
                 )
 
-                # Same/recent title
                 if (
                     not normalized_title
                     or normalized_title in excluded_titles
@@ -901,20 +1114,17 @@ class YouTubeAPI:
                     entry.get("duration") or 0
                 )
 
-                # Invalid/live results
                 if duration_sec <= 0:
                     continue
 
-                # Duration limit
                 if (
                     max_duration
                     and duration_sec > int(max_duration)
                 ):
                     continue
 
-                # Same movie/album style filtering
                 candidate_words = _title_words(
-                    song_title
+                    song_title,
                 )
 
                 overlap = (
@@ -948,7 +1158,7 @@ class YouTubeAPI:
             return None
 
         selected = random.choice(
-            candidates
+            candidates,
         )
 
         entry = selected["entry"]
@@ -967,7 +1177,7 @@ class YouTubeAPI:
         return {
             "title": song_title,
             "link": (
-                f"https://www.youtube.com/"
+                "https://www.youtube.com/"
                 f"watch?v={candidate_id}"
             ),
             "vidid": candidate_id,
@@ -985,14 +1195,14 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link)
             if videoid
             else _clean_youtube_url(link)
         )
 
         try:
             result = await _extract_info(
-                url
+                url,
             )
 
             formats_available = []
@@ -1013,19 +1223,19 @@ class YouTubeAPI:
 
                 formats_available.append({
                     "format": fmt.get(
-                        "format"
+                        "format",
                     ),
                     "filesize": fmt.get(
-                        "filesize"
+                        "filesize",
                     ),
                     "format_id": fmt.get(
-                        "format_id"
+                        "format_id",
                     ),
                     "ext": fmt.get(
-                        "ext"
+                        "ext",
                     ),
                     "format_note": fmt.get(
-                        "format_note"
+                        "format_note",
                     ),
                     "yturl": url,
                 })
@@ -1045,7 +1255,7 @@ class YouTubeAPI:
         videoid: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link)
             if videoid
             else _clean_youtube_url(link)
         )
@@ -1055,15 +1265,25 @@ class YouTubeAPI:
             opts["extract_flat"] = True
 
             with yt_dlp.YoutubeDL(
-                opts
+                opts,
             ) as ydl:
 
+                if videoid:
+                    data = ydl.extract_info(
+                        url,
+                        download=False,
+                    )
+
+                    if data.get("entries"):
+                        return (
+                            data.get("entries")
+                            or []
+                        )[query_type]
+
+                    return data
+
                 data = ydl.extract_info(
-                    (
-                        url
-                        if videoid
-                        else f"ytsearch10:{link}"
-                    ),
+                    f"ytsearch10:{link}",
                     download=False,
                 )
 
@@ -1072,15 +1292,15 @@ class YouTubeAPI:
                     or []
                 )
 
-                return entries[
-                    query_type
-                ]
+                return entries[query_type]
 
         result = await asyncio.to_thread(
-            run
+            run,
         )
 
-        vidid = result["id"]
+        vidid = str(
+            result.get("id") or ""
+        ).strip()
 
         duration = int(
             result.get("duration")
@@ -1094,6 +1314,12 @@ class YouTubeAPI:
             else "00:00"
         )
 
+        title = await _resolve_real_title(
+            result,
+            vidid,
+            str(link),
+        )
+
         thumb = (
             result.get("thumbnail")
             or (
@@ -1103,10 +1329,7 @@ class YouTubeAPI:
         )
 
         return (
-            result.get(
-                "title",
-                "Unknown Title",
-            ),
+            title,
             duration_min,
             thumb,
             vidid,
@@ -1124,7 +1347,7 @@ class YouTubeAPI:
         title: Union[bool, str] = None,
     ):
         url = (
-            self.base + link
+            self.base + str(link)
             if videoid
             else _clean_youtube_url(link)
         )
@@ -1132,11 +1355,11 @@ class YouTubeAPI:
         try:
             if video:
                 file_path = await download_video(
-                    url
+                    url,
                 )
             else:
                 file_path = await download_song(
-                    url
+                    url,
                 )
 
             if file_path:
