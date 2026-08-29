@@ -28,7 +28,7 @@ API_URL = os.environ.get(
 # Example:
 # SHRUTI_API_KEY=your_key_here
 API_KEY = os.environ.get(
-    "SHRUTI_API_KEY",
+    "ShrutiBotsfhGT4c09sFRRuQIB6yCG",
     "",
 )
 
