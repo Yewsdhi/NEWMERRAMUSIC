@@ -3,96 +3,54 @@
 # 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
 # ======================================================
 
-import math
-
 from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 
 from ShiviMusic import app
-from ShiviMusic.utils.formatters import time_to_seconds
 
 
 # ======================================================
-# PROGRESS BAR
-# ======================================================
-
-def progress_bar(played, dur):
-    try:
-        played_sec = time_to_seconds(played)
-        duration_sec = time_to_seconds(dur)
-
-        if duration_sec <= 0:
-            return "----------"
-
-        percent = math.floor(
-            (played_sec / duration_sec) * 100
-        )
-
-        percent = max(0, min(percent, 100))
-
-    except Exception:
-        percent = 0
-
-    bars = [
-        "o---------",
-        "-o--------",
-        "--o-------",
-        "---o------",
-        "----o-----",
-        "-----o----",
-        "------o---",
-        "-------o--",
-        "--------o-",
-        "---------o",
-    ]
-
-    index = min(percent // 10, 9)
-
-    return bars[index]
-
-
-# ======================================================
-# ADMIN BUTTONS
+# ADMIN CONTROL PANEL
 # ======================================================
 
 def admin_buttons(chat_id, autoplay=True):
 
     if autoplay:
-        autoplay_text = "AUTOPLAY ON"
+        autoplay_text = "ᴀᴜᴛᴏᴘʟᴀʏ : ᴏɴ"
         autoplay_style = ButtonStyle.SUCCESS
     else:
-        autoplay_text = "AUTOPLAY OFF"
+        autoplay_text = "ᴀᴜᴛᴏᴘʟᴀʏ : ᴏғғ"
         autoplay_style = ButtonStyle.DANGER
 
     return [
 
-        # ==================================================
-        # ROW 1
-        # ==================================================
+        # ==============================================
+        # CONTROL ROW
+        # ==============================================
 
         [
             InlineKeyboardButton(
-                "PAUSE",
+                "ᴘᴀᴜsᴇ",
                 callback_data=f"ADMIN Pause|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
-                "RESUME",
+                "ʀᴇsᴜᴍᴇ",
                 callback_data=f"ADMIN Resume|{chat_id}",
                 style=ButtonStyle.SUCCESS,
             ),
 
             InlineKeyboardButton(
-                "SKIP",
+                "sᴋɪᴘ",
                 callback_data=f"ADMIN Skip|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
         ],
 
-        # ==================================================
-        # ROW 2
-        # ==================================================
+        # ==============================================
+        # AUTOPLAY + CLOSE
+        # ==============================================
 
         [
             InlineKeyboardButton(
@@ -102,7 +60,7 @@ def admin_buttons(chat_id, autoplay=True):
             ),
 
             InlineKeyboardButton(
-                "CLOSE",
+                "ᴄʟᴏsᴇ",
                 callback_data="close",
                 style=ButtonStyle.DANGER,
             ),
@@ -123,41 +81,6 @@ def stream_markup(_, chat_id):
 
 
 # ======================================================
-# STREAM MARKUP TIMER
-# ======================================================
-
-def stream_markup_timer(
-    _,
-    chat_id,
-    played,
-    dur,
-):
-
-    bar = progress_bar(
-        played,
-        dur,
-    )
-
-    return [
-
-        # TIMER
-        [
-            InlineKeyboardButton(
-                f"{played} {bar} {dur}",
-                callback_data="GetTimer",
-                style=ButtonStyle.PRIMARY,
-            )
-        ],
-
-        # CONTROLS
-        *admin_buttons(
-            chat_id,
-            autoplay=True,
-        ),
-    ]
-
-
-# ======================================================
 # TRACK MARKUP
 # ======================================================
 
@@ -170,7 +93,6 @@ def track_markup(
 ):
 
     return [
-
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -192,7 +114,6 @@ def track_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
-
         [
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
@@ -220,7 +141,6 @@ def playlist_markup(
 ):
 
     return [
-
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -242,7 +162,6 @@ def playlist_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
-
         [
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
@@ -270,7 +189,6 @@ def livestream_markup(
 ):
 
     return [
-
         [
             InlineKeyboardButton(
                 text=_["P_B_3"],
@@ -282,7 +200,6 @@ def livestream_markup(
                 style=ButtonStyle.PRIMARY,
             )
         ],
-
         [
             InlineKeyboardButton(
                 text=_["CLOSE_BUTTON"],
@@ -313,7 +230,6 @@ def slider_markup(
     query = str(query)[:20]
 
     return [
-
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -335,10 +251,9 @@ def slider_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
-
         [
             InlineKeyboardButton(
-                "BACK",
+                "ʙᴀᴄᴋ",
                 callback_data=(
                     f"slider B|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
@@ -347,7 +262,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                "CLOSE",
+                "ᴄʟᴏsᴇ",
                 callback_data=(
                     f"forceclose "
                     f"{query}|{user_id}"
@@ -356,7 +271,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                "NEXT",
+                "ɴᴇxᴛ",
                 callback_data=(
                     f"slider F|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
@@ -364,4 +279,4 @@ def slider_markup(
                 style=ButtonStyle.PRIMARY,
             ),
         ],
-    ]
+                       ]
