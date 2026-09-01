@@ -6,8 +6,6 @@
 from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 
-from ShiviMusic import app
-
 
 # ======================================================
 # ADMIN CONTROL PANEL
@@ -16,18 +14,13 @@ from ShiviMusic import app
 def admin_buttons(chat_id, autoplay=True):
 
     if autoplay:
-        autoplay_text = "ᴀᴜᴛᴏᴘʟᴀʏ : ᴏɴ"
+        autoplay_text = "ᴀᴜᴛᴏ : ᴏɴ"
         autoplay_style = ButtonStyle.SUCCESS
     else:
-        autoplay_text = "ᴀᴜᴛᴏᴘʟᴀʏ : ᴏғғ"
+        autoplay_text = "ᴀᴜᴛᴏ : ᴏғғ"
         autoplay_style = ButtonStyle.DANGER
 
     return [
-
-        # ==============================================
-        # CONTROL ROW
-        # ==============================================
-
         [
             InlineKeyboardButton(
                 "ᴘᴀᴜsᴇ",
@@ -47,11 +40,6 @@ def admin_buttons(chat_id, autoplay=True):
                 style=ButtonStyle.PRIMARY,
             ),
         ],
-
-        # ==============================================
-        # AUTOPLAY + CLOSE
-        # ==============================================
-
         [
             InlineKeyboardButton(
                 autoplay_text,
@@ -73,6 +61,26 @@ def admin_buttons(chat_id, autoplay=True):
 # ======================================================
 
 def stream_markup(_, chat_id):
+
+    return admin_buttons(
+        chat_id,
+        autoplay=True,
+    )
+
+
+# ======================================================
+# STREAM MARKUP TIMER
+# ======================================================
+# Timer/progress bar removed.
+# Kept for compatibility with old imports.
+# ======================================================
+
+def stream_markup_timer(
+    _,
+    chat_id,
+    played=None,
+    dur=None,
+):
 
     return admin_buttons(
         chat_id,
@@ -114,9 +122,10 @@ def track_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="ᴄʟᴏsᴇ",
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -162,9 +171,10 @@ def playlist_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="ᴄʟᴏsᴇ",
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -200,9 +210,10 @@ def livestream_markup(
                 style=ButtonStyle.PRIMARY,
             )
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="ᴄʟᴏsᴇ",
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -251,6 +262,7 @@ def slider_markup(
                 style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
                 "ʙᴀᴄᴋ",
@@ -279,4 +291,4 @@ def slider_markup(
                 style=ButtonStyle.PRIMARY,
             ),
         ],
-                       ]
+    ]
