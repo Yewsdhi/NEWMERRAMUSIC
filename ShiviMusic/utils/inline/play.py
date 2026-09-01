@@ -22,7 +22,7 @@ def progress_bar(played, dur):
         duration_sec = time_to_seconds(dur)
 
         if duration_sec <= 0:
-            return "──────────"
+            return "----------"
 
         percent = math.floor(
             (played_sec / duration_sec) * 100
@@ -34,16 +34,16 @@ def progress_bar(played, dur):
         percent = 0
 
     bars = [
-        "◉—————————",
-        "—◉————————",
-        "——◉———————",
-        "———◉——————",
-        "————◉—————",
-        "—————◉————",
-        "——————◉———",
-        "———————◉——",
-        "————————◉—",
-        "—————————◉",
+        "o---------",
+        "-o--------",
+        "--o-------",
+        "---o------",
+        "----o-----",
+        "-----o----",
+        "------o---",
+        "-------o--",
+        "--------o-",
+        "---------o",
     ]
 
     index = min(percent // 10, 9)
@@ -58,41 +58,41 @@ def progress_bar(played, dur):
 def admin_buttons(chat_id, autoplay=True):
 
     if autoplay:
-        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ ✅"
+        autoplay_text = "AUTOPLAY ON"
         autoplay_style = ButtonStyle.SUCCESS
     else:
-        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ ❌"
+        autoplay_text = "AUTOPLAY OFF"
         autoplay_style = ButtonStyle.DANGER
 
     return [
 
-        # ------------------------------------------------
-        # PAUSE / RESUME / SKIP
-        # ------------------------------------------------
+        # ==================================================
+        # ROW 1
+        # ==================================================
 
         [
             InlineKeyboardButton(
-                "⏸ ᴘᴀᴜsᴇ",
+                "PAUSE",
                 callback_data=f"ADMIN Pause|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
-                "▶️ ʀᴇsᴜᴍᴇ",
+                "RESUME",
                 callback_data=f"ADMIN Resume|{chat_id}",
                 style=ButtonStyle.SUCCESS,
             ),
 
             InlineKeyboardButton(
-                "⏭ sᴋɪᴘ",
+                "SKIP",
                 callback_data=f"ADMIN Skip|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
         ],
 
-        # ------------------------------------------------
-        # AUTOPLAY / CLOSE
-        # ------------------------------------------------
+        # ==================================================
+        # ROW 2
+        # ==================================================
 
         [
             InlineKeyboardButton(
@@ -102,7 +102,7 @@ def admin_buttons(chat_id, autoplay=True):
             ),
 
             InlineKeyboardButton(
-                "✕ ᴄʟᴏsᴇ",
+                "CLOSE",
                 callback_data="close",
                 style=ButtonStyle.DANGER,
             ),
@@ -117,7 +117,7 @@ def admin_buttons(chat_id, autoplay=True):
 def stream_markup(_, chat_id):
 
     return admin_buttons(
-        chat_id=chat_id,
+        chat_id,
         autoplay=True,
     )
 
@@ -140,6 +140,7 @@ def stream_markup_timer(
 
     return [
 
+        # TIMER
         [
             InlineKeyboardButton(
                 f"{played} {bar} {dur}",
@@ -148,8 +149,9 @@ def stream_markup_timer(
             )
         ],
 
+        # CONTROLS
         *admin_buttons(
-            chat_id=chat_id,
+            chat_id,
             autoplay=True,
         ),
     ]
@@ -336,7 +338,7 @@ def slider_markup(
 
         [
             InlineKeyboardButton(
-                "◀️",
+                "BACK",
                 callback_data=(
                     f"slider B|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
@@ -345,7 +347,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                _["CLOSE_BUTTON"],
+                "CLOSE",
                 callback_data=(
                     f"forceclose "
                     f"{query}|{user_id}"
@@ -354,7 +356,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                "▶️",
+                "NEXT",
                 callback_data=(
                     f"slider F|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
