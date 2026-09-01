@@ -6,6 +6,7 @@
 import math
 
 from pyrogram.types import InlineKeyboardButton
+from pyrogram.enums import ButtonStyle
 
 from ShiviMusic import app
 from ShiviMusic.utils.formatters import time_to_seconds
@@ -57,46 +58,53 @@ def progress_bar(played, dur):
 def admin_buttons(chat_id, autoplay=True):
 
     if autoplay:
-        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : ON ✅"
+        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ ✅"
+        autoplay_style = ButtonStyle.SUCCESS
     else:
-        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : OFF ❌"
+        autoplay_text = "🔄 ᴀᴜᴛᴏᴘʟᴀʏ ❌"
+        autoplay_style = ButtonStyle.DANGER
 
     return [
 
-        # ==============================================
-        # ROW 1
-        # ==============================================
+        # ------------------------------------------------
+        # PAUSE / RESUME / SKIP
+        # ------------------------------------------------
 
         [
             InlineKeyboardButton(
                 "⏸ ᴘᴀᴜsᴇ",
                 callback_data=f"ADMIN Pause|{chat_id}",
+                style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
                 "▶️ ʀᴇsᴜᴍᴇ",
                 callback_data=f"ADMIN Resume|{chat_id}",
+                style=ButtonStyle.SUCCESS,
             ),
 
             InlineKeyboardButton(
                 "⏭ sᴋɪᴘ",
                 callback_data=f"ADMIN Skip|{chat_id}",
+                style=ButtonStyle.PRIMARY,
             ),
         ],
 
-        # ==============================================
-        # ROW 2
-        # ==============================================
+        # ------------------------------------------------
+        # AUTOPLAY / CLOSE
+        # ------------------------------------------------
 
         [
             InlineKeyboardButton(
                 autoplay_text,
                 callback_data=f"ADMIN AutoPlay|{chat_id}",
+                style=autoplay_style,
             ),
 
             InlineKeyboardButton(
                 "✕ ᴄʟᴏsᴇ",
                 callback_data="close",
+                style=ButtonStyle.DANGER,
             ),
         ],
     ]
@@ -108,17 +116,14 @@ def admin_buttons(chat_id, autoplay=True):
 
 def stream_markup(_, chat_id):
 
-    # Default ON display.
-    # Actual ON/OFF state should be supplied from DB
-    # if your project already has an autoplay database.
     return admin_buttons(
-        chat_id,
+        chat_id=chat_id,
         autoplay=True,
     )
 
 
 # ======================================================
-# STREAM MARKUP WITH TIMER
+# STREAM MARKUP TIMER
 # ======================================================
 
 def stream_markup_timer(
@@ -134,15 +139,17 @@ def stream_markup_timer(
     )
 
     return [
+
         [
             InlineKeyboardButton(
                 f"{played} {bar} {dur}",
                 callback_data="GetTimer",
+                style=ButtonStyle.PRIMARY,
             )
         ],
 
         *admin_buttons(
-            chat_id,
+            chat_id=chat_id,
             autoplay=True,
         ),
     ]
@@ -170,6 +177,7 @@ def track_markup(
                     f"{videoid}|{user_id}|a|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
@@ -179,6 +187,7 @@ def track_markup(
                     f"{videoid}|{user_id}|v|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
 
@@ -189,6 +198,7 @@ def track_markup(
                     f"forceclose "
                     f"{videoid}|{user_id}"
                 ),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
@@ -217,6 +227,7 @@ def playlist_markup(
                     f"{videoid}|{user_id}|{ptype}|a|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
@@ -226,6 +237,7 @@ def playlist_markup(
                     f"{videoid}|{user_id}|{ptype}|v|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
 
@@ -236,6 +248,7 @@ def playlist_markup(
                     f"forceclose "
                     f"{videoid}|{user_id}"
                 ),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
@@ -264,6 +277,7 @@ def livestream_markup(
                     f"{videoid}|{user_id}|{mode}|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             )
         ],
 
@@ -274,6 +288,7 @@ def livestream_markup(
                     f"forceclose "
                     f"{videoid}|{user_id}"
                 ),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
@@ -305,6 +320,7 @@ def slider_markup(
                     f"{videoid}|{user_id}|a|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
@@ -314,6 +330,7 @@ def slider_markup(
                     f"{videoid}|{user_id}|v|"
                     f"{channel}|{fplay}"
                 ),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
 
@@ -324,6 +341,7 @@ def slider_markup(
                     f"slider B|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
@@ -332,6 +350,7 @@ def slider_markup(
                     f"forceclose "
                     f"{query}|{user_id}"
                 ),
+                style=ButtonStyle.DANGER,
             ),
 
             InlineKeyboardButton(
@@ -340,6 +359,7 @@ def slider_markup(
                     f"slider F|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
                 ),
+                style=ButtonStyle.PRIMARY,
             ),
         ],
     ]
