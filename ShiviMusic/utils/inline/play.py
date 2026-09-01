@@ -3,150 +3,142 @@
 # 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
 # ======================================================
 
-import math
-import random
-
 from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 
-from ShiviMusic import app
-from ShiviMusic.utils.formatters import time_to_seconds
+
+# ======================================================
+# ADMIN CONTROL PANEL
+# ======================================================
+
+def admin_buttons(chat_id, autoplay=True):
+
+    if autoplay:
+        autoplay_text = "ᴀᴜᴛᴏ : ᴏɴ"
+        autoplay_style = ButtonStyle.SUCCESS
+    else:
+        autoplay_text = "ᴀᴜᴛᴏ : ᴏғғ"
+        autoplay_style = ButtonStyle.DANGER
+
+    return [
+        [
+            InlineKeyboardButton(
+                "ᴘᴀᴜsᴇ",
+                callback_data=f"ADMIN Pause|{chat_id}",
+                style=ButtonStyle.PRIMARY,
+            ),
+
+            InlineKeyboardButton(
+                "ʀᴇsᴜᴍᴇ",
+                callback_data=f"ADMIN Resume|{chat_id}",
+                style=ButtonStyle.SUCCESS,
+            ),
+
+            InlineKeyboardButton(
+                "sᴋɪᴘ",
+                callback_data=f"ADMIN Skip|{chat_id}",
+                style=ButtonStyle.PRIMARY,
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                autoplay_text,
+                callback_data=f"ADMIN AutoPlay|{chat_id}",
+                style=autoplay_style,
+            ),
+
+            InlineKeyboardButton(
+                "ᴄʟᴏsᴇ",
+                callback_data="close",
+                style=ButtonStyle.DANGER,
+            ),
+        ],
+    ]
 
 
-styles = [
-    ButtonStyle.PRIMARY,
-    ButtonStyle.SUCCESS,
-    ButtonStyle.DANGER,
-]
+# ======================================================
+# STREAM MARKUP
+# ======================================================
+
+def stream_markup(_, chat_id):
+
+    return admin_buttons(
+        chat_id,
+        autoplay=True,
+    )
 
 
-def track_markup(_, videoid, user_id, channel, fplay):
+# ======================================================
+# STREAM MARKUP TIMER
+# ======================================================
+# Timer/progress bar removed.
+# Kept for compatibility with old imports.
+# ======================================================
+
+def stream_markup_timer(
+    _,
+    chat_id,
+    played=None,
+    dur=None,
+):
+
+    return admin_buttons(
+        chat_id,
+        autoplay=True,
+    )
+
+
+# ======================================================
+# TRACK MARKUP
+# ======================================================
+
+def track_markup(
+    _,
+    videoid,
+    user_id,
+    channel,
+    fplay,
+):
+
     return [
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
                 callback_data=(
                     f"MusicStream "
-                    f"{videoid}|{user_id}|a|{channel}|{fplay}"
+                    f"{videoid}|{user_id}|a|"
+                    f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             ),
+
             InlineKeyboardButton(
                 text=_["P_B_2"],
                 callback_data=(
                     f"MusicStream "
-                    f"{videoid}|{user_id}|v|{channel}|{fplay}"
+                    f"{videoid}|{user_id}|v|"
+                    f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
-                callback_data=f"forceclose {videoid}|{user_id}",
-                style=random.choice(styles),
+                text="ᴄʟᴏsᴇ",
+                callback_data=(
+                    f"forceclose "
+                    f"{videoid}|{user_id}"
+                ),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
 
 
-def progress_bar(played, dur):
-    try:
-        played_sec = time_to_seconds(played)
-        duration_sec = time_to_seconds(dur)
-
-        if duration_sec == 0:
-            return "──────────"
-
-        percent = math.floor(
-            (played_sec / duration_sec) * 100
-        )
-
-    except Exception:
-        percent = 0
-
-    bars = [
-        "◉—————————",
-        "—◉————————",
-        "——◉———————",
-        "———◉——————",
-        "————◉—————",
-        "—————◉————",
-        "——————◉———",
-        "———————◉——",
-        "————————◉—",
-        "—————————◉",
-    ]
-
-    index = min(max(percent, 0) // 10, 9)
-
-    return bars[index]
-
-
-def admin_buttons(chat_id):
-    return [
-        [
-            InlineKeyboardButton(
-                "▷",
-                callback_data=f"ADMIN Resume|{chat_id}",
-                style=ButtonStyle.SUCCESS,
-            ),
-            InlineKeyboardButton(
-                "II",
-                callback_data=f"ADMIN Pause|{chat_id}",
-                style=ButtonStyle.PRIMARY,
-            ),
-            InlineKeyboardButton(
-                "↻",
-                callback_data=f"ADMIN Replay|{chat_id}",
-                style=ButtonStyle.PRIMARY,
-            ),
-            InlineKeyboardButton(
-                "‣‣I",
-                callback_data=f"ADMIN Skip|{chat_id}",
-                style=ButtonStyle.PRIMARY,
-            ),
-            InlineKeyboardButton(
-                "▢",
-                callback_data=f"ADMIN Stop|{chat_id}",
-                style=ButtonStyle.DANGER,
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                "🔄 ᴀᴜᴛᴏᴘʟᴀʏ : ON ✅",
-                callback_data=f"ADMIN AutoPlay|{chat_id}",
-                style=ButtonStyle.DANGER,
-            ),
-        ],
-        [
-            InlineKeyboardButton(
-                "✘ CLOSE ✘",
-                callback_data="close",
-                style=ButtonStyle.SUCCESS,
-            ),
-        ],
-    ]
-
-
-def stream_markup_timer(_, chat_id, played, dur):
-    bar = progress_bar(played, dur)
-
-    return [
-        [
-            InlineKeyboardButton(
-                f"{played} {bar} {dur}",
-                callback_data="GetTimer",
-                style=ButtonStyle.PRIMARY,
-            )
-        ],
-        *admin_buttons(chat_id),
-    ]
-
-
-def stream_markup(_, chat_id):
-    return admin_buttons(chat_id)
-
+# ======================================================
+# PLAYLIST MARKUP
+# ======================================================
 
 def playlist_markup(
     _,
@@ -156,6 +148,7 @@ def playlist_markup(
     channel,
     fplay,
 ):
+
     return [
         [
             InlineKeyboardButton(
@@ -165,8 +158,9 @@ def playlist_markup(
                     f"{videoid}|{user_id}|{ptype}|a|"
                     f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             ),
+
             InlineKeyboardButton(
                 text=_["P_B_2"],
                 callback_data=(
@@ -174,20 +168,26 @@ def playlist_markup(
                     f"{videoid}|{user_id}|{ptype}|v|"
                     f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="ᴄʟᴏsᴇ",
                 callback_data=(
-                    f"forceclose {videoid}|{user_id}"
+                    f"forceclose "
+                    f"{videoid}|{user_id}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
 
+
+# ======================================================
+# LIVESTREAM MARKUP
+# ======================================================
 
 def livestream_markup(
     _,
@@ -197,6 +197,7 @@ def livestream_markup(
     channel,
     fplay,
 ):
+
     return [
         [
             InlineKeyboardButton(
@@ -206,20 +207,26 @@ def livestream_markup(
                     f"{videoid}|{user_id}|{mode}|"
                     f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             )
         ],
+
         [
             InlineKeyboardButton(
-                text=_["CLOSE_BUTTON"],
+                text="ᴄʟᴏsᴇ",
                 callback_data=(
-                    f"forceclose {videoid}|{user_id}"
+                    f"forceclose "
+                    f"{videoid}|{user_id}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.DANGER,
             )
         ],
     ]
 
+
+# ======================================================
+# SLIDER MARKUP
+# ======================================================
 
 def slider_markup(
     _,
@@ -230,6 +237,7 @@ def slider_markup(
     channel,
     fplay,
 ):
+
     query = str(query)[:20]
 
     return [
@@ -238,42 +246,49 @@ def slider_markup(
                 text=_["P_B_1"],
                 callback_data=(
                     f"MusicStream "
-                    f"{videoid}|{user_id}|a|{channel}|{fplay}"
+                    f"{videoid}|{user_id}|a|"
+                    f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             ),
+
             InlineKeyboardButton(
                 text=_["P_B_2"],
                 callback_data=(
                     f"MusicStream "
-                    f"{videoid}|{user_id}|v|{channel}|{fplay}"
+                    f"{videoid}|{user_id}|v|"
+                    f"{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.SUCCESS,
             ),
         ],
+
         [
             InlineKeyboardButton(
-                "◁",
+                "ʙᴀᴄᴋ",
                 callback_data=(
                     f"slider B|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             ),
+
             InlineKeyboardButton(
-                _["CLOSE_BUTTON"],
+                "ᴄʟᴏsᴇ",
                 callback_data=(
-                    f"forceclose {query}|{user_id}"
+                    f"forceclose "
+                    f"{query}|{user_id}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.DANGER,
             ),
+
             InlineKeyboardButton(
-                "▷",
+                "ɴᴇxᴛ",
                 callback_data=(
                     f"slider F|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
                 ),
-                style=random.choice(styles),
+                style=ButtonStyle.PRIMARY,
             ),
         ],
-                        ]
+    ]
