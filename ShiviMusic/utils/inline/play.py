@@ -3,43 +3,97 @@
 # 🧑‍💻 Developer : t.me/lll_APNA_BADNAM_BABY_lll
 # ======================================================
 
+import math
+
 from pyrogram.types import InlineKeyboardButton
 from pyrogram.enums import ButtonStyle
 
+from ShiviMusic import app
+from ShiviMusic.utils.formatters import time_to_seconds
+
 
 # ======================================================
-# ADMIN CONTROL PANEL
+# PROGRESS BAR
+# ======================================================
+
+def progress_bar(played, dur):
+    try:
+        played_sec = time_to_seconds(played)
+        duration_sec = time_to_seconds(dur)
+
+        if duration_sec <= 0:
+            return "----------"
+
+        percent = math.floor(
+            (played_sec / duration_sec) * 100
+        )
+
+        percent = max(0, min(percent, 100))
+
+    except Exception:
+        percent = 0
+
+    bars = [
+        "o---------",
+        "-o--------",
+        "--o-------",
+        "---o------",
+        "----o-----",
+        "-----o----",
+        "------o---",
+        "-------o--",
+        "--------o-",
+        "---------o",
+    ]
+
+    index = min(percent // 10, 9)
+
+    return bars[index]
+
+
+# ======================================================
+# ADMIN BUTTONS
 # ======================================================
 
 def admin_buttons(chat_id, autoplay=True):
 
     if autoplay:
-        autoplay_text = "ᴀᴜᴛᴏ : ᴏɴ"
+        autoplay_text = "AUTOPLAY ON"
         autoplay_style = ButtonStyle.SUCCESS
     else:
-        autoplay_text = "ᴀᴜᴛᴏ : ᴏғғ"
+        autoplay_text = "AUTOPLAY OFF"
         autoplay_style = ButtonStyle.DANGER
 
     return [
+
+        # ==================================================
+        # ROW 1
+        # ==================================================
+
         [
             InlineKeyboardButton(
-                "ᴘᴀᴜsᴇ",
+                "PAUSE",
                 callback_data=f"ADMIN Pause|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
 
             InlineKeyboardButton(
-                "ʀᴇsᴜᴍᴇ",
+                "RESUME",
                 callback_data=f"ADMIN Resume|{chat_id}",
                 style=ButtonStyle.SUCCESS,
             ),
 
             InlineKeyboardButton(
-                "sᴋɪᴘ",
+                "SKIP",
                 callback_data=f"ADMIN Skip|{chat_id}",
                 style=ButtonStyle.PRIMARY,
             ),
         ],
+
+        # ==================================================
+        # ROW 2
+        # ==================================================
+
         [
             InlineKeyboardButton(
                 autoplay_text,
@@ -48,7 +102,7 @@ def admin_buttons(chat_id, autoplay=True):
             ),
 
             InlineKeyboardButton(
-                "ᴄʟᴏsᴇ",
+                "CLOSE",
                 callback_data="close",
                 style=ButtonStyle.DANGER,
             ),
@@ -71,21 +125,36 @@ def stream_markup(_, chat_id):
 # ======================================================
 # STREAM MARKUP TIMER
 # ======================================================
-# Timer/progress bar removed.
-# Kept for compatibility with old imports.
-# ======================================================
 
 def stream_markup_timer(
     _,
     chat_id,
-    played=None,
-    dur=None,
+    played,
+    dur,
 ):
 
-    return admin_buttons(
-        chat_id,
-        autoplay=True,
+    bar = progress_bar(
+        played,
+        dur,
     )
+
+    return [
+
+        # TIMER
+        [
+            InlineKeyboardButton(
+                f"{played} {bar} {dur}",
+                callback_data="GetTimer",
+                style=ButtonStyle.PRIMARY,
+            )
+        ],
+
+        # CONTROLS
+        *admin_buttons(
+            chat_id,
+            autoplay=True,
+        ),
+    ]
 
 
 # ======================================================
@@ -101,6 +170,7 @@ def track_markup(
 ):
 
     return [
+
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -125,7 +195,7 @@ def track_markup(
 
         [
             InlineKeyboardButton(
-                text="ᴄʟᴏsᴇ",
+                text=_["CLOSE_BUTTON"],
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -150,6 +220,7 @@ def playlist_markup(
 ):
 
     return [
+
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -174,7 +245,7 @@ def playlist_markup(
 
         [
             InlineKeyboardButton(
-                text="ᴄʟᴏsᴇ",
+                text=_["CLOSE_BUTTON"],
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -199,6 +270,7 @@ def livestream_markup(
 ):
 
     return [
+
         [
             InlineKeyboardButton(
                 text=_["P_B_3"],
@@ -213,7 +285,7 @@ def livestream_markup(
 
         [
             InlineKeyboardButton(
-                text="ᴄʟᴏsᴇ",
+                text=_["CLOSE_BUTTON"],
                 callback_data=(
                     f"forceclose "
                     f"{videoid}|{user_id}"
@@ -241,6 +313,7 @@ def slider_markup(
     query = str(query)[:20]
 
     return [
+
         [
             InlineKeyboardButton(
                 text=_["P_B_1"],
@@ -265,7 +338,7 @@ def slider_markup(
 
         [
             InlineKeyboardButton(
-                "ʙᴀᴄᴋ",
+                "BACK",
                 callback_data=(
                     f"slider B|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
@@ -274,7 +347,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                "ᴄʟᴏsᴇ",
+                "CLOSE",
                 callback_data=(
                     f"forceclose "
                     f"{query}|{user_id}"
@@ -283,7 +356,7 @@ def slider_markup(
             ),
 
             InlineKeyboardButton(
-                "ɴᴇxᴛ",
+                "NEXT",
                 callback_data=(
                     f"slider F|{query_type}|{query}|"
                     f"{user_id}|{channel}|{fplay}"
