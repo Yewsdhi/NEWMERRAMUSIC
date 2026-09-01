@@ -36,6 +36,9 @@ API_URL = "https://teaminflex.xyz"
 
 API_KEY = "INFLEX57606928D"
 
+API_URL = getenv("API_URL", 'https://pvtz.nexgenbots.xyz') #youtube song url
+VIDEO_API_URL = getenv("VIDEO_API_URL", 'https://api.video.nexgenbots.xyz')
+API_KEY = getenv("API_KEY", None) # youtube song api key, generate free key or buy paid plan from https://console.nexgenbots.xyz
 
 # ======================================================
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 17000))
