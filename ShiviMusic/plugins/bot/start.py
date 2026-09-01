@@ -35,14 +35,11 @@ from strings import get_string
 
 
 shivi_PIC = [
-    "https://d.uguu.se/AHWUtCcF.jpg",
-    "https://h.uguu.se/oCKonQPF.jpg",
-    "https://o.uguu.se/ZKmYOtBA.jpg",
-    "https://o.uguu.se/ZKmYOtBA.jpg",
-    "https://d.uguu.se/CPlUJSEp.jpg",
-    "https://h.uguu.se/LSyRfkrb.jpg",
-    "https://h.uguu.se/ALtehGVn.jpg",
-    "https://d.uguu.se/TOCZFbxQ.jpg"
+    "https://files.catbox.moe/5dc4r1.jpg",
+    "https://files.catbox.moe/8dx37s.jpg",
+    "https://files.catbox.moe/9jfiap.jpg",
+    "https://files.catbox.moe/csdelk.jpg",
+    "https://files.catbox.moe/ma73xg.jpg",
 ]
 
 
