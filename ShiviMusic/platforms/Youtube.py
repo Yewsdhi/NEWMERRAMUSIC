@@ -27,10 +27,12 @@ API_URL = os.environ.get(
 # Keep API key in environment variable.
 # Example:
 # SHRUTI_API_KEY=your_key_here
-API_KEY = os.environ.get(
-    "SHRUTI_API_KEY",
-    "ShrutiBotsfhGT4c09sFRRuQIB6yCG",
-)
+API_KEY = os.environ.get("SHRUTI_API_KEY", "").strip()
+
+# Optional exported Netscape-format cookies file.
+# Set YTDLP_COOKIES_FILE to a secure Heroku-mounted/managed path if you
+# legitimately have permission to use the cookies. Never hard-code cookies.
+YTDLP_COOKIES_FILE = os.environ.get("YTDLP_COOKIES_FILE", "").strip()
 
 DOWNLOAD_DIR = "downloads"
 
@@ -285,6 +287,9 @@ def _ydl_opts():
         "noplaylist": True,
         "skip_download": True,
         "socket_timeout": 30,
+        "retries": 2,
+        "fragment_retries": 2,
+        "extractor_retries": 2,
         "extractor_args": {
             "youtube": {
                 "player_client": [
@@ -308,6 +313,8 @@ async def _extract_info(
             options.update(opts)
 
         options["skip_download"] = not download
+        if YTDLP_COOKIES_FILE and os.path.isfile(YTDLP_COOKIES_FILE):
+            options["cookiefile"] = YTDLP_COOKIES_FILE
 
         with yt_dlp.YoutubeDL(
             options
@@ -920,6 +927,9 @@ async def download_song(
                 "quiet": True,
                 "no_warnings": True,
                 "socket_timeout": 30,
+                "retries": 2,
+                "fragment_retries": 2,
+                "extractor_retries": 2,
                 "extractor_args": {
                     "youtube": {
                         "player_client": [
@@ -974,7 +984,8 @@ async def download_song(
 
         return None
 
-    except Exception:
+    except Exception as error:
+        print(f"[YouTube] audio download failed: {type(error).__name__}: {error}")
         return None
 
 
@@ -1133,6 +1144,9 @@ async def download_video(
                 "quiet": True,
                 "no_warnings": True,
                 "socket_timeout": 30,
+                "retries": 2,
+                "fragment_retries": 2,
+                "extractor_retries": 2,
                 "extractor_args": {
                     "youtube": {
                         "player_client": [
@@ -1163,7 +1177,8 @@ async def download_video(
             run
         )
 
-    except Exception:
+    except Exception as error:
+        print(f"[YouTube] video download failed: {type(error).__name__}: {error}")
         return None
 
 
@@ -2120,3 +2135,4 @@ class YouTubeAPI:
 # =========================================================
 
 YouTube = YouTubeAPI()
+    
