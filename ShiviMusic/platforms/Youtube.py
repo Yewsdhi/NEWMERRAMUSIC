@@ -8,7 +8,7 @@ from pyrogram.types import Message
 from py_yt import Playlist
 import aiohttp
 
-API_URL = os.environ.get("ROYAL_API_URL", "youtubeapikey-production-701a.up.railway.app")
+API_URL = os.environ.get("ROYAL_API_URL", "https://youtubeapikey-production-701a.up.railway.app/download")
 API_KEY = os.environ.get("ROYAL_API_KEY", "Royal_660703bee3b31dea") ## Get this API key from your ROYAL bot 
 
 DOWNLOAD_DIR = "downloads"
