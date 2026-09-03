@@ -11,7 +11,7 @@ from pyrogram.types import Message
 from py_yt import Playlist
 
 # VideosSearch ka import apni existing dependency ke hisaab se rakho
-from youtubesearchpython import VideosSearch
+from py_yt import Playlist
 
 
 API_URL = os.environ.get(
